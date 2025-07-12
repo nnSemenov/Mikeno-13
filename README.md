@@ -7,7 +7,9 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 1. `pOffset`
     
     Use gauge pressure for p-V coupling, and absolute pressure for thermophysical.
+2. Equation of state: RK
+3. Support AOCC
 
 ## Pending works
-1. More equation of state: RK, SRK
+1. More equation of state: SRK
 2. Van der vaals one fluid mixing rule
