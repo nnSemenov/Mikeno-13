@@ -11,30 +11,6 @@
 
 namespace Foam {
 
-    //- Returns empty string if specie is ok.
-    template<class Specie>
-    inline word checkSpecie(const Specie&sp, bool checkOmega=false) {
-        if(sp.W()<=0) {
-            return "Invalid molecular weight: "+name(sp.W())+"[kg/kmol]";
-        }
-        if(sp.Tc()<=0) {
-            return "Invalid critical temperature: "+name(sp.Tc()) +"[K]";
-        }
-        if(sp.Pc()<=0) {
-            return "Invalid critical pressure: "+name(sp.Pc())+"[Pa]";
-        }
-        if(sp.Vc()<=0) {
-            return "Invalid critical volume: "+name(sp.Vc())+"[m^3/kmol]";
-        }
-        if(sp.Zc()<=0 or sp.Zc()>1) {
-            return "Invalid critical compression factor: "+name(sp.Pc());
-        }
-        if(checkOmega and sp.omega()<=-1) {
-            return "Invalid acentric factor: "+name(sp.omega());
-        }
-        return "";
-    }
-
     struct cubicEOSCoefficient {
         scalar a;
         scalar b;

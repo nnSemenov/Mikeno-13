@@ -41,10 +41,10 @@ Foam::specie::specie(const word& name, const dictionary& dict)
     Y_(dict.subDict("specie").lookupOrDefault("massFraction", 1.0)),
     molWeight_(dict.subDict("specie").lookup<scalar>("molWeight")),
     // Non-physical default value will force user input them when actually required
-    Tc_(dict.subDict("specie").lookupOrDefault("Tc", -1)),
-    Vc_(dict.subDict("specie").lookupOrDefault("Vc", -1)),
-    Pc_(dict.subDict("specie").lookupOrDefault("Pc", -1)),
-    omega_(-2)
+    Tc_(dict.subDict("specie").lookupOrDefault("Tc", -1.0)),
+    Vc_(dict.subDict("specie").lookupOrDefault("Vc", -1.0)),
+    Pc_(dict.subDict("specie").lookupOrDefault("Pc", -1.0)),
+    omega_(dict.subDict("specie").lookupOrDefault("Pc", -2.0))
 {
     auto eosDict = dict.subDictPtr("equationOfState");
     if (eosDict not_eq nullptr) {
@@ -60,6 +60,37 @@ Foam::specie::specie(const word& name, const dictionary& dict)
 
 }
 
+Foam::word Foam::specie::checkForRealGasEOS(bool checkOmega) const {
+    if(this->W()<=0) {
+        return "Invalid molecular weight: "+::Foam::name(this->W())+"[kg/kmol]";
+    }
+    if(this->Tc()<=0) {
+        return "Invalid critical temperature: "+::Foam::name(this->Tc()) +"[K]";
+    }
+    if(this->Pc()<=0) {
+        return "Invalid critical pressure: "+::Foam::name(this->Pc())+"[Pa]";
+    }
+    if(this->Vc()<=0) {
+        return "Invalid critical volume: "+::Foam::name(this->Vc())+"[m^3/kmol]";
+    }
+    if(this->Zc()<=0 or this->Zc()>1) {
+        return "Invalid critical compression factor: "+::Foam::name(this->Pc());
+    }
+    if(checkOmega and this->omega()<=-1) {
+        return "Invalid acentric factor: "+::Foam::name(this->omega());
+    }
+    return "";
+}
+
+
+void Foam::specie::requireRealGasEOS(bool requireOmega) const {
+    word err=this->checkForRealGasEOS(requireOmega);
+    if(not err.empty()) {
+        FatalErrorInFunction<<this->name()<<" is invalid specie: "<<err<<endl;
+
+        ::Foam::abort(::Foam::FatalError);
+    }
+}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 

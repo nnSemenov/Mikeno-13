@@ -37,11 +37,7 @@ Foam::RedlichKwongGas<Specie>::RedlichKwongGas
         :
         Specie(name, dict)
 {
-
-    word err=checkSpecie(static_cast(const Specie&)(*this));
-    if(not err.empty()) {
-        FatalErrorIn(__PRETTY_FUNCTION__)<<name<<" is invalid specie: "<<err<<endl;
-    }
+    this->requireRealGasEOS(false);
 }
 
 

@@ -46,11 +46,7 @@ class RedlichKwongGas : public Specie {
 
 public:
     inline RedlichKwongGas(
-            const Specie &sp,
-            const scalar& Tc,
-            const scalar& Vc,
-            const scalar& Zc,
-            const scalar& Pc
+            const Specie &sp
        );
 
     RedlichKwongGas(const word&name, const dictionary&dict);

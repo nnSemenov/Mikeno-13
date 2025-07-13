@@ -90,6 +90,9 @@ protected:
         //- Acentric factor [-]
         scalar omega_;
 
+        word checkForRealGasEOS(bool requireOmega) const;
+        void requireRealGasEOS(bool requireOmega) const;
+
 public:
 
     //- Runtime type information
