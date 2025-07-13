@@ -31,20 +31,10 @@ License
 template<class Specie>
 inline Foam::PengRobinsonGas<Specie>::PengRobinsonGas
 (
-    const Specie& sp,
-    const scalar& Tc,
-    const scalar& Vc,
-    const scalar& Zc,
-    const scalar& Pc,
-    const scalar& omega
+    const Specie& sp
 )
 :
-    Specie(sp),
-    Tc_(Tc),
-    Vc_(Vc),
-    Zc_(Zc),
-    Pc_(Pc),
-    omega_(omega)
+    Specie(sp)
 {}
 
 

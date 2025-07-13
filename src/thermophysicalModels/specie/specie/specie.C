@@ -39,8 +39,25 @@ Foam::specie::specie(const word& name, const dictionary& dict)
 :
     name_(name),
     Y_(dict.subDict("specie").lookupOrDefault("massFraction", 1.0)),
-    molWeight_(dict.subDict("specie").lookup<scalar>("molWeight"))
-{}
+    molWeight_(dict.subDict("specie").lookup<scalar>("molWeight")),
+    Tc_(dict.subDict("specie").lookupOrDefault("Tc", 0)),
+    Vc_(dict.subDict("specie").lookupOrDefault("Vc", 0)),
+    Pc_(dict.subDict("specie").lookupOrDefault("Pc", 0)),
+    omega_(0)
+{
+    auto eosDict = dict.subDictPtr("equationOfState");
+    if (eosDict not_eq nullptr) {
+        List<word> oldKeyWords({"Tc", "Pc", "Vc", "omega"});
+        forAll(oldKeyWords, wordIdx) {
+            if (eosDict->found(oldKeyWords[wordIdx])) {
+                WarningIn(__PRETTY_FUNCTION__) << "EOS parameter " << oldKeyWords[wordIdx]
+                                               << " has been moved to \"specie\" dict. This change is introduced in OpenFOAMCE because they are eigen properties of specie. Your input will not take effect."
+                                               << endl;
+            }
+        }
+    }
+
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //

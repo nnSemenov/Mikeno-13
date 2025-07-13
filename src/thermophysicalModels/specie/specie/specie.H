@@ -76,6 +76,19 @@ class specie
         //- Molecular weight of specie [kg/kmol]
         scalar molWeight_;
 
+protected:
+
+        //- Critical Temperature [K]
+        scalar Tc_;
+
+        //- Critical volume [m^3/kmol]
+        scalar Vc_;
+
+        //- Critical Pressure [Pa]
+        scalar Pc_;
+
+        //- Acentric factor [-]
+        scalar omega_;
 
 public:
 
@@ -122,6 +135,21 @@ public:
             //- Gas constant [J/kg/K]
             inline scalar R() const;
 
+
+            //- Critical Temperature [K]
+            inline scalar Tc() const;
+
+            //- Critical compression factor [-]
+            inline scalar Zc() const;
+
+            //- Critical Pressure [Pa]
+            inline scalar Pc() const;
+
+            //- Critical volume [m^3/kmol]
+            inline scalar Vc() const;
+
+            //- Acentric factor [-]
+            inline scalar omega() const;
 
         // I-O
 
