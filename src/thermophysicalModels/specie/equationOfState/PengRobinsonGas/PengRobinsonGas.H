@@ -114,22 +114,6 @@ class PengRobinsonGas
 {
     // Private Data
 
-        //- Critical Temperature [K]
-        scalar Tc_;
-
-        //- Critical volume [m^3/kmol]
-        scalar Vc_;
-
-        //- Critical compression factor [-]
-        scalar Zc_;
-
-        //- Critical Pressure [Pa]
-        scalar Pc_;
-
-        //- Acentric factor [-]
-        scalar omega_;
-
-
 public:
 
     // Constructors
@@ -137,12 +121,7 @@ public:
         //- Construct from components
         inline PengRobinsonGas
         (
-            const Specie& sp,
-            const scalar& Tc,
-            const scalar& Vc,
-            const scalar& Zc,
-            const scalar& Pc,
-            const scalar& omega
+            const Specie& sp
         );
 
         //- Construct from name and dictionary

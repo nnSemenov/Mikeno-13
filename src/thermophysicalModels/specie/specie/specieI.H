@@ -91,6 +91,25 @@ inline scalar specie::R() const
     return RR/molWeight_;
 }
 
+inline scalar specie::Tc() const {
+    return this->Tc_;
+}
+
+inline scalar specie::Zc() const {
+    return Pc_*Vc_/(RR*Tc_);
+}
+
+inline scalar specie::Pc() const {
+    return this->Pc_;
+}
+
+inline scalar specie::omega() const {
+    return this->omega_;
+}
+
+inline scalar specie::Vc() const {
+    return this->Vc_;
+}
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 

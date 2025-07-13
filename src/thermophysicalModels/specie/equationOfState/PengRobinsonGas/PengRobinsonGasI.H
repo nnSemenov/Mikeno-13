@@ -31,26 +31,21 @@ License
 template<class Specie>
 inline Foam::PengRobinsonGas<Specie>::PengRobinsonGas
 (
-    const Specie& sp,
-    const scalar& Tc,
-    const scalar& Vc,
-    const scalar& Zc,
-    const scalar& Pc,
-    const scalar& omega
+    const Specie& sp
 )
 :
-    Specie(sp),
-    Tc_(Tc),
-    Vc_(Vc),
-    Zc_(Zc),
-    Pc_(Pc),
-    omega_(omega)
-{}
+    Specie(sp)
+{
+    this->requireRealGasEOS(true);
+}
 
 
 template<class Specie>
 inline Foam::cubicEOSCoefficient Foam::PengRobinsonGas<Specie>::coeff_AB(scalar p, scalar T) const {
 
+    const auto Tc_=this->Tc_;
+    const auto Pc_=this->Pc_;
+    const auto omega_ = this->omega_;
     const scalar Tr = T/Tc_;
     const scalar Pr = p/Pc_;
     const scalar a = 0.45724*sqr(RR*Tc_)/Pc_;
@@ -70,13 +65,10 @@ inline Foam::PengRobinsonGas<Specie>::PengRobinsonGas
     const PengRobinsonGas& pg
 )
 :
-    Specie(name, pg),
-    Tc_(pg.Tc_),
-    Vc_(pg.Vc_),
-    Zc_(pg.Zc_),
-    Pc_(pg.Pc_),
-    omega_(pg.omega_)
-{}
+    Specie(name, pg)
+{
+    this->requireRealGasEOS(true);
+}
 
 
 template<class Specie>
@@ -108,6 +100,7 @@ template<class Specie>
 inline Foam::scalar Foam::PengRobinsonGas<Specie>::h(scalar p, scalar T) const
 {
     const auto coeff = this->coeff_AB(p,T);
+    const auto Tc_=this->Tc_;
 //    const scalar A=coeff.A;
     const scalar B=coeff.B;
     const scalar Tr=coeff.Tr;
@@ -131,6 +124,7 @@ template<class Specie>
 inline Foam::scalar Foam::PengRobinsonGas<Specie>::Cp(scalar p, scalar T) const
 {
     const auto coeff = this->coeff_AB(p,T);
+    const auto Tc_=this->Tc_;
     const scalar a=coeff.a;
     const scalar b=coeff.b;
     const scalar A=coeff.A;
@@ -163,6 +157,7 @@ inline Foam::scalar Foam::PengRobinsonGas<Specie>::e(scalar p, scalar T) const
     const scalar B=coeff.B;
     const scalar kappa = coeff.kappa;
     const scalar alpha = coeff.alpha;
+    const auto Tc_=this->Tc_;
 
     const scalar Z = this->Z(p, T);
 
@@ -180,6 +175,7 @@ template<class Specie>
 inline Foam::scalar Foam::PengRobinsonGas<Specie>::Cv(scalar p, scalar T) const
 {
     const auto coeff = this->coeff_AB(p,T);
+    const auto Tc_=this->Tc_;
     const scalar a=coeff.a;
     const scalar b=coeff.b;
     const scalar B=coeff.B;
@@ -284,6 +280,7 @@ inline Foam::scalar Foam::PengRobinsonGas<Specie>::CpMCv
     const scalar b=coeff.b;
 
     const scalar Z = this->Z(p, T);
+    const auto Tc_=this->Tc_;
 
     const scalar ap = kappa*a*(kappa/Tc_ - (1 + kappa)/sqrt(T*Tc_));
     const scalar M = (sqr(Z) + 2*B*Z - sqr(B))/(Z - B);
@@ -321,11 +318,11 @@ inline void Foam::PengRobinsonGas<Specie>::operator+=
         X1 *= this->W()/this->Y();
         const scalar X2 = this->W()*pg.Y()/(pg.W()*this->Y());
 
-        Tc_ = X1*Tc_ + X2*pg.Tc_;
-        Vc_ = X1*Vc_ + X2*pg.Vc_;
-        Zc_ = X1*Zc_ + X2*pg.Zc_;
-        Pc_ = RR*Zc_*Tc_/Vc_;
-        omega_ = X1*omega_ + X2*pg.omega_;
+//        Tc_ = X1*Tc_ + X2*pg.Tc_;
+//        Vc_ = X1*Vc_ + X2*pg.Vc_;
+//        Zc_ = X1*Zc_ + X2*pg.Zc_;
+//        Pc_ = RR*Zc_*Tc_/Vc_;
+//        omega_ = X1*omega_ + X2*pg.omega_;
     }
 }
 
@@ -357,12 +354,7 @@ Foam::PengRobinsonGas<Specie> Foam::operator+
     {
         return PengRobinsonGas<Specie>
         (
-            sp,
-            pg1.Tc_,
-            pg1.Vc_,
-            pg1.Zc_,
-            pg1.Pc_,
-            pg1.omega_
+            sp
         );
     }
     else
@@ -370,18 +362,13 @@ Foam::PengRobinsonGas<Specie> Foam::operator+
         const scalar X1 = sp.W()*pg1.Y()/(pg1.W()*sp.Y());
         const scalar X2 = sp.W()*pg2.Y()/(pg2.W()*sp.Y());
 
-        const scalar Tc = X1*pg1.Tc_ + X2*pg2.Tc_;
-        const scalar Vc = X1*pg1.Vc_ + X2*pg2.Vc_;
-        const scalar Zc = X1*pg1.Zc_ + X2*pg2.Zc_;
+//        const scalar Tc = X1*pg1.Tc_ + X2*pg2.Tc_;
+//        const scalar Vc = X1*pg1.Vc_ + X2*pg2.Vc_;
+//        const scalar Zc = X1*pg1.Zc_ + X2*pg2.Zc_;
 
         return PengRobinsonGas<Specie>
         (
-            sp,
-            Tc,
-            Vc,
-            Zc,
-            RR*Zc*Tc/Vc,
-            X1*pg1.omega_ + X2*pg2.omega_
+            sp
         );
     }
 }
@@ -396,12 +383,7 @@ Foam::PengRobinsonGas<Specie> Foam::operator*
 {
     return PengRobinsonGas<Specie>
     (
-        s*static_cast<const Specie&>(pg),
-        pg.Tc_,
-        pg.Vc_,
-        pg.Zc_,
-        pg.Pc_,
-        pg.omega_
+        s*static_cast<const Specie&>(pg)
     );
 }
 
@@ -415,12 +397,7 @@ Foam::PengRobinsonGas<Specie> Foam::operator==
 {
     return PengRobinsonGas<Specie>
     (
-        static_cast<const Specie&>(pg1) == static_cast<const Specie&>(pg2),
-        NaN,
-        NaN,
-        NaN,
-        NaN,
-        NaN
+        static_cast<const Specie&>(pg1) == static_cast<const Specie&>(pg2)
     );
 }
 

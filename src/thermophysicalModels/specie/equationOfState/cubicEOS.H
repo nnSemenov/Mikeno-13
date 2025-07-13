@@ -23,7 +23,7 @@ namespace Foam {
     };
 
     // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
-    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0) {
+    inline scalar solveCubicEquation(scalar a2, scalar a1, scalar a0) {
 
         const scalar Q = (3*a1 - a2*a2)/9.0;
         const scalar Rl = (9*a2*a1 - 27*a0 - 2*a2*a2*a2)/54.0;

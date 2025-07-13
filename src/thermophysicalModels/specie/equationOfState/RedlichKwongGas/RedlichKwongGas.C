@@ -35,13 +35,9 @@ Foam::RedlichKwongGas<Specie>::RedlichKwongGas
                 const dictionary& dict
         )
         :
-        Specie(name, dict),
-        Tc_(dict.subDict("equationOfState").lookup<scalar>("Tc")),
-        Vc_(dict.subDict("equationOfState").lookup<scalar>("Vc")),
-        Zc_(1.0),
-        Pc_(dict.subDict("equationOfState").lookup<scalar>("Pc"))
+        Specie(name, dict)
 {
-    Zc_ = Pc_*Vc_/(RR*Tc_);
+    this->requireRealGasEOS(false);
 }
 
 

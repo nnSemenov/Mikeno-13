@@ -7,23 +7,21 @@
 template<class Specie>
 inline Foam::RedlichKwongGas<Specie>::RedlichKwongGas
         (
-                const Specie &sp,
-                const scalar &Tc,
-                const scalar &Vc,
-                const scalar &Zc,
-                const scalar &Pc
+                const Specie &sp
         )
         :
-        Specie(sp),
-        Tc_(Tc),
-        Vc_(Vc),
-        Zc_(Zc),
-        Pc_(Pc) {}
+        Specie(sp) {
+
+    this->requireRealGasEOS(false);
+    }
 
 
 template<class Specie>
 inline Foam::cubicEOSCoefficient Foam::RedlichKwongGas<Specie>::coeff_AB(scalar p, scalar T) const {
 
+    const auto Tc_=this->Tc_;
+//    const auto Vc_=this->Vc_;
+    const auto Pc_=this->Pc_;
     const scalar Tr = T / Tc_;
     const scalar Pr = p / Pc_;
     const scalar a = 0.42748 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
@@ -41,11 +39,10 @@ inline Foam::RedlichKwongGas<Specie>::RedlichKwongGas
                 const RedlichKwongGas &pg
         )
         :
-        Specie(name, pg),
-        Tc_(pg.Tc_),
-        Vc_(pg.Vc_),
-        Zc_(pg.Zc_),
-        Pc_(pg.Pc_) {}
+        Specie(name, pg) {
+
+        this->requireRealGasEOS(false);
+    }
 
 
 template<class Specie>
@@ -174,25 +171,7 @@ inline Foam::scalar Foam::RedlichKwongGas<Specie>::sp
                 scalar T
         ) const {
     NotImplemented;
-    const auto coeff = this->coeff_AB(p, T);
-    const scalar Pr = coeff.Pr;
-    const scalar Tr = coeff.Tr;
-    const scalar B = coeff.B;
-    const scalar kappa = coeff.kappa;
-    const scalar alpha = coeff.alpha;
-
-    const scalar Z = this->Z(p, T);
-
-    return
-            this->R()
-            * (
-                    -log(p / Pstd)
-                    + (
-                            log(Z - B)
-                            - 2.078 * kappa * ((1 + kappa) / sqrt(Tr) - kappa)
-                              * log((Z + 2.414 * B) / (Z - 0.414 * B))
-                    )
-            );
+    return 0;
 }
 
 
@@ -255,19 +234,20 @@ inline void Foam::RedlichKwongGas<Specie>::operator+=
         (
                 const RedlichKwongGas<Specie> &pg
         ) {
-    scalar X1 = this->Y() / this->W();
-    Specie::operator+=(pg);
-
-    if (mag(this->Y()) > small) {
-        X1 *= this->W() / this->Y();
-        const scalar X2 = this->W() * pg.Y() / (pg.W() * this->Y());
-
-        Tc_ = X1 * Tc_ + X2 * pg.Tc_;
-        Vc_ = X1 * Vc_ + X2 * pg.Vc_;
-        Zc_ = X1 * Zc_ + X2 * pg.Zc_;
-        Pc_ = RR * Zc_ * Tc_ / Vc_;
-//        omega_ = X1*omega_ + X2*pg.omega_;
-    }
+    notImplemented(__PRETTY_FUNCTION__);
+//    scalar X1 = this->Y() / this->W();
+//    Specie::operator+=(pg);
+//
+//    if (mag(this->Y()) > small) {
+//        X1 *= this->W() / this->Y();
+//        const scalar X2 = this->W() * pg.Y() / (pg.W() * this->Y());
+//
+//        Tc_ = X1 * Tc_ + X2 * pg.Tc_;
+//        Vc_ = X1 * Vc_ + X2 * pg.Vc_;
+////        Zc_ = X1 * Zc_ + X2 * pg.Zc_;
+//        Pc_ = RR * Zc_ * Tc_ / Vc_;
+////        omega_ = X1*omega_ + X2*pg.omega_;
+//    }
 }
 
 
@@ -295,28 +275,19 @@ Foam::RedlichKwongGas<Specie> Foam::operator+
     if (mag(sp.Y()) < small) {
         return RedlichKwongGas<Specie>
                 (
-                        sp,
-                        pg1.Tc_,
-                        pg1.Vc_,
-                        pg1.Zc_,
-                        pg1.Pc_,
-                        pg1.omega_
+                        sp
                 );
     } else {
-        const scalar X1 = sp.W() * pg1.Y() / (pg1.W() * sp.Y());
-        const scalar X2 = sp.W() * pg2.Y() / (pg2.W() * sp.Y());
-
-        const scalar Tc = X1 * pg1.Tc_ + X2 * pg2.Tc_;
-        const scalar Vc = X1 * pg1.Vc_ + X2 * pg2.Vc_;
-        const scalar Zc = X1 * pg1.Zc_ + X2 * pg2.Zc_;
+//        const scalar X1 = sp.W() * pg1.Y() / (pg1.W() * sp.Y());
+//        const scalar X2 = sp.W() * pg2.Y() / (pg2.W() * sp.Y());
+//
+//        const scalar Tc = X1 * pg1.Tc_ + X2 * pg2.Tc_;
+//        const scalar Vc = X1 * pg1.Vc_ + X2 * pg2.Vc_;
+//        const scalar Zc = X1 * pg1.Zc_ + X2 * pg2.Zc_;
 
         return RedlichKwongGas<Specie>
                 (
-                        sp,
-                        Tc,
-                        Vc,
-                        Zc,
-                        RR * Zc * Tc / Vc
+                        sp
                 );
     }
 }
@@ -330,11 +301,7 @@ Foam::RedlichKwongGas<Specie> Foam::operator*
         ) {
     return RedlichKwongGas<Specie>
             (
-                    s * static_cast<const Specie &>(pg),
-                    pg.Tc_,
-                    pg.Vc_,
-                    pg.Zc_,
-                    pg.Pc_
+                    s * static_cast<const Specie &>(pg)
             );
 }
 
@@ -347,12 +314,7 @@ Foam::RedlichKwongGas<Specie> Foam::operator==
         ) {
     return RedlichKwongGas<Specie>
             (
-                    static_cast<const Specie &>(pg1) == static_cast<const Specie &>(pg2),
-                    NaN,
-                    NaN,
-                    NaN,
-                    NaN,
-                    NaN
+                    static_cast<const Specie &>(pg1) == static_cast<const Specie &>(pg2)
             );
 }
 
