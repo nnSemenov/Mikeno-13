@@ -43,18 +43,6 @@ Ostream& operator<<
 
 template<class Specie>
 class RedlichKwongGas : public Specie {
-    // private data
-    //- Critical Temperature [K]
-    scalar Tc_;
-
-    //- Critical volume [m^3/kmol]
-    scalar Vc_;
-
-    //- Critical compression factor [-]
-    scalar Zc_;
-
-    //- Critical Pressure [Pa]
-    scalar Pc_;
 
 public:
     inline RedlichKwongGas(
