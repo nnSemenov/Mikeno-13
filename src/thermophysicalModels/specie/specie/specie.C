@@ -40,10 +40,11 @@ Foam::specie::specie(const word& name, const dictionary& dict)
     name_(name),
     Y_(dict.subDict("specie").lookupOrDefault("massFraction", 1.0)),
     molWeight_(dict.subDict("specie").lookup<scalar>("molWeight")),
-    Tc_(dict.subDict("specie").lookupOrDefault("Tc", 0)),
-    Vc_(dict.subDict("specie").lookupOrDefault("Vc", 0)),
-    Pc_(dict.subDict("specie").lookupOrDefault("Pc", 0)),
-    omega_(0)
+    // Non-physical default value will force user input them when actually required
+    Tc_(dict.subDict("specie").lookupOrDefault("Tc", -1)),
+    Vc_(dict.subDict("specie").lookupOrDefault("Vc", -1)),
+    Pc_(dict.subDict("specie").lookupOrDefault("Pc", -1)),
+    omega_(-2)
 {
     auto eosDict = dict.subDictPtr("equationOfState");
     if (eosDict not_eq nullptr) {
@@ -70,6 +71,18 @@ void Foam::specie::write(Ostream& os) const
         dict.add("massFraction", Y_);
     }
     dict.add("molWeight", molWeight_);
+    if(Tc_>0) {
+        dict.add("Tc", Tc_);
+    }
+    if(Pc_>0) {
+        dict.add("Pc",Pc_);
+    }
+    if(Vc_>0) {
+        dict.add("Vc",Vc_);
+    }
+    if(omega_>-1) {
+        dict.add("omega", omega_);
+    }
     os  << indent << dict.dictName() << dict;
 }
 
