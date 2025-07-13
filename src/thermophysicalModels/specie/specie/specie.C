@@ -44,7 +44,7 @@ Foam::specie::specie(const word& name, const dictionary& dict)
     Tc_(dict.subDict("specie").lookupOrDefault("Tc", -1.0)),
     Vc_(dict.subDict("specie").lookupOrDefault("Vc", -1.0)),
     Pc_(dict.subDict("specie").lookupOrDefault("Pc", -1.0)),
-    omega_(dict.subDict("specie").lookupOrDefault("Pc", -2.0))
+    omega_(dict.subDict("specie").lookupOrDefault("omega", -2.0))
 {
     auto eosDict = dict.subDictPtr("equationOfState");
     if (eosDict not_eq nullptr) {

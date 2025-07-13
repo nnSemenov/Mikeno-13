@@ -37,12 +37,9 @@ Foam::PengRobinsonGas<Specie>::PengRobinsonGas
                 const dictionary &dict
         )
         :
-        Specie(name, dict), {
+        Specie(name, dict) {
 
-    word err=checkSpecie(static_cast(const Specie&)(*this), true);
-    if(not err.empty()) {
-        FatalErrorIn(__PRETTY_FUNCTION__)<<name<<" is invalid specie: "<<err<<endl;
-    }
+    this->requireRealGasEOS(true);
 }
 
 
