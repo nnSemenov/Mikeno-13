@@ -11,6 +11,27 @@
 
 namespace Foam {
 
+    //- Returns empty string if specie is ok.
+    template<class Specie>
+    inline word checkSpecie(const Specie&sp) {
+        if(sp.W()<=0) {
+            return "Invalid molecular weight: "+name(sp.W())+"[kg/kmol]";
+        }
+        if(sp.Tc()<=0) {
+            return "Invalid critical temperature: "+name(sp.Tc()) +"[K]";
+        }
+        if(sp.Pc()<=0) {
+            return "Invalid critical pressure: "+name(sp.Pc())+"[Pa]";
+        }
+        if(sp.Vc()<=0) {
+            return "Invalid critical volume: "+name(sp.Vc())+"[m^3/kmol]";
+        }
+        if(sp.Zc()<=0 or sp.Zc()>1) {
+            return "Invalid critical compression factor: "+name(sp.Pc());
+        }
+        return "";
+    }
+
     struct cubicEOSCoefficient {
         scalar a;
         scalar b;
@@ -23,7 +44,7 @@ namespace Foam {
     };
 
     // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
-    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0) {
+    inline scalar solveCubicEquation(scalar a2, scalar a1, scalar a0) {
 
         const scalar Q = (3*a1 - a2*a2)/9.0;
         const scalar Rl = (9*a2*a1 - 27*a0 - 2*a2*a2*a2)/54.0;
