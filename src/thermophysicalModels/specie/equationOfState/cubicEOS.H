@@ -8,61 +8,71 @@
 #include "autoPtr.H"
 #include "mathematicalConstants.H"
 #include <cassert>
+#include <type_traits>
 
 namespace Foam {
 
-    struct cubicEOSCoefficient {
+    struct cubicEOSRawCoefficient {
         scalar a;
         scalar b;
+    };
+
+    struct cubicEOSDimlessCoefficient {
+        scalar A;
+        scalar B;
+    };
+
+    struct [[deprecated]]cubicEOSCoefficient : public cubicEOSRawCoefficient {
+
+
         scalar A;
         scalar B;
         scalar Tr;
         scalar Pr;
         scalar kappa;
         scalar alpha;
+
+        cubicEOSCoefficient(const cubicEOSRawCoefficient raw, scalar A, scalar B, scalar Tr, scalar Pr, scalar kappa,
+                            scalar alpha) : cubicEOSRawCoefficient(raw), A(A), B(B), Tr(Tr), Pr(Pr), kappa(kappa),
+                                            alpha(alpha) {}
+
     };
 
     // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
     inline scalar solveCubicEquation(scalar a2, scalar a1, scalar a0) {
 
-        const scalar Q = (3*a1 - a2*a2)/9.0;
-        const scalar Rl = (9*a2*a1 - 27*a0 - 2*a2*a2*a2)/54.0;
+        const scalar Q = (3 * a1 - a2 * a2) / 9.0;
+        const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
 
-        const scalar Q3 = Q*Q*Q;
-        const scalar D = Q3 + Rl*Rl;
+        const scalar Q3 = Q * Q * Q;
+        const scalar D = Q3 + Rl * Rl;
 
         scalar root = -1;
 
-        if (D <= 0)
-        {
-            const scalar th = ::acos(Rl/sqrt(-Q3));
-            const scalar qm = 2*sqrt(-Q);
-            const scalar r1 = qm*cos(th/3.0) - a2/3.0;
+        if (D <= 0) {
+            const scalar th = ::acos(Rl / sqrt(-Q3));
+            const scalar qm = 2 * sqrt(-Q);
+            const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
             const scalar r2 =
-                    qm*cos((th + 2*constant::mathematical::pi)/3.0) - a2/3.0;
+                    qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
             const scalar r3 =
-                    qm*cos((th + 4*constant::mathematical::pi)/3.0) - a2/3.0;
+                    qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
 
             root = max(r1, max(r2, r3));
-        }
-        else
-        {
+        } else {
             // One root is real
             const scalar D05 = sqrt(D);
-            const scalar S = pow(Rl + D05, 1.0/3.0);
+            const scalar S = pow(Rl + D05, 1.0 / 3.0);
             scalar Tl = 0;
-            if (D05 > Rl)
-            {
-                Tl = -pow(mag(Rl - D05), 1.0/3.0);
-            }
-            else
-            {
-                Tl = pow(Rl - D05, 1.0/3.0);
+            if (D05 > Rl) {
+                Tl = -pow(mag(Rl - D05), 1.0 / 3.0);
+            } else {
+                Tl = pow(Rl - D05, 1.0 / 3.0);
             }
 
-            root = S + Tl - a2/3.0;
+            root = S + Tl - a2 / 3.0;
         }
-        assert(root>0);
+        assert(root > 0);
 
         return root;
     }
@@ -78,6 +88,46 @@ namespace Foam {
         scalar Cv_R;//[J/kg/K]
         scalar Cp_R_minus_Cv_R;//[J/kg/K]
         scalar Z;
+    };
+
+    template<class getRawCoeffFun, class getXiFun>
+    inline cubicEOSRawCoefficient
+    mixingRuleRK(label nSpecie, const getRawCoeffFun rawCoeffFun, const getXiFun &specieMoleFracFun) {
+        scalar sqrt_a_sum = 0;
+        scalar bSum = 0;
+        for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
+            const cubicEOSRawCoefficient iCoeff = rawCoeffFun(spIdx);
+            const scalar Xi = specieMoleFracFun(spIdx);
+            sqrt_a_sum += Xi * sqrt(iCoeff.a);
+            bSum += Xi * iCoeff.b;
+        }
+
+        return cubicEOSRawCoefficient{sqr(sqrt_a_sum), bSum};
+    }
+
+
+    namespace internal {
+        template<class EOS>
+        inline int requiresCubicEOS(const EOS *eos) {
+            const scalar T = 273;
+            const scalar p = 1e5;
+            const scalar W = 28.0;
+            [[maybe_unused]]cubicEOSRawCoefficient coeff = eos->coeffRaw(p, T);
+            [[maybe_unused]] typename EOS::implementation core = eos->core(p, T);
+            [[maybe_unused]] const scalar u = core.Z(p, T) + core.rho(p, T, W)
+                                              + core.h(p, T, W) + core.Cp(p, T, W) + core.e(p, T, W) +
+                                              core.Cv(p, T, W) + core.sp(p, T, W) + core.sv(p, T, W) +
+                                              core.psi(p, T, W) + core.CpCv(p, T, W) + core.alphav(p, T, W);
+        }
+
+        inline void requiresCubicEOS(...) {}
+
+    }
+    template<class EOS>
+    struct is_cubic_EOS {
+        static constexpr bool value = std::is_same<decltype(internal::requiresCubicEOS(
+                static_cast<const EOS *>(nullptr)
+        )), int>::value and (not EOS::incompressible);
     };
 
 }
