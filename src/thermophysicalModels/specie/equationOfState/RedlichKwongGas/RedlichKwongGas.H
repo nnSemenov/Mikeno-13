@@ -52,7 +52,8 @@ public:
         //- Molar volume [m^3/kmol]
     public:
         inline cubicEOSDimlessCoefficient dimlessCoeff(scalar p, scalar T) const {
-            const scalar A = rawCoeff.a / p / sqrt(T) * sqr(p / (RR * T));
+//            const scalar A = rawCoeff.a / p / sqrt(T) * sqr(p / (RR * T));
+            const scalar A = rawCoeff.a *p/ sqr(RR*T)/ sqrt(T);
             const scalar B = rawCoeff.b * p / (RR * T);
             return {A, B};
         }
