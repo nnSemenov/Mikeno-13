@@ -107,11 +107,13 @@ namespace Foam {
 
 
     namespace internal {
+        // Some SFINAE tricks
         template<class EOS>
         inline int requiresCubicEOS(const EOS *eos) {
             const scalar T = 273;
             const scalar p = 1e5;
             const scalar W = 28.0;
+            // EOS must have these interfaces
             [[maybe_unused]]cubicEOSRawCoefficient coeff = eos->coeffRaw(p, T);
             [[maybe_unused]] typename EOS::implementation core = eos->core(p, T);
             [[maybe_unused]] const scalar u = core.Z(p, T) + core.rho(p, T, W)
