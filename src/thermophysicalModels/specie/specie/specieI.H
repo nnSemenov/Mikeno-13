@@ -36,23 +36,39 @@ inline specie::specie
 (
     const word& name,
     const scalar Y,
-    const scalar molWeight
+    const scalar molWeight,
+    const scalar Tc,
+    const scalar Vc,
+    const scalar Pc,
+    const scalar omega
 )
 :
     name_(name),
     Y_(Y),
-    molWeight_(molWeight)
+    molWeight_(molWeight),
+    Tc_(Tc),
+    Vc_(Vc),
+    Pc_(Pc),
+    omega_(omega)
 {}
 
 
 inline specie::specie
 (
     const scalar Y,
-    const scalar molWeight
+    const scalar molWeight,
+    const scalar Tc,
+    const scalar Vc,
+    const scalar Pc,
+    const scalar omega
 )
 :
     Y_(Y),
-    molWeight_(molWeight)
+    molWeight_(molWeight),
+    Tc_(Tc),
+    Vc_(Vc),
+    Pc_(Pc),
+    omega_(omega)
 {}
 
 
@@ -62,7 +78,11 @@ inline specie::specie(const word& name, const specie& st)
 :
     name_(name),
     Y_(st.Y_),
-    molWeight_(st.molWeight_)
+    molWeight_(st.molWeight_),
+    Tc_(st.Tc_),
+    Vc_(st.Vc_),
+    Pc_(st.Pc_),
+    omega_(st.omega_)
 {}
 
 
@@ -118,6 +138,11 @@ inline void specie::operator=(const specie& st)
     // name_ = st.name_;
     Y_ = st.Y_;
     molWeight_ = st.molWeight_;
+
+    Tc_=st.Tc_;
+    Vc_=st.Vc_;
+    Pc_=st.Pc_;
+    omega_=st.omega_;
 }
 
 
@@ -127,6 +152,15 @@ inline void specie::operator+=(const specie& st)
     if (mag(sumY) > small)
     {
         molWeight_ = sumY/(Y_/molWeight_ + st.Y_/st.molWeight_);
+
+        const scalar moleScore0=this->Y_/this->molWeight_;
+        const scalar moleScore1=st.Y_/st.molWeight_;
+        const scalar X0=moleScore0/(moleScore0+moleScore1);
+        const scalar X1=moleScore1/(moleScore0+moleScore1);
+        this->Tc_=X0*this->Tc_+X1*st.Tc_;
+        this->Vc_=X0*this->Vc_+X1*st.Vc_;
+        this->Pc_=X0*this->Pc_+X1*st.Pc_;
+        this->omega_=X0*this->omega_+X1*st.omega_;
     }
 
     Y_ = sumY;
@@ -147,10 +181,18 @@ inline specie operator+(const specie& st1, const specie& st2)
 
     if (mag(sumY) > small)
     {
+        const scalar moleScore1=st1.Y_/st1.molWeight_;
+        const scalar moleScore2=st2.Y_/st2.molWeight_;
+        const scalar X1=moleScore1/(moleScore1+moleScore2);
+        const scalar X2=moleScore2/(moleScore1+moleScore2);
         return specie
         (
             sumY,
-            sumY/(st1.Y_/st1.molWeight_ + st2.Y_/st2.molWeight_)
+            sumY/(st1.Y_/st1.molWeight_ + st2.Y_/st2.molWeight_),
+            X1*st1.Tc_+X2*st2.Tc_,
+            X1*st1.Vc_+X2*st2.Vc_,
+            X1*st1.Pc_+X2*st2.Pc_,
+            X1*st1.omega_+X2*st2.omega_
         );
     }
     else
@@ -165,7 +207,11 @@ inline specie operator*(const scalar s, const specie& st)
     return specie
     (
         s*st.Y_,
-        st.molWeight_
+        st.molWeight_,
+        st.Tc_,
+        st.Vc_,
+        st.Pc_,
+        st.omega_
     );
 }
 
@@ -186,8 +232,8 @@ inline specie operator==(const specie& st1, const specie& st2)
     {
         molWeight = diffY/diffRW;
     }
-
-    return specie(diffY, molWeight);
+#warning "Implement some kind of mixing of Tc, Vc, Pc, omega"
+    return specie(diffY, molWeight, st1.Tc_, st1.Vc_, st1.Pc_, st1.omega_);
 }
 
 

@@ -102,14 +102,24 @@ public:
     // Constructors
 
         //- Construct from components without name
-        inline specie(const scalar Y, const scalar molWeight);
+        inline specie(const scalar Y,
+                      const scalar molWeight,
+                      const scalar Tc=-1,
+                      const scalar Vc=-1,
+                      const scalar Pc=-1,
+                      const scalar omega=-2
+                      );
 
         //- Construct from components with name
         inline specie
         (
             const word& name,
             const scalar Y,
-            const scalar molWeight
+            const scalar molWeight,
+            const scalar Tc=-1,
+            const scalar Vc=-1,
+            const scalar Pc=-1,
+            const scalar omega=-2
         );
 
         //- Construct as named copy
