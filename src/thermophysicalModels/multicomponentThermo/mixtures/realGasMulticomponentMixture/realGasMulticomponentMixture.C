@@ -126,9 +126,8 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::rho
                 scalar p,
                 scalar T
         ) const {
-    const scalar W=this->W();
     auto mixedCore=this->mixedCore(p,T);
-    return mixedCore.rho(p,T,W);
+    return mixedCore.rho(p,T,this->W());
 //    return harmonicMassWeighted(&ThermoType::rho, p, T);
 }
 
@@ -140,21 +139,8 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::psi
                 scalar p,
                 scalar T
         ) const {
-    scalar oneByRho = 0;
-    scalar psiByRho2 = 0;
-
-    forAll(Y_, i) {
-        const scalar rhoi = specieThermos_[i].rho(p, T);
-        const scalar psii = specieThermos_[i].psi(p, T);
-
-        oneByRho += Y_[i] / rhoi;
-
-        if (psii > 0) {
-            psiByRho2 += Y_[i] * psii / sqr(rhoi);
-        }
-    }
-
-    return psiByRho2 / sqr(oneByRho);
+    auto mixedCore=this->mixedCore(p,T);
+    return mixedCore.psi(p,T,this->W());
 }
 
 
