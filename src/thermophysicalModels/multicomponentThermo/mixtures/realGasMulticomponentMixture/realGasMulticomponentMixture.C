@@ -1,5 +1,7 @@
 #include "realGasMulticomponentMixture.H"
 
+#include "../../specie/equationOfState/cubicEOS.H"
+
 template<class ThermoType>
 template<class Method, class ... Args>
 Foam::scalar
@@ -7,14 +9,12 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::
 massWeighted
         (
                 Method psiMethod,
-                const Args& ... args
-        ) const
-{
+                const Args &... args
+        ) const {
     scalar psi = 0;
 
-    forAll(Y_, i)
-    {
-        psi += Y_[i]*(specieThermos_[i].*psiMethod)(args ...);
+    forAll(Y_, i) {
+        psi += Y_[i] * (specieThermos_[i].*psiMethod)(args ...);
     }
 
     return psi;
@@ -28,17 +28,15 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::
 harmonicMassWeighted
         (
                 Method psiMethod,
-                const Args& ... args
-        ) const
-{
+                const Args &... args
+        ) const {
     scalar rPsi = 0;
 
-    forAll(Y_, i)
-    {
-        rPsi += Y_[i]/(specieThermos_[i].*psiMethod)(args ...);
+    forAll(Y_, i) {
+        rPsi += Y_[i] / (specieThermos_[i].*psiMethod)(args ...);
     }
 
-    return 1/rPsi;
+    return 1 / rPsi;
 }
 
 
@@ -47,8 +45,7 @@ Foam::scalar
 Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::limit
         (
                 const scalar T
-        ) const
-{
+        ) const {
     return T;
 }
 
@@ -60,14 +57,12 @@ Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType::
 moleWeighted
         (
                 Method psiMethod,
-                const Args& ... args
-        ) const
-{
+                const Args &... args
+        ) const {
     scalar psi = 0;
 
-    forAll(X_, i)
-    {
-        psi += X_[i]*(specieThermos_[i].*psiMethod)(args ...);
+    forAll(X_, i) {
+        psi += X_[i] * (specieThermos_[i].*psiMethod)(args ...);
     }
 
     return psi;
@@ -79,21 +74,47 @@ moleWeighted
 template<class ThermoType>
 Foam::realGasMulticomponentMixture<ThermoType>::realGasMulticomponentMixture
         (
-                const dictionary& dict
+                const dictionary &dict
         )
         :
         multicomponentMixture<ThermoType>(dict),
         thermoMixture_(this->specieThermos()),
-        transportMixture_(this->specieThermos())
-{}
+        transportMixture_(this->specieThermos()) {
+    static_assert(Foam::is_cubic_EOS<ThermoType>::value, "Only cubic EOS is supported now.");
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class ThermoType>
+Foam::cubicEOSRawCoefficient
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::cubicEOSCoeffOfSpecie(scalar p, scalar T,
+                                                                                         label idx) const {
+    return this->specieThermos_[idx].coeffRaw(p,T);
+}
+
+template<class ThermoType>
+Foam::cubicEOSRawCoefficient
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedRawCoeff(scalar p, scalar T) const {
+
+    auto coeffFun=[this, p, T](label idx) {
+        return this->cubicEOSCoeffOfSpecie(p,T,idx);
+    };
+    auto XiFun=[this](label idx) {
+        return this->X_[idx];
+    };
+
+    return ThermoType::mixingRule(this->X_.size(), coeffFun, XiFun);
+}
+
+template<class ThermoType>
+auto Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedCore(scalar p, scalar T) const {
+    return typename ThermoType::EOSCore{this->mixedRawCoeff(p,T)};
+}
+
+template<class ThermoType>
 Foam::scalar
-Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::W() const
-{
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::W() const {
     return harmonicMassWeighted(&ThermoType::W);
 }
 
@@ -104,9 +125,11 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::rho
         (
                 scalar p,
                 scalar T
-        ) const
-{
-    return harmonicMassWeighted(&ThermoType::rho, p, T);
+        ) const {
+    const scalar W=this->W();
+    auto mixedCore=this->mixedCore(p,T);
+    return mixedCore.rho(p,T,W);
+//    return harmonicMassWeighted(&ThermoType::rho, p, T);
 }
 
 
@@ -116,32 +139,28 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::psi
         (
                 scalar p,
                 scalar T
-        ) const
-{
+        ) const {
     scalar oneByRho = 0;
     scalar psiByRho2 = 0;
 
-    forAll(Y_, i)
-    {
+    forAll(Y_, i) {
         const scalar rhoi = specieThermos_[i].rho(p, T);
         const scalar psii = specieThermos_[i].psi(p, T);
 
-        oneByRho += Y_[i]/rhoi;
+        oneByRho += Y_[i] / rhoi;
 
-        if (psii > 0)
-        {
-            psiByRho2 += Y_[i]*psii/sqr(rhoi);
+        if (psii > 0) {
+            psiByRho2 += Y_[i] * psii / sqr(rhoi);
         }
     }
 
-    return psiByRho2/sqr(oneByRho);
+    return psiByRho2 / sqr(oneByRho);
 }
 
 
 template<class ThermoType>
 Foam::scalar
-Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::hf() const
-{
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::hf() const {
     return massWeighted(&ThermoType::hf);
 }
 
@@ -160,11 +179,17 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::hf() const
     }
 
 thermoMixtureFunction(Cp)
+
 thermoMixtureFunction(Cv)
+
 thermoMixtureFunction(hs)
+
 thermoMixtureFunction(ha)
+
 thermoMixtureFunction(Cpv)
+
 thermoMixtureFunction(gamma)
+
 thermoMixtureFunction(he)
 
 
@@ -175,8 +200,7 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::The
                 const scalar he,
                 scalar p,
                 scalar T0
-        ) const
-{
+        ) const {
     return ThermoType::T
             (
                     *this,
@@ -196,8 +220,7 @@ Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType::mu
         (
                 scalar p,
                 scalar T
-        ) const
-{
+        ) const {
     return moleWeighted(&ThermoType::mu, p, T);
 }
 
@@ -208,30 +231,26 @@ Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType::kappa
         (
                 scalar p,
                 scalar T
-        ) const
-{
+        ) const {
     return moleWeighted(&ThermoType::kappa, p, T);
 }
 
 
 template<class ThermoType>
 const typename
-Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType&
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType &
 Foam::realGasMulticomponentMixture<ThermoType>::thermoMixture
         (
-                const scalarFieldListSlice& Y
-        ) const
-{
+                const scalarFieldListSlice &Y
+        ) const {
     scalar sumX = 0;
-    forAll(Y, i)
-    {
+    forAll(Y, i) {
         thermoMixture_.Y_[i] = Y[i];
-        thermoMixture_.X_[i] = Y[i]/this->specieThermos()[i].W();
+        thermoMixture_.X_[i] = Y[i] / this->specieThermos()[i].W();
         sumX += thermoMixture_.X_[i];
     }
 
-    forAll(Y, i)
-    {
+    forAll(Y, i) {
         thermoMixture_.X_[i] /= sumX;
     }
 
@@ -241,22 +260,19 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixture
 
 template<class ThermoType>
 const typename
-Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType&
+Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType &
 Foam::realGasMulticomponentMixture<ThermoType>::transportMixture
         (
-                const scalarFieldListSlice& Y
-        ) const
-{
+                const scalarFieldListSlice &Y
+        ) const {
     scalar sumX = 0;
 
-    forAll(Y, i)
-    {
-        transportMixture_.X_[i] = Y[i]/this->specieThermos()[i].W();
+    forAll(Y, i) {
+        transportMixture_.X_[i] = Y[i] / this->specieThermos()[i].W();
         sumX += transportMixture_.X_[i];
     }
 
-    forAll(Y, i)
-    {
+    forAll(Y, i) {
         transportMixture_.X_[i] /= sumX;
     }
 
@@ -266,12 +282,11 @@ Foam::realGasMulticomponentMixture<ThermoType>::transportMixture
 
 template<class ThermoType>
 const typename
-Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType&
+Foam::realGasMulticomponentMixture<ThermoType>::transportMixtureType &
 Foam::realGasMulticomponentMixture<ThermoType>::transportMixture
         (
-                const scalarFieldListSlice& Y,
-                const thermoMixtureType&
-        ) const
-{
+                const scalarFieldListSlice &Y,
+                const thermoMixtureType &
+        ) const {
     return transportMixture(Y);
 }

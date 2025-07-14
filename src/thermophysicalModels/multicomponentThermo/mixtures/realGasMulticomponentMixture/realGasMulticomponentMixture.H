@@ -10,6 +10,9 @@
 
 namespace Foam {
 
+// forward declaration
+struct cubicEOSRawCoefficient;
+
 template<class ThermoType>
 class realGasMulticomponentMixture
         :
@@ -51,7 +54,13 @@ public:
         //- Limit the given temperature
         scalar limit(const scalar T) const;
 
+    protected:
+        // cubicEOS properties
+        cubicEOSRawCoefficient cubicEOSCoeffOfSpecie(scalar p, scalar T, label idx)const;
 
+        cubicEOSRawCoefficient mixedRawCoeff(scalar p, scalar T) const;
+
+        auto mixedCore(scalar p, scalar T) const;
     public:
         friend class realGasMulticomponentMixture;
 

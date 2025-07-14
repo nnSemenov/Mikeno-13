@@ -45,7 +45,7 @@ class RedlichKwongGas : public Specie {
 
 public:
 
-    struct implementation {
+    struct EOSCore {
         cubicEOSRawCoefficient rawCoeff;
 
     protected:
@@ -56,7 +56,7 @@ public:
             const scalar B = rawCoeff.b * p / (RR * T);
             return {A, B};
         }
-        // compute from AB, that is real implementation
+        // compute from AB, that is real EOSCore
         inline scalar Z(const cubicEOSDimlessCoefficient&AB) const {
             const scalar A = AB.A;
             const scalar B = AB.B;
@@ -171,6 +171,11 @@ public:
             const Specie &sp
        );
 
+    template<class getRawCoeffFun, class getXiFun>
+    static inline cubicEOSRawCoefficient mixingRule(label nSpecie, getRawCoeffFun &rawCoeffFun, getXiFun &specieMoleFracFun) {
+        return mixingRuleRK(nSpecie,rawCoeffFun,specieMoleFracFun);
+    }
+
     RedlichKwongGas(const word&name, const dictionary&dict);
 
     inline RedlichKwongGas(const word&name, const RedlichKwongGas&);
@@ -187,8 +192,8 @@ public:
     }
     inline Foam::cubicEOSRawCoefficient coeffRaw(scalar p, scalar T) const;
 
-    inline implementation core(scalar p, scalar T) const {
-        return implementation{this->coeffRaw(p,T)};
+    inline EOSCore core(scalar p, scalar T) const {
+        return EOSCore{this->coeffRaw(p,T)};
     }
 
     //- Is the equation of state is incompressible i.e. rho != f(p)

@@ -92,7 +92,7 @@ namespace Foam {
 
     template<class getRawCoeffFun, class getXiFun>
     inline cubicEOSRawCoefficient
-    mixingRuleRK(label nSpecie, const getRawCoeffFun rawCoeffFun, const getXiFun &specieMoleFracFun) {
+    mixingRuleRK(label nSpecie, getRawCoeffFun& rawCoeffFun, getXiFun &specieMoleFracFun) {
         scalar sqrt_a_sum = 0;
         scalar bSum = 0;
         for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
@@ -115,7 +115,7 @@ namespace Foam {
             const scalar W = 28.0;
             // EOS must have these interfaces
             [[maybe_unused]]cubicEOSRawCoefficient coeff = eos->coeffRaw(p, T);
-            [[maybe_unused]] typename EOS::implementation core = eos->core(p, T);
+            [[maybe_unused]] typename EOS::EOSCore core = eos->core(p, T);
             [[maybe_unused]] const scalar u = core.Z(p, T) + core.rho(p, T, W)
                                               + core.h(p, T, W) + core.Cp(p, T, W) + core.e(p, T, W) +
                                               core.Cv(p, T, W) + core.sp(p, T, W) + core.sv(p, T, W) +
