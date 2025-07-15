@@ -19,16 +19,6 @@ inline Foam::RedlichKwongGas<Specie>::RedlichKwongGas
 
 
 template<class Specie>
-inline Foam::cubicEOSRawCoefficient Foam::RedlichKwongGas<Specie>::coeffRaw(scalar p[[maybe_unused]], scalar T[[maybe_unused]]) const {
-    const auto Tc_ = this->Tc_;
-//    const auto Vc_=this->Vc_;
-    const auto Pc_ = this->Pc_;
-    const scalar a = 0.42748 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
-    const scalar b = 0.08664 * RR * Tc_ / Pc_;
-    return {a, b};
-}
-
-template<class Specie>
 inline Foam::RedlichKwongGas<Specie>::RedlichKwongGas
         (
                 const word &name,

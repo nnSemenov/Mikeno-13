@@ -86,30 +86,31 @@ Foam::realGasMulticomponentMixture<ThermoType>::realGasMulticomponentMixture
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class ThermoType>
-Foam::cubicEOSRawCoefficient
-Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::cubicEOSCoeffOfSpecie(scalar p, scalar T,
-                                                                                         label idx) const {
-    return this->specieThermos_[idx].coeffRaw(p,T);
-}
+//template<class ThermoType>
+//Foam::cubicEOSRawCoefficient
+//Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::cubicEOSCoeffOfSpecie(scalar p, scalar T,
+//                                                                                         label idx) const {
+//    return
+//}
+
+//template<class ThermoType>
+//Foam::cubicEOSRawCoefficient
+//Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedRawCoeff(scalar p, scalar T) const {
+//
+//    return
+//}
 
 template<class ThermoType>
-Foam::cubicEOSRawCoefficient
-Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedRawCoeff(scalar p, scalar T) const {
+auto Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedCore(scalar p, scalar T) const {
 
     auto coeffFun=[this, p, T](label idx) {
-        return this->cubicEOSCoeffOfSpecie(p,T,idx);
+        return this->specieThermos_[idx].core(p,T);
     };
     auto XiFun=[this](label idx) {
         return this->X_[idx];
     };
 
     return ThermoType::mixingRule(this->X_.size(), coeffFun, XiFun);
-}
-
-template<class ThermoType>
-auto Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedCore(scalar p, scalar T) const {
-    return typename ThermoType::EOSCore{this->mixedRawCoeff(p,T)};
 }
 
 template<class ThermoType>

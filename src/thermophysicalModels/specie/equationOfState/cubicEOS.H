@@ -12,30 +12,9 @@
 
 namespace Foam {
 
-    struct cubicEOSRawCoefficient {
-        scalar a;
-        scalar b;
-    };
-
     struct cubicEOSDimlessCoefficient {
         scalar A;
         scalar B;
-    };
-
-    struct [[deprecated]]cubicEOSCoefficient : public cubicEOSRawCoefficient {
-
-
-        scalar A;
-        scalar B;
-        scalar Tr;
-        scalar Pr;
-        scalar kappa;
-        scalar alpha;
-
-        cubicEOSCoefficient(const cubicEOSRawCoefficient raw, scalar A, scalar B, scalar Tr, scalar Pr, scalar kappa,
-                            scalar alpha) : cubicEOSRawCoefficient(raw), A(A), B(B), Tr(Tr), Pr(Pr), kappa(kappa),
-                                            alpha(alpha) {}
-
     };
 
     // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
@@ -90,22 +69,6 @@ namespace Foam {
         scalar Z;
     };
 
-    template<class getRawCoeffFun, class getXiFun>
-    inline cubicEOSRawCoefficient
-    mixingRuleRK(label nSpecie, getRawCoeffFun& rawCoeffFun, getXiFun &specieMoleFracFun) {
-        scalar sqrt_a_sum = 0;
-        scalar bSum = 0;
-        for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
-            const cubicEOSRawCoefficient iCoeff = rawCoeffFun(spIdx);
-            const scalar Xi = specieMoleFracFun(spIdx);
-            sqrt_a_sum += Xi * sqrt(iCoeff.a);
-            bSum += Xi * iCoeff.b;
-        }
-
-        return cubicEOSRawCoefficient{sqr(sqrt_a_sum), bSum};
-    }
-
-
     namespace internal {
         // Some SFINAE tricks
         template<class EOS>
@@ -114,7 +77,6 @@ namespace Foam {
             const scalar p = 1e5;
             const scalar W = 28.0;
             // EOS must have these interfaces
-            [[maybe_unused]]cubicEOSRawCoefficient coeff = eos->coeffRaw(p, T);
             [[maybe_unused]] typename EOS::EOSCore core = eos->core(p, T);
             [[maybe_unused]] const scalar u = core.Z(p, T) + core.rho(p, T, W)
                                               + core.h(p, T, W) + core.Cp(p, T, W) + core.e(p, T, W) +

@@ -56,9 +56,9 @@ public:
 
     protected:
         // cubicEOS properties
-        cubicEOSRawCoefficient cubicEOSCoeffOfSpecie(scalar p, scalar T, label idx)const;
-
-        cubicEOSRawCoefficient mixedRawCoeff(scalar p, scalar T) const;
+//        cubicEOSRawCoefficient cubicEOSCoeffOfSpecie(scalar p, scalar T, label idx)const;
+//
+//        cubicEOSRawCoefficient mixedRawCoeff(scalar p, scalar T) const;
 
         auto mixedCore(scalar p, scalar T) const;
     public:

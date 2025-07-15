@@ -46,15 +46,15 @@ class RedlichKwongGas : public Specie {
 public:
 
     struct EOSCore {
-        cubicEOSRawCoefficient rawCoeff;
+        scalar a;
+        scalar b;
 
     protected:
         //- Molar volume [m^3/kmol]
     public:
         inline cubicEOSDimlessCoefficient dimlessCoeff(scalar p, scalar T) const {
-//            const scalar A = rawCoeff.a / p / sqrt(T) * sqr(p / (RR * T));
-            const scalar A = rawCoeff.a *p/ sqr(RR*T)/ sqrt(T);
-            const scalar B = rawCoeff.b * p / (RR * T);
+            const scalar A = a *p/ sqr(RR*T)/ sqrt(T);
+            const scalar B = b * p / (RR * T);
             return {A, B};
         }
         // compute from AB, that is real EOSCore
@@ -173,8 +173,17 @@ public:
        );
 
     template<class getRawCoeffFun, class getXiFun>
-    static inline cubicEOSRawCoefficient mixingRule(label nSpecie, getRawCoeffFun &rawCoeffFun, getXiFun &specieMoleFracFun) {
-        return mixingRuleRK(nSpecie,rawCoeffFun,specieMoleFracFun);
+    static inline EOSCore mixingRule(label nSpecie, getRawCoeffFun &rawCoeffFun, getXiFun &specieMoleFracFun) {
+//        return EOSCore{mixingRuleRK(nSpecie, rawCoeffFun, specieMoleFracFun)};
+        scalar sqrt_a_sum = 0;
+        scalar bSum = 0;
+        for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
+            const EOSCore core_i = rawCoeffFun(spIdx);
+            const scalar Xi = specieMoleFracFun(spIdx);
+            sqrt_a_sum += Xi * sqrt(core_i.a);
+            bSum += Xi * core_i.b;
+        }
+        return EOSCore{sqr(sqrt_a_sum), bSum};
     }
 
     RedlichKwongGas(const word&name, const dictionary&dict);
@@ -191,10 +200,15 @@ public:
     {
         return "RedlichKwongGas<" + word(Specie::typeName_()) + '>';
     }
-    inline Foam::cubicEOSRawCoefficient coeffRaw(scalar p, scalar T) const;
+//    inline Foam::cubicEOSRawCoefficient coeffRaw(scalar p, scalar T) const;
 
-    inline EOSCore core(scalar p, scalar T) const {
-        return EOSCore{this->coeffRaw(p,T)};
+    inline EOSCore core(scalar p[[maybe_unused]], scalar T[[maybe_unused]]) const {
+        const auto Tc_ = this->Tc_;
+//    const auto Vc_=this->Vc_;
+        const auto Pc_ = this->Pc_;
+        const scalar a = 0.42748 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
+        const scalar b = 0.08664 * RR * Tc_ / Pc_;
+        return {a, b};
     }
 
     //- Is the equation of state is incompressible i.e. rho != f(p)
