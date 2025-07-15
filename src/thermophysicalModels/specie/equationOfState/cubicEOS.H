@@ -18,43 +18,7 @@ namespace Foam {
     };
 
     // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
-    inline scalar solveCubicEquation(scalar a2, scalar a1, scalar a0) {
-
-        const scalar Q = (3 * a1 - a2 * a2) / 9.0;
-        const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
-
-        const scalar Q3 = Q * Q * Q;
-        const scalar D = Q3 + Rl * Rl;
-
-        scalar root = -1;
-
-        if (D <= 0) {
-            const scalar th = ::acos(Rl / sqrt(-Q3));
-            const scalar qm = 2 * sqrt(-Q);
-            const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
-            const scalar r2 =
-                    qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
-            const scalar r3 =
-                    qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
-
-            root = max(r1, max(r2, r3));
-        } else {
-            // One root is real
-            const scalar D05 = sqrt(D);
-            const scalar S = pow(Rl + D05, 1.0 / 3.0);
-            scalar Tl = 0;
-            if (D05 > Rl) {
-                Tl = -pow(mag(Rl - D05), 1.0 / 3.0);
-            } else {
-                Tl = pow(Rl - D05, 1.0 / 3.0);
-            }
-
-            root = S + Tl - a2 / 3.0;
-        }
-        assert(root > 0);
-
-        return root;
-    }
+    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0);
 
     struct residualEnergy {
         scalar h_R;//[J/kg]
@@ -94,6 +58,65 @@ namespace Foam {
         )), int>::value and (not EOS::incompressible);
     };
 
+    class flatMatrix {
+    protected:
+        label rowCols;
+        List<scalar> value;
+
+    public:
+        explicit flatMatrix(label rc): rowCols(rc),value(rc*rc, Foam::zero()) {
+        }
+
+        inline scalar rows() const {
+            return this->rowCols;
+        }
+        inline scalar cols() const {
+            return this->rowCols;
+        }
+        inline scalar size() const {
+            return this->rows()*this->cols();
+        }
+
+
+        inline label offsetOf(label i, label j) const {
+            assert(rowCols>0);
+            assert(i>=0);
+            assert(j>=0);
+            assert(i<rowCols);
+            assert(j<rowCols);
+            return i*rowCols+j;
+        }
+
+        inline scalar & operator()(label i,label j) & {
+            return this->value[this->offsetOf(i,j)];
+        }
+
+        inline const scalar & operator()(label i,label j)const & {
+            return this->value[this->offsetOf(i,j)];
+        }
+
+        inline List<scalar>& asList() & {
+            return this->value;
+        }
+        inline const List<scalar>& asList() const & {
+            return this->value;
+        }
+
+        inline auto begin() & {
+            return this->value.begin();
+        }
+        inline auto end() & {
+            return this->value.end();
+        }
+        inline auto begin()const & {
+            return this->value.begin();
+        }
+        inline auto end()const & {
+            return this->value.end();
+        }
+    };
+
+    word parseBinarySpeciePair(const word&str, word&sp0, word&sp1);
 }
 
 #endif // CUBICEOS_H

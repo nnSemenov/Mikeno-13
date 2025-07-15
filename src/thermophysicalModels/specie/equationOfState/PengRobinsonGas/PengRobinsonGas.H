@@ -62,7 +62,9 @@ SourceFiles
 #define PengRobinsonGas_H
 
 #include "autoPtr.H"
+#include "speciesTable.H"
 #include "../equationOfState/cubicEOS.H"
+#include <cmath>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -360,61 +362,117 @@ namespace Foam {
 
         // mixing
 
-        struct interactionCoefficient {
+        class EOSMixer {
+        protected:
+            const label nSpecie;
+            // row major
+            flatMatrix kij;
+            explicit EOSMixer(label nSp):nSpecie(nSp), kij(nSp) { }
+        public:
+            EOSMixer(const speciesTable &spTable, const dictionary&physicalPropDict):
+                EOSMixer(spTable.size()) {
+                const dictionary* mixingRuleDict=physicalPropDict.subDictPtr("mixingRule");
+                if(mixingRuleDict==nullptr) { // keep default, all k_ij=0
+                    return;
+                }
+                const dictionary* binaryInterfactionDict=mixingRuleDict->subDictPtr("binaryInteraction");
+                if(binaryInterfactionDict==nullptr) {
+                    return;
+                }
+                const dictionary*kDict=binaryInterfactionDict->subDictPtr("k");
+                if(kDict==nullptr) {
+                    return;
+                }
+                const bool symmetry=kDict->lookupOrDefault<bool>("symmetry", true);
+                const auto keys = kDict->keys(true);
+                // fill the table with NAN
+                for(scalar &k:this->kij) {
+                    k=std::nan("");
+                }
+
+                auto set_k_ij=[this](label i, label j, scalar k) noexcept  {
+                    const bool alreadySet=std::isfinite(this->k(i,j));
+                    if(alreadySet) {
+                        WarningInFunction<<"Duplicated declaration of k("<<i<<','<<j<<"), previous value will be overrided."<<endl;
+                    }
+                    this->k(i,j)=k;
+                };
+
+                forAll(keys, keyIdx) {
+                    const word & speciePair=keys[keyIdx];
+                    if(speciePair=="symmetry") {
+                        continue;
+                    }
+                    word sp0, sp1;
+                    const word err=parseBinarySpeciePair(speciePair,sp0,sp1);
+                    if(not err.empty()) {
+                        FatalErrorInFunction<<"Invalid binary interaction table: "<<err<<endl;
+                        ::Foam::abort(::Foam::FatalError);
+                    }
+                    const label idxSp0=spTable[sp0];
+                    const label idxSp1=spTable[sp1];
+
+                    const scalar k=kDict->template lookup<scalar>(speciePair);
+                    set_k_ij(idxSp0,idxSp1,k);
+                    if(symmetry) {
+                        set_k_ij(idxSp1,idxSp0,k);
+                    }
+                }
+                for(scalar& k:this->kij) {
+                    if(not std::isfinite(k)) {
+                        k=0;
+                    }
+                }
+
+                Info<<"Binary interaction coefficient table for PR equation: k="<<this->kij.asList()<<endl;
+            }
+
+            inline scalar &k(label i, label j)& {
+                return this->kij(i,j);
+            }
+            inline scalar k(label i,label j) const &{
+                return this->kij(i,j);
+            }
+
+            template<class getCoreFun, class getXiFun>
+            inline EOSCore mix(label nSpecie,
+                               getCoreFun &coreFun,
+                               getXiFun &specieMoleFracFun)const {
+
+                scalar aSum=0;
+                scalar da_dT_sum=0;
+                scalar d2a_dT2_sum=0;
+                scalar bSum=0;
+                for(label i=0;i<nSpecie;i++) {
+                    const scalar Xi=specieMoleFracFun(i);
+                    const EOSCore iCore=coreFun(i);
+
+                    bSum+=Xi*iCore.b;
+
+                    for(label j=0;j<nSpecie;j++) {
+                        const scalar Xj=specieMoleFracFun(j);
+                        const EOSCore jCore=coreFun(j);
+                        const scalar kij=this->k(i,j);
+                        const scalar sqrt_aiaj=sqrt(iCore.a * jCore.a);
+                        const scalar ddT_aiaj = iCore.a*jCore.da_dT + jCore.a*iCore.da_dT;
+                        aSum += Xi*Xj*(1-kij)*sqrt_aiaj ;
+
+                        // compute da/dT
+                        const scalar ddT_sqrt_aiaj=1/(2*sqrt_aiaj)*ddT_aiaj;
+                        da_dT_sum+= Xi*Xj*(1-kij) * ddT_sqrt_aiaj;
+
+                        // compute d2a/dT2
+                        const scalar d2_dT2_sqrt_aiaj = 1/(4*iCore.a * jCore.a) * (
+                                2*sqrt_aiaj*(iCore.a *jCore.dd2a_dT2 + 2*iCore.da_dT*jCore.da_dT + jCore.a*iCore.dd2a_dT2)
+                                - ddT_aiaj * ddT_sqrt_aiaj
+                        );
+                        d2a_dT2_sum += Xi*Xj*(1-kij) *d2_dT2_sqrt_aiaj;
+                    }
+                }
+                return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum};
+            }
 
         };
-
-        template<class getCoreFun, class getXiFun, class getInteractionCoeffFun>
-        static inline EOSCore mixingRule3(label nSpecie,
-                                         getCoreFun &coreFun,
-                                         getXiFun &specieMoleFracFun,
-                                         getInteractionCoeffFun &kijFun) {
-            scalar aSum=0;
-            scalar da_dT_sum=0;
-            scalar d2a_dT2_sum=0;
-            scalar bSum=0;
-            for(label i=0;i<nSpecie;i++) {
-                const scalar Xi=specieMoleFracFun(i);
-                const EOSCore iCore=coreFun(i);
-
-                bSum+=Xi*iCore.b;
-
-                for(label j=0;j<nSpecie;j++) {
-                    const scalar Xj=specieMoleFracFun(j);
-                    const EOSCore jCore=coreFun(j);
-                    const scalar kij=kijFun(i,j);
-                    const scalar sqrt_aiaj=sqrt(iCore.a * jCore.a);
-                    const scalar ddT_aiaj = iCore.a*jCore.da_dT + jCore.a*iCore.da_dT;
-                    aSum += Xi*Xj*(1-kij)*sqrt_aiaj ;
-
-                    // compute da/dT
-                    const scalar ddT_sqrt_aiaj=1/(2*sqrt_aiaj)*ddT_aiaj;
-                    da_dT_sum+= Xi*Xj*(1-kij) * ddT_sqrt_aiaj;
-
-                    // compute d2a/dT2
-                    const scalar d2_dT2_sqrt_aiaj = 1/(4*iCore.a * jCore.a) * (
-                            2*sqrt_aiaj*(iCore.a *jCore.dd2a_dT2 + 2*iCore.da_dT*jCore.da_dT + jCore.a*iCore.dd2a_dT2)
-                            - ddT_aiaj * ddT_sqrt_aiaj
-                            );
-                    d2a_dT2_sum += Xi*Xj*(1-kij) *d2_dT2_sqrt_aiaj;
-                }
-            }
-            return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum};
-        }
-
-        // Ignore interaction coeff, k_ij=0
-        template<class getCoreFun, class getXiFun>
-        static inline EOSCore mixingRule(label nSpecie,
-                                         getCoreFun &coreFun,
-                                         getXiFun &specieMoleFracFun) {
-            auto kijFun=[](label, label)->scalar { return 0;};
-            return mixingRule3(nSpecie,
-                               coreFun,
-                               specieMoleFracFun,
-                               kijFun
-            );
-        }
-
 
         // IO
 

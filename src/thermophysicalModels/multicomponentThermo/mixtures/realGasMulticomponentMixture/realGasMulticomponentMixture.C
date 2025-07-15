@@ -81,6 +81,8 @@ Foam::realGasMulticomponentMixture<ThermoType>::realGasMulticomponentMixture
         thermoMixture_(this->specieThermos()),
         transportMixture_(this->specieThermos()) {
     static_assert(Foam::is_cubic_EOS<ThermoType>::value, "Only cubic EOS is supported now.");
+
+    this->thermoMixture_.mixer_=new typename ThermoType::EOSMixer{this->specieNames(), dict};
 }
 
 
@@ -110,7 +112,7 @@ auto Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::mixedCor
         return this->X_[idx];
     };
 
-    return ThermoType::mixingRule(this->X_.size(), coeffFun, XiFun);
+    return this->mixer_().mix(this->X_.size(), coeffFun, XiFun);
 }
 
 template<class ThermoType>

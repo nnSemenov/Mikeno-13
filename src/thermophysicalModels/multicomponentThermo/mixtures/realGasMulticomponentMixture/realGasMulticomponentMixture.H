@@ -35,6 +35,8 @@ public:
         //- List of mole fractions
         mutable List<scalar> X_;
 
+        autoPtr<typename ThermoType::EOSMixer> mixer_;
+
         //- Calculate a mass-fraction-weighted property
         template<class Method, class ... Args>
         scalar massWeighted
@@ -72,7 +74,8 @@ public:
                 :
                 specieThermos_(specieThermos),
                 Y_(specieThermos.size()),
-                X_(specieThermos.size())
+                X_(specieThermos.size()),
+                mixer_{nullptr}
         {}
 
 

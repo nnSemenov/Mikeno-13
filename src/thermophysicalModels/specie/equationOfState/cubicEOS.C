@@ -1,0 +1,62 @@
+//
+// Created by joseph on 25-7-15.
+//
+#include "cubicEOS.H"
+
+using Foam::scalar;
+using Foam::word;
+
+Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0) {
+
+    const scalar Q = (3 * a1 - a2 * a2) / 9.0;
+    const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
+
+    const scalar Q3 = Q * Q * Q;
+    const scalar D = Q3 + Rl * Rl;
+
+    scalar root = -1;
+
+    if (D <= 0) {
+        const scalar th = ::acos(Rl / sqrt(-Q3));
+        const scalar qm = 2 * sqrt(-Q);
+        const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
+        const scalar r2 =
+                qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
+        const scalar r3 =
+                qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
+
+        root = max(r1, max(r2, r3));
+    } else {
+        // One root is real
+        const scalar D05 = sqrt(D);
+        const scalar S = pow(Rl + D05, 1.0 / 3.0);
+        scalar Tl = 0;
+        if (D05 > Rl) {
+            Tl = -pow(mag(Rl - D05), 1.0 / 3.0);
+        } else {
+            Tl = pow(Rl - D05, 1.0 / 3.0);
+        }
+
+        root = S + Tl - a2 / 3.0;
+    }
+    assert(root > 0);
+
+    return root;
+}
+
+word Foam::parseBinarySpeciePair(const word&str, word&sp0, word&sp1) {
+    sp0="";
+    sp1="";
+    const word explain="it is not a valid binary specie pair. Example: \"O2:CO2\"";
+//    const std::string_view str{str__};
+    const size_t comma_idx=str.find_first_of(':');
+    if(comma_idx==str.npos) {
+        return str+" doesn't contain colon, "+explain;
+    }
+    if(comma_idx not_eq str.find_last_of(':')) {
+        return str+" has multiple colon, "+explain;
+    }
+    sp0=std::string{str.data(),str.data()+comma_idx};
+    sp1=std::string{str.begin()+comma_idx+1,str.end()};
+    return "";
+}
