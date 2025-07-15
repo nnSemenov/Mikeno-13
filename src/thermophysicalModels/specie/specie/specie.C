@@ -73,10 +73,10 @@ Foam::word Foam::specie::checkForRealGasEOS(bool checkOmega) const {
     if(this->Vc()<=0) {
         return "Invalid critical volume: "+::Foam::name(this->Vc())+"[m^3/kmol]";
     }
-    if(this->Zc()<=0 or this->Zc()>1) {
+    if((this->Zc()<=0) or (this->Zc()>1)) {
         return "Invalid critical compression factor: "+::Foam::name(this->Pc());
     }
-    if(checkOmega and this->omega()<=-1) {
+    if(checkOmega and (this->omega()<=-1)) {
         return "Invalid acentric factor: "+::Foam::name(this->omega());
     }
     return "";

@@ -66,166 +66,341 @@ SourceFiles
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
-{
+namespace Foam {
 
 // Forward declaration of friend functions and operators
 
-template<class Specie> class PengRobinsonGas;
+    template<class Specie>
+    class PengRobinsonGas;
 
-template<class Specie>
-inline PengRobinsonGas<Specie> operator+
-(
-    const PengRobinsonGas<Specie>&,
-    const PengRobinsonGas<Specie>&
-);
+    template<class Specie>
+    inline PengRobinsonGas<Specie> operator+
+            (
+                    const PengRobinsonGas<Specie> &,
+                    const PengRobinsonGas<Specie> &
+            );
 
-template<class Specie>
-inline PengRobinsonGas<Specie> operator*
-(
-    const scalar,
-    const PengRobinsonGas<Specie>&
-);
+    template<class Specie>
+    inline PengRobinsonGas<Specie> operator*
+            (
+                    const scalar,
+                    const PengRobinsonGas<Specie> &
+            );
 
-template<class Specie>
-inline PengRobinsonGas<Specie> operator==
-(
-    const PengRobinsonGas<Specie>&,
-    const PengRobinsonGas<Specie>&
-);
+    template<class Specie>
+    inline PengRobinsonGas<Specie> operator==
+            (
+                    const PengRobinsonGas<Specie> &,
+                    const PengRobinsonGas<Specie> &
+            );
 
-template<class Specie>
-Ostream& operator<<
-(
-    Ostream&,
-    const PengRobinsonGas<Specie>&
-);
-
+    template<class Specie>
+    Ostream &operator<<
+            (
+                    Ostream &,
+                    const PengRobinsonGas<Specie> &
+            );
 
 
 /*---------------------------------------------------------------------------*\
                        Class PengRobinsonGas Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Specie>
-class PengRobinsonGas
-:
-    public Specie
-{
-    // Private Data
+    template<class Specie>
+    class PengRobinsonGas
+            :
+                    public Specie {
+        // Private Data
 
-public:
+    public:
 
-    // Constructors
+        struct EOSCore {
+            scalar a;
+            scalar b;
+            scalar da_dT;
+            scalar dd2a_dT2;
+
+            inline cubicEOSDimlessCoefficient dimlessCoeff(scalar p, scalar T) const {
+                const scalar A = a * p / sqr(RR * T);
+                const scalar B = b * p / (RR * T);
+                return {A,B};
+            }
+
+            inline scalar R(scalar W) const {
+                return RR/W;
+            }
+
+            inline scalar Z(const cubicEOSDimlessCoefficient&AB) const {
+                const scalar A = AB.A;
+                const scalar B = AB.B;
+
+                const scalar a2 = B-1;
+                const scalar a1=A -2*B -3*sqr(B);
+                const scalar a0 = pow3(B) + sqr(B)-A*B;
+                return solveCubicEquation(a2,a1,a0);
+            }
+
+            inline scalar Z(scalar p, scalar T) const {
+                auto AB=this->dimlessCoeff(p,T);
+                return this->Z(AB);
+            }
+
+            inline scalar rho(scalar p, scalar T, scalar W) const {
+                const scalar Z=this->Z(p,T);
+                return p / (Z * this->R(W) * T);
+            }
+
+            inline Foam::residualEnergy residualHE(scalar p, scalar T, scalar W) const {
+                const auto AB=this->dimlessCoeff(p,T);
+                const scalar A=AB.A;
+                const scalar B=AB.B;
+                const scalar Z=this->Z(AB);
+
+                const scalar log_part = log(
+                        (Z-(sqr(2.0)-1)*B)
+                        /(Z+(sqr(2.0)+1)*B)
+                        );
+                const scalar aT_part = a - T*this->da_dT;
+                const scalar e_R_dimless = 1/(2* sqr(2.0)*b*RR*T)*aT_part*log_part;
+//                const scalar AT_part = A- sqr(RR)* pow3(T)/p * this->da_dT;
+//
+//                const scalar e_R_dimless = 1/(2* sqr(2.0)*B) * AT_part*log_part;
+                const scalar h_R_dimless = Z-1 + e_R_dimless;
+                return Foam::residualEnergy{
+                        T * this->R(W) * h_R_dimless,
+                        T * this->R(W) * e_R_dimless,
+                        Z
+                };
+            }
+
+            inline Foam::residualSpecificHeat residualSpecificHeat(scalar p, scalar T, scalar W) const {
+                const auto AB=this->dimlessCoeff(p,T);
+                const scalar B=AB.B;
+                const scalar Z=this->Z(AB);
+
+                const scalar log_part = log(
+                        (Z-(sqr(2.0)-1)*B)
+                        /(Z+(sqr(2.0)+1)*B)
+                );
+                const scalar pB_part = p*B/(2* sqr(2.0)* sqr(RR));
+
+                const scalar Cv_dimless = -this->dd2a_dT2*pB_part*log_part;
+
+                // compute CpMCv
+                const scalar CpMCv_dimless = [=](){
+                    const scalar V = Z*RR*T/p;
+                    const scalar VVBbbVb=V*(V+b)+b*(V-b);
+                    const scalar numerator = sqr(
+                        RR/(V-b)
+                        - da_dT/VVBbbVb
+                    );
+                    const scalar denominator =
+                            2*a*(V+b)/sqr(VVBbbVb) - RR*T/ sqr(V-b);
+                    return -1 - T/RR * numerator/denominator;
+                }();
+                const scalar Cp_dimless = Cv_dimless+CpMCv_dimless;
+
+                return Foam::residualSpecificHeat{
+                        Cp_dimless * this->R(W),
+                        Cv_dimless * this->R(W),
+                        CpMCv_dimless * this->R(W),
+                        Z
+                };
+            }
+
+            inline scalar e(scalar p, scalar T, scalar W) const {
+                return this->residualHE(p,T,W).e_R;
+            }
+
+            inline scalar h(scalar p, scalar T, scalar W) const {
+                return this->residualHE(p,T,W).h_R;
+            }
+
+            //- Return Cp contribution [J/(kg K]
+            inline scalar Cp(scalar p, scalar T, scalar W) const {
+                return this->residualSpecificHeat(p,T,W).Cp_R;
+            }
+
+
+            //- Return Cv contribution [J/(kg K]
+            inline scalar Cv(scalar p, scalar T, scalar W) const{
+                return this->residualSpecificHeat(p,T,W).Cv_R;
+            }
+
+            //- Return entropy contribution to the integral of Cp/T [J/kg/K]
+            inline scalar sp(const scalar p, const scalar T, scalar W) const {
+                return 0;
+            }
+
+            //- Return entropy contribution to the integral of Cv/T [J/kg/K]
+            inline scalar sv(const scalar p, const scalar T, scalar W) const {
+                return 0;
+            }
+
+            //- Return compressibility [s^2/m^2]
+            inline scalar psi(scalar p, scalar T, scalar W) const {
+                return 1/(this->Z(p,T)*this->R(W)*T);
+            }
+
+            //- Return (Cp - Cv) [J/(kg K]
+            inline scalar CpMCv(scalar p, scalar T, scalar W) const{
+                return this->residualSpecificHeat(p,T,W).Cp_R_minus_Cv_R;
+            }
+
+            inline scalar alphav(const scalar p, const scalar T) const;
+        };
+
+    public:
+        // Constructors
 
         //- Construct from components
         inline PengRobinsonGas
-        (
-            const Specie& sp
-        );
+                (
+                        const Specie &sp
+                );
 
         //- Construct from name and dictionary
-        PengRobinsonGas(const word& name, const dictionary& dict);
+        PengRobinsonGas(const word &name, const dictionary &dict);
 
         //- Construct as named copy
-        inline PengRobinsonGas(const word& name, const PengRobinsonGas&);
+        inline PengRobinsonGas(const word &name, const PengRobinsonGas &);
 
         //- Construct and return a clone
         inline autoPtr<PengRobinsonGas> clone() const;
 
 
-    // Member Functions
+        // Member Functions
 
         //- Return the instantiated type name
-        static word typeName()
-        {
+        static word typeName() {
             return "PengRobinsonGas<" + word(Specie::typeName_()) + '>';
         }
 
         // Fundamental properties
+        inline EOSCore core(scalar p, scalar T) const {
+            const auto Tc = this->Tc();
+            const auto Pc = this->Pc();
+            const scalar omega=this->omega_;
+            const scalar Tr = T/Tc;
+            const scalar a_c = 0.457235* sqr(RR*Tc)/Pc;
+            const scalar kappa = 0.37464+1.54226*omega - 0.26992*sqr(omega);
+            const scalar sqrtAlpha = 1+kappa*(1-sqrt(Tr));
+            const scalar alpha= sqr(sqrtAlpha);
+            const scalar a = a_c*alpha;
+            const scalar b =0.077796*RR*Tc/Pc;
 
-            inline Foam::cubicEOSCoefficient coeff_AB(scalar p, scalar T) const;
+            const scalar da_dT = -a_c*kappa* sqrt(alpha/(T*Tc));
+            const scalar d2a_dT2 =
+                    a_c*kappa*sqrtAlpha/(2* sqr(Tc)*Tr*sqr(Tr))
+                    + 1/(2*alpha)*da_dT;
 
-            //- Is the equation of state is incompressible i.e. rho != f(p)
-            static const bool incompressible = false;
+            return {a,b,da_dT,d2a_dT2};
+        }
 
-            //- Is the equation of state is isochoric i.e. rho = const
-            static const bool isochoric = false;
+        //- Is the equation of state is incompressible i.e. rho != f(p)
+        static const bool incompressible = false;
 
-            //- Return density [kg/m^3]
-            inline scalar rho(scalar p, scalar T) const;
-
-            //- Return enthalpy contribution [J/kg]
-            inline scalar h(const scalar p, const scalar T) const;
-
-            //- Return Cp contribution [J/(kg K]
-            inline scalar Cp(scalar p, scalar T) const;
-
-            //- Return internal energy contribution [J/kg]
-            inline scalar e(const scalar p, const scalar T) const;
-
-            //- Return Cv contribution [J/(kg K]
-            inline scalar Cv(scalar p, scalar T) const;
-
-            //- Return entropy contribution to the integral of Cp/T [J/kg/K]
-            inline scalar sp(const scalar p, const scalar T) const;
-
-            //- Return entropy contribution to the integral of Cv/T [J/kg/K]
-            inline scalar sv(const scalar p, const scalar T) const;
-
-            //- Return compressibility [s^2/m^2]
-            inline scalar psi(scalar p, scalar T) const;
-
-            //- Return compression factor []
-            inline scalar Z(scalar p, scalar T) const;
-
-            //- Return (Cp - Cv) [J/(kg K]
-            inline scalar CpMCv(scalar p, scalar T) const;
-
-            //- Return volumetric coefficient of thermal expansion [1/T]
-            inline scalar alphav(const scalar p, const scalar T) const;
+        //- Is the equation of state is isochoric i.e. rho = const
+        static const bool isochoric = false;
 
 
-    // IO
+        //- Return compression factor []
+        inline scalar Z(scalar p, scalar T) const{
+            return this->core(p,T).Z(p,T);
+        }
 
-            //- Write to Ostream
-            void write(Ostream& os) const;
+        //- Return density [kg/m^3]
+        inline scalar rho(scalar p, scalar T) const {
+            return this->core(p,T).rho(p,T,this->W());
+        }
 
-    // Member Operators
+        //- Return enthalpy contribution [J/kg]
+        inline scalar h(const scalar p, const scalar T) const {
+            return this->core(p,T).h(p,T,this->W());
+        }
 
-        inline void operator+=(const PengRobinsonGas&);
+        //- Return Cp contribution [J/(kg K)]
+        inline scalar Cp(scalar p, scalar T) const{
+            return this->core(p,T).Cp(p,T,this->W());
+        }
+
+        //- Return internal energy contribution [J/kg]
+        inline scalar e(const scalar p, const scalar T) const{
+            return this->core(p,T).e(p,T,this->W());
+        }
+
+        //- Return Cv contribution [J/(kg K)]
+        inline scalar Cv(scalar p, scalar T) const{
+            return this->core(p,T).Cv(p,T,this->W());
+        }
+
+        //- Return entropy contribution to the integral of Cp/T [J/kg/K]
+        inline scalar sp(const scalar p, const scalar T) const {
+            return this->core(p,T).sp(p,T,this->W());
+        }
+
+        //- Return entropy contribution to the integral of Cv/T [J/kg/K]
+        inline scalar sv(const scalar p, const scalar T) const{
+            return this->core(p,T).sv(p,T,this->W());
+        }
+
+        //- Return compressibility [s^2/m^2]
+        inline scalar psi(scalar p, scalar T) const{
+            return this->core(p,T).psi(p,T,this->W());
+        }
+
+        //- Return (Cp - Cv) [J/(kg K]
+        inline scalar CpMCv(scalar p, scalar T) const{
+            return this->core(p,T).CpMCv(p,T,this->W());
+        }
+
+        //- Return volumetric coefficient of thermal expansion [1/T]
+        inline scalar alphav(const scalar p, const scalar T) const{
+            return this->core(p,T).alphav(p,T,this->W());
+        }
+
+
+        // IO
+
+        //- Write to Ostream
+        void write(Ostream &os) const;
+
+        // Member Operators
+
+        inline void operator+=(const PengRobinsonGas &);
+
         inline void operator*=(const scalar);
 
 
-    // Friend operators
+        // Friend operators
 
-        friend PengRobinsonGas operator+ <Specie>
-        (
-            const PengRobinsonGas&,
-            const PengRobinsonGas&
-        );
+        friend PengRobinsonGas operator+<Specie>
+                (
+                        const PengRobinsonGas &,
+                        const PengRobinsonGas &
+                );
 
-        friend PengRobinsonGas operator* <Specie>
-        (
-            const scalar s,
-            const PengRobinsonGas&
-        );
+        friend PengRobinsonGas operator*<Specie>
+                (
+                        const scalar s,
+                        const PengRobinsonGas &
+                );
 
-        friend PengRobinsonGas operator== <Specie>
-        (
-            const PengRobinsonGas&,
-            const PengRobinsonGas&
-        );
+        friend PengRobinsonGas operator==<Specie>
+                (
+                        const PengRobinsonGas &,
+                        const PengRobinsonGas &
+                );
 
 
-    // Ostream Operator
+        // Ostream Operator
 
-        friend Ostream& operator<< <Specie>
-        (
-            Ostream&,
-            const PengRobinsonGas&
-        );
-};
+        friend Ostream &operator<<<Specie>
+                (
+                        Ostream &,
+                        const PengRobinsonGas &
+                );
+    };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -237,7 +412,7 @@ public:
 #include "PengRobinsonGasI.H"
 
 #ifdef NoRepository
-    #include "PengRobinsonGas.C"
+#include "PengRobinsonGas.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
