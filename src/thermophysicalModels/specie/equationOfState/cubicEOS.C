@@ -4,6 +4,8 @@
 #include "cubicEOS.H"
 #include "dictionary.H"
 
+#include <limits>
+
 using Foam::scalar;
 using Foam::word;
 
@@ -69,7 +71,7 @@ void Foam::parseBinaryInteractionMatrix(const dictionary&kDict,
                                         bool symmetry) {
 
     for(scalar &k:mat) {
-        k=std::nan("");
+        k=std::numeric_limits<scalar>::signaling_NaN();
     }
 
     auto set_k_ij=[&mat](label i, label j, scalar k) noexcept  {
