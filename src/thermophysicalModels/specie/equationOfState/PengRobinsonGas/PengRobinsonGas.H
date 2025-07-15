@@ -384,47 +384,16 @@ namespace Foam {
                     return;
                 }
                 const bool symmetry=kDict->lookupOrDefault<bool>("symmetry", true);
-                const auto keys = kDict->keys(true);
-                // fill the table with NAN
-                for(scalar &k:this->kij) {
-                    k=std::nan("");
-                }
 
-                auto set_k_ij=[this](label i, label j, scalar k) noexcept  {
-                    const bool alreadySet=std::isfinite(this->k(i,j));
-                    if(alreadySet) {
-                        WarningInFunction<<"Duplicated declaration of k("<<i<<','<<j<<"), previous value will be overrided."<<endl;
+                auto skipFun=[](const word&key) {
+                    if(key=="symmetry") {
+                        return true;
                     }
-                    this->k(i,j)=k;
+                    return false;
                 };
+                parseBinaryInteractionMatrix(*kDict,skipFun,this->kij,spTable,symmetry);
 
-                forAll(keys, keyIdx) {
-                    const word & speciePair=keys[keyIdx];
-                    if(speciePair=="symmetry") {
-                        continue;
-                    }
-                    word sp0, sp1;
-                    const word err=parseBinarySpeciePair(speciePair,sp0,sp1);
-                    if(not err.empty()) {
-                        FatalErrorInFunction<<"Invalid binary interaction table: "<<err<<endl;
-                        ::Foam::abort(::Foam::FatalError);
-                    }
-                    const label idxSp0=spTable[sp0];
-                    const label idxSp1=spTable[sp1];
-
-                    const scalar k=kDict->template lookup<scalar>(speciePair);
-                    set_k_ij(idxSp0,idxSp1,k);
-                    if(symmetry) {
-                        set_k_ij(idxSp1,idxSp0,k);
-                    }
-                }
-                for(scalar& k:this->kij) {
-                    if(not std::isfinite(k)) {
-                        k=0;
-                    }
-                }
-
-                Info<<"Binary interaction coefficient table for PR equation: k="<<this->kij.asList()<<endl;
+                Info<<"Binary interaction coefficient table for PR equationOfState: \nk="<<this->kij.asList()<<endl;
             }
 
             inline scalar &k(label i, label j)& {

@@ -7,8 +7,10 @@
 
 #include "autoPtr.H"
 #include "mathematicalConstants.H"
+#include "speciesTable.H"
 #include <cassert>
 #include <type_traits>
+#include <functional>
 
 namespace Foam {
 
@@ -117,6 +119,10 @@ namespace Foam {
     };
 
     word parseBinarySpeciePair(const word&str, word&sp0, word&sp1);
+
+    void parseBinaryInteractionMatrix(const dictionary&coeffDict, const std::function<bool(const word&)> & skipKey,
+                                      flatMatrix& mat, const speciesTable&spTable,
+                                      bool symmetry);
 }
 
 #endif // CUBICEOS_H

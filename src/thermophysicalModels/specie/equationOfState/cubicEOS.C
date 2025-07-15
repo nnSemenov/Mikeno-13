@@ -2,6 +2,7 @@
 // Created by joseph on 25-7-15.
 //
 #include "cubicEOS.H"
+#include "dictionary.H"
 
 using Foam::scalar;
 using Foam::word;
@@ -59,4 +60,49 @@ word Foam::parseBinarySpeciePair(const word&str, word&sp0, word&sp1) {
     sp0=std::string{str.data(),str.data()+comma_idx};
     sp1=std::string{str.begin()+comma_idx+1,str.end()};
     return "";
+}
+
+void Foam::parseBinaryInteractionMatrix(const dictionary&kDict,
+                                        const std::function<bool(const word&)> & skipKey,
+                                        flatMatrix& mat,
+                                        const speciesTable&spTable,
+                                        bool symmetry) {
+
+    for(scalar &k:mat) {
+        k=std::nan("");
+    }
+
+    auto set_k_ij=[&mat](label i, label j, scalar k) noexcept  {
+            const bool alreadySet=std::isfinite(mat(i,j));
+            if(alreadySet) {
+                WarningInFunction<<"Duplicated declaration of k("<<i<<','<<j<<"), previous value will be covered."<<endl;
+            }
+            mat(i,j)=k;
+    };
+    const auto keys = kDict.keys(true);
+    forAll(keys, keyIdx) {
+        const word & speciePair=keys[keyIdx];
+        if(skipKey(speciePair)) {
+            continue;
+        }
+        word sp0, sp1;
+        const word err=parseBinarySpeciePair(speciePair,sp0,sp1);
+        if(not err.empty()) {
+            FatalErrorInFunction<<"Invalid binary interaction table: "<<err<<endl;
+            ::Foam::abort(::Foam::FatalError);
+        }
+        const label idxSp0=spTable[sp0];
+        const label idxSp1=spTable[sp1];
+
+        const scalar k=kDict.template lookup<scalar>(speciePair);
+        set_k_ij(idxSp0,idxSp1,k);
+        if(symmetry) {
+            set_k_ij(idxSp1,idxSp0,k);
+        }
+    }
+    for(scalar& k:mat) {
+        if(not std::isfinite(k)) {
+            k=0;
+        }
+    }
 }
