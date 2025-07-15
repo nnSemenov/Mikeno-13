@@ -3,6 +3,8 @@ specie/specie.C
 reaction/specieCoeffs/specieCoeffs.C
 reaction/reaction/reaction.C
 
+equationOfState/cubicEOS.C
+
 thermophysicalFunctions/integratedNonUniformTable1/integratedNonUniformTable1.C
 thermophysicalFunctions/APIdiffCoef/APIdiffCoef.C
 thermophysicalFunctions/binaryDiffusionCoefficient/binaryDiffusionCoefficient.C

@@ -39,6 +39,7 @@ mixture
     multicomponentMixture
     valueMulticomponentMixture
     coefficientWilkeMulticomponentMixture
+    realGasMulticomponentMixture
 );
 
 mixtureRenamed
