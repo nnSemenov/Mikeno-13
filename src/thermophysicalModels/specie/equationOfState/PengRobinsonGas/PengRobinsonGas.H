@@ -254,9 +254,8 @@ namespace Foam {
         // Constructors
 
         //- Construct from components
-        inline PengRobinsonGas
-                (
-                        const Specie &sp
+        inline PengRobinsonGas(
+                    const Specie &sp
                 );
 
         //- Construct from name and dictionary
@@ -357,6 +356,63 @@ namespace Foam {
         //- Return volumetric coefficient of thermal expansion [1/T]
         inline scalar alphav(const scalar p, const scalar T) const{
             return this->core(p,T).alphav(p,T,this->W());
+        }
+
+        // mixing
+
+        struct interactionCoefficient {
+
+        };
+
+        template<class getCoreFun, class getXiFun, class getInteractionCoeffFun>
+        static inline EOSCore mixingRule3(label nSpecie,
+                                         getCoreFun &coreFun,
+                                         getXiFun &specieMoleFracFun,
+                                         getInteractionCoeffFun &kijFun) {
+            scalar aSum=0;
+            scalar da_dT_sum=0;
+            scalar d2a_dT2_sum=0;
+            scalar bSum=0;
+            for(label i=0;i<nSpecie;i++) {
+                const scalar Xi=specieMoleFracFun(i);
+                const EOSCore iCore=coreFun(i);
+
+                bSum+=Xi*iCore.b;
+
+                for(label j=0;j<nSpecie;j++) {
+                    const scalar Xj=specieMoleFracFun(j);
+                    const EOSCore jCore=coreFun(j);
+                    const scalar kij=kijFun(i,j);
+                    const scalar sqrt_aiaj=sqrt(iCore.a * jCore.a);
+                    const scalar ddT_aiaj = iCore.a*jCore.da_dT + jCore.a*iCore.da_dT;
+                    aSum += Xi*Xj*(1-kij)*sqrt_aiaj ;
+
+                    // compute da/dT
+                    const scalar ddT_sqrt_aiaj=1/(2*sqrt_aiaj)*ddT_aiaj;
+                    da_dT_sum+= Xi*Xj*(1-kij) * ddT_sqrt_aiaj;
+
+                    // compute d2a/dT2
+                    const scalar d2_dT2_sqrt_aiaj = 1/(4*iCore.a * jCore.a) * (
+                            2*sqrt_aiaj*(iCore.a *jCore.dd2a_dT2 + 2*iCore.da_dT*jCore.da_dT + jCore.a*iCore.dd2a_dT2)
+                            - ddT_aiaj * ddT_sqrt_aiaj
+                            );
+                    d2a_dT2_sum += Xi*Xj*(1-kij) *d2_dT2_sqrt_aiaj;
+                }
+            }
+            return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum};
+        }
+
+        // Ignore interaction coeff, k_ij=0
+        template<class getCoreFun, class getXiFun>
+        static inline EOSCore mixingRule(label nSpecie,
+                                         getCoreFun &coreFun,
+                                         getXiFun &specieMoleFracFun) {
+            auto kijFun=[](label, label)->scalar { return 0;};
+            return mixingRule3(nSpecie,
+                               coreFun,
+                               specieMoleFracFun,
+                               kijFun
+            );
         }
 
 

@@ -172,20 +172,6 @@ public:
             const Specie &sp
        );
 
-    template<class getRawCoeffFun, class getXiFun>
-    static inline EOSCore mixingRule(label nSpecie, getRawCoeffFun &rawCoeffFun, getXiFun &specieMoleFracFun) {
-//        return EOSCore{mixingRuleRK(nSpecie, rawCoeffFun, specieMoleFracFun)};
-        scalar sqrt_a_sum = 0;
-        scalar bSum = 0;
-        for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
-            const EOSCore core_i = rawCoeffFun(spIdx);
-            const scalar Xi = specieMoleFracFun(spIdx);
-            sqrt_a_sum += Xi * sqrt(core_i.a);
-            bSum += Xi * core_i.b;
-        }
-        return EOSCore{sqr(sqrt_a_sum), bSum};
-    }
-
     RedlichKwongGas(const word&name, const dictionary&dict);
 
     inline RedlichKwongGas(const word&name, const RedlichKwongGas&);
@@ -272,6 +258,20 @@ public:
         return this->core(p,T).alphav(p,T,this->W());
     }
 
+
+    template<class getRawCoeffFun, class getXiFun>
+    static inline EOSCore mixingRule(label nSpecie, getRawCoeffFun &rawCoeffFun, getXiFun &specieMoleFracFun) {
+//        return EOSCore{mixingRuleRK(nSpecie, rawCoeffFun, specieMoleFracFun)};
+        scalar sqrt_a_sum = 0;
+        scalar bSum = 0;
+        for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
+            const EOSCore core_i = rawCoeffFun(spIdx);
+            const scalar Xi = specieMoleFracFun(spIdx);
+            sqrt_a_sum += Xi * sqrt(core_i.a);
+            bSum += Xi * core_i.b;
+        }
+        return EOSCore{sqr(sqrt_a_sum), bSum};
+    }
     // IO
 
     //- Write to Ostream
