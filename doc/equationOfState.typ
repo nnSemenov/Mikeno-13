@@ -38,12 +38,12 @@ Fixed volume:
 $
 C_V^R/R & = T/R integral_infinity^V ((partial^2 p)/(partial T^2))_V dif V \
         & = - (dif^2 a)/(dif T^2) dot T/R integral_infinity^V (dif V)/(V(V+b)+b(V-b)) \
-        & = - (dif^2 a)/(dif T^2) dot (p B)/(2sqrt(2) R^2) ln((Z-(sqrt(2)-1)B)/(Z+(sqrt(2)+1)B))
+        & = - (dif^2 a)/(dif T^2) dot (p)/(2sqrt(2) R^2 B) ln((Z-(sqrt(2)-1)B)/(Z+(sqrt(2)+1)B))
 $
 Fixed pressure:
 $
 (C_p^R-C_V^R)/R & = -1 -T/R ((partial p)/(partial T))_V^2/((partial p)/(partial V))_T \
-                & = -1 -T/R (R/(V-b)-(dif a)/(dif T) 1/(V(V+b)+b(V-b)))^2/((2a(V+b))/[V(V+b)+b(V-b)]^2 - (R T)/(V-b)^2 )
+                & = -1 -T/R (R/(V-b)-(dif a)/(dif T) 1/(V(V+b)+b(V-b)))^2/((a(V+b))/[V(V+b)+b(V-b)]^2 - (R T)/(V-b)^2 )
 $
 
 

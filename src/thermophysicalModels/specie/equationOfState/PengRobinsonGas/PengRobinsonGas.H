@@ -64,6 +64,7 @@ SourceFiles
 #include "autoPtr.H"
 #include "speciesTable.H"
 #include "../equationOfState/cubicEOS.H"
+#include <cassert>
 #include <cmath>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -139,7 +140,9 @@ namespace Foam {
                 const scalar a2 = B-1;
                 const scalar a1=A -2*B -3*sqr(B);
                 const scalar a0 = pow3(B) + sqr(B)-A*B;
-                return solveCubicEquation(a2,a1,a0);
+                const scalar Z = solveCubicEquation(a2,a1,a0);
+                assert(Z>B);
+                return Z;
             }
 
             inline scalar Z(scalar p, scalar T) const {
@@ -159,14 +162,11 @@ namespace Foam {
                 const scalar Z=this->Z(AB);
 
                 const scalar log_part = log(
-                        (Z-(sqr(2.0)-1)*B)
-                        /(Z+(sqr(2.0)+1)*B)
+                            (Z-(sqrt(2.0)-1)*B)
+                            /(Z+(sqrt(2.0)+1)*B)
                         );
                 const scalar aT_part = a - T*this->da_dT;
-                const scalar e_R_dimless = 1/(2* sqr(2.0)*b*RR*T)*aT_part*log_part;
-//                const scalar AT_part = A- sqr(RR)* pow3(T)/p * this->da_dT;
-//
-//                const scalar e_R_dimless = 1/(2* sqr(2.0)*B) * AT_part*log_part;
+                const scalar e_R_dimless = 1/(2* sqrt(2.0)*b*RR*T)*aT_part*log_part;
                 const scalar h_R_dimless = Z-1 + e_R_dimless;
                 return Foam::residualEnergy{
                         T * this->R(W) * h_R_dimless,
@@ -181,23 +181,23 @@ namespace Foam {
                 const scalar Z=this->Z(AB);
 
                 const scalar log_part = log(
-                        (Z-(sqr(2.0)-1)*B)
-                        /(Z+(sqr(2.0)+1)*B)
+                        (Z-(sqrt(2.0)-1)*B)
+                        /(Z+(sqrt(2.0)+1)*B)
                 );
-                const scalar pB_part = p*B/(2* sqr(2.0)* sqr(RR));
+                const scalar V = Z*RR*T/p;
+                const scalar VVBbbVb=V*(V+b)+b*(V-b);
+                const scalar pB_part = p/(2*sqrt(2.0)*sqr(RR)*B);
 
                 const scalar Cv_dimless = -this->dd2a_dT2*pB_part*log_part;
 
                 // compute CpMCv
                 const scalar CpMCv_dimless = [=](){
-                    const scalar V = Z*RR*T/p;
-                    const scalar VVBbbVb=V*(V+b)+b*(V-b);
                     const scalar numerator = sqr(
                         RR/(V-b)
                         - da_dT/VVBbbVb
                     );
                     const scalar denominator =
-                            2*a*(V+b)/sqr(VVBbbVb) - RR*T/ sqr(V-b);
+                            a*(V+b)/sqr(VVBbbVb) - RR*T/ sqr(V-b);
                     return -1 - T/RR * numerator/denominator;
                 }();
                 const scalar Cp_dimless = Cv_dimless+CpMCv_dimless;
@@ -292,7 +292,7 @@ namespace Foam {
 
             const scalar da_dT = -a_c*kappa* sqrt(alpha/(T*Tc));
             const scalar d2a_dT2 =
-                    a_c*kappa*sqrtAlpha/(2* sqr(Tc)*Tr*sqr(Tr))
+                    a_c*kappa*sqrtAlpha/(2* sqr(Tc)*Tr*sqrt(Tr))
                     + 1/(2*alpha)*da_dT;
 
             return {a,b,da_dT,d2a_dT2};
