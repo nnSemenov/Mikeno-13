@@ -14,9 +14,8 @@ thermoType {
     mixture pureMixture;
     transport const;
     thermo hIcoTabulated;
-    // equationOfState perfectGas;
-    //equationOfState PengRobinsonGas;
-    equationOfState RedlichKwongGas;
+    equationOfState PengRobinsonGas;
+    //equationOfState RedlichKwongGas;
     specie specie;
     energy sensibleEnthalpy;
 }
