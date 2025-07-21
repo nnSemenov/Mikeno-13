@@ -61,7 +61,7 @@ $
 (dif a)/(dif T) = a_c (dif alpha)/(dif T)=-a_c kappa sqrt(alpha/(T T_c)) \
 
 
-(dif^2 a)/(dif T^2)=a_c (dif^2 alpha)/(dif T^2)=(a_c kappa sqrt(alpha))/(2 T_c^2 T_r^1.5) + 1/(2 alpha)(dif a)/(dif T)
+(dif^2 a)/(dif T^2)=a_c (dif^2 alpha)/(dif T^2)=a_c (kappa (alpha-T (dif a)/(dif T)))/(2 T sqrt(T T_c alpha))
 $
 
 Mixture:

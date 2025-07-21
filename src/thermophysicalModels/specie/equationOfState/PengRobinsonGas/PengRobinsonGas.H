@@ -282,18 +282,18 @@ namespace Foam {
             const auto Tc = this->Tc();
             const auto Pc = this->Pc();
             const scalar omega=this->omega_;
-            const scalar Tr = T/Tc;
+            // const scalar Tr = T/Tc;
             const scalar a_c = 0.457235* sqr(RR*Tc)/Pc;
             const scalar kappa = 0.37464+1.54226*omega - 0.26992*sqr(omega);
-            const scalar sqrtAlpha = 1+kappa*(1-sqrt(Tr));
+            const scalar sqrtAlpha = 1+kappa*(1-sqrt(T/Tc));
             const scalar alpha= sqr(sqrtAlpha);
+            const scalar dalpha_dT=-kappa* sqrt(alpha/(T*Tc));
+            const scalar d2alpha_dT2 = kappa *(alpha-T*dalpha_dT)/(2*T*sqrt(T*Tc*alpha));
+
             const scalar a = a_c*alpha;
             const scalar b =0.077796*RR*Tc/Pc;
-
-            const scalar da_dT = -a_c*kappa* sqrt(alpha/(T*Tc));
-            const scalar d2a_dT2 =
-                    a_c*kappa*sqrtAlpha/(2* sqr(Tc)*Tr*sqrt(Tr))
-                    + 1/(2*alpha)*da_dT;
+            const scalar da_dT = a_c*dalpha_dT;
+            const scalar d2a_dT2 = a_c*d2alpha_dT2;
 
             return {a,b,da_dT,d2a_dT2};
         }
