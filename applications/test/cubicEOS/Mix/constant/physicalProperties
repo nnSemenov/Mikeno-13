@@ -14,31 +14,31 @@ thermoType {
     mixture realGasMulticomponentMixture;
     transport const;
     thermo hIcoTabulated;
-    equationOfState PengRobinsonGas;
-    //equationOfState RedlichKwongGas;
+    //equationOfState PengRobinsonGas;
+    equationOfState RedlichKwongGas;
     specie specie;
     energy sensibleEnthalpy;
 }
 
-specie (
-    H2
+species (
+    // H2
     NH3
     H2O
-    CH4
-    N2
+    // CH4
+    // N2
 );
 
-defaultSpecie N2;
+defaultSpecie H2O;
 
 mixingRule {
     binaryInteraction {
         k {
             symmetry yes;
-            "H2:N2"    0.103;
-            "N2:NH3"   0.2193;
+            // "H2:N2"    0.103;
+            // "N2:NH3"   0.2193;
             "NH3:H2O" -0.2589;
-            "H2:CH4"   0.0156;
-            "N2:CH4"   0.0311;
+            // "H2:CH4"   0.0156;
+            // "N2:CH4"   0.0311;
         }
     }
 }
