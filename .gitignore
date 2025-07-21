@@ -90,3 +90,5 @@ doc/Doxygen/DTAGS
 
 # IDE config files
 .idea
+.vscode
+.vs
