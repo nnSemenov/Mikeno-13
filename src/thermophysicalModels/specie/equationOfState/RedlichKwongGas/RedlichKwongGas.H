@@ -192,8 +192,8 @@ public:
         const auto Tc_ = this->Tc_;
 //    const auto Vc_=this->Vc_;
         const auto Pc_ = this->Pc_;
-        const scalar a = 0.42748 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
-        const scalar b = 0.08664 * RR * Tc_ / Pc_;
+        const scalar a = 0.42748025 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
+        const scalar b = 0.08664035 * RR * Tc_ / Pc_;
         return {a, b};
     }
 
@@ -266,7 +266,7 @@ public:
         template<class getCoreFun, class getXiFun>
         inline EOSCore mix(label nSpecie,
                            getCoreFun &coreFun,
-                           getXiFun &specieMoleFracFun)const {
+                           getXiFun &specieMoleFracFun) const {
             scalar sqrt_a_sum = 0;
             scalar bSum = 0;
             for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
