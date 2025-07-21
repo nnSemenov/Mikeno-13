@@ -14,8 +14,8 @@ thermoType {
     mixture realGasMulticomponentMixture;
     transport const;
     thermo hIcoTabulated;
-    //equationOfState PengRobinsonGas;
-    equationOfState RedlichKwongGas;
+    equationOfState PengRobinsonGas;
+    // equationOfState RedlichKwongGas;
     specie specie;
     energy sensibleEnthalpy;
 }
