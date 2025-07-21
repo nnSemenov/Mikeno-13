@@ -422,19 +422,24 @@ namespace Foam {
                         const scalar Xj=specieMoleFracFun(j);
                         const EOSCore jCore=coreFun(j);
                         const scalar kij=this->k(i,j);
-                        const scalar sqrt_aiaj=sqrt(iCore.a * jCore.a);
-                        const scalar ddT_aiaj = iCore.a*jCore.da_dT + jCore.a*iCore.da_dT;
+                        const scalar ai=iCore.a;
+                        const scalar aj=jCore.a;
+                        const scalar sqrt_aiaj=sqrt(ai * aj);
+                        const scalar ddT_aiaj = ai*jCore.da_dT + aj*iCore.da_dT;
                         aSum += Xi*Xj*(1-kij)*sqrt_aiaj ;
 
                         // compute da/dT
                         const scalar ddT_sqrt_aiaj=1/(2*sqrt_aiaj)*ddT_aiaj;
                         da_dT_sum+= Xi*Xj*(1-kij) * ddT_sqrt_aiaj;
-
+                        
                         // compute d2a/dT2
-                        const scalar d2_dT2_sqrt_aiaj = 1/(4*iCore.a * jCore.a) * (
-                                2*sqrt_aiaj*(iCore.a *jCore.dd2a_dT2 + 2*iCore.da_dT*jCore.da_dT + jCore.a*iCore.dd2a_dT2)
-                                - ddT_aiaj * ddT_sqrt_aiaj
-                        );
+                        const scalar d2_dT2_sqrt_aiaj = 
+                            1/(4*ai*aj * sqrt_aiaj) * (
+                                2*sqr(ai)*aj *jCore.dd2a_dT2
+                                - sqr(ai*jCore.da_dT)
+                                + 2*ai *iCore.da_dT*aj*jCore.da_dT
+                                + sqr(aj) * (2*ai *iCore.dd2a_dT2 - sqr(iCore.da_dT))
+                            );
                         d2a_dT2_sum += Xi*Xj*(1-kij) *d2_dT2_sqrt_aiaj;
                     }
                 }

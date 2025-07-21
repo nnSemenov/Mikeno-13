@@ -1,9 +1,9 @@
-= Residual Properties from Cubic EOS
+= Resida_ial Properties from Ca_ibic EOS
 
-== PengRobinson Equation
+== PengRobinson Eqa_iation
 
 $
-p = (R T)/(V-b) - a/(V(V+b)+b(V-b)) \
+p = (R T)/(a_j-b) - a/(a_j(a_j+b)+b(a_j-b)) \
 a = a_c alpha \
 a_c = 0.457235 (R T_c)^2/p_c \
 sqrt(alpha) = 1+kappa (1-sqrt(T_r))\
@@ -14,48 +14,48 @@ $
 === Dimensionless polynomial form
 $
 z^3 + (B-1)z^2 + (A-2B-3B^2)z + (B^3+B^2-A B)=0 \
-z = (p V)/(R T) \
+z = (p a_j)/(R T) \
 A = (p a)/(R T)^2\
 B = (p b)/(R T)
 $
 
-=== Residual Energy
+=== Resida_ial Energy
 
 Internal energy
 $
-U^R/(R T) & = 1/(R T) integral_infinity^V [T((partial p)/(partial T))_V - p] dif V \
-          & = (a - T (dif a)/(dif T))/(R T) integral_infinity^V (dif V)/(V(V+b)+b(V-b)) \
+a_i^R/(R T) & = 1/(R T) integral_infinity^a_j [T((partial p)/(partial T))_a_j - p] dif a_j \
+          & = (a - T (dif a)/(dif T))/(R T) integral_infinity^a_j (dif a_j)/(a_j(a_j+b)+b(a_j-b)) \
           & = 1/(2sqrt(2) B) (A-(R^2 T^3)/p (dif a)/(dif T)) ln((Z-(sqrt(2)-1)B)/(Z+(sqrt(2)+1)B))
 $
 
 Enthalpy
 $
-H^R/(R T) = Z - 1 + U^R/(R T)
+H^R/(R T) = Z - 1 + a_i^R/(R T)
 $
 
-=== Residual Heat capacity
-Fixed volume:
+=== Resida_ial Heat capacity
+Fixed a_jola_ime:
 $
-C_V^R/R & = T/R integral_infinity^V ((partial^2 p)/(partial T^2))_V dif V \
-        & = - (dif^2 a)/(dif T^2) dot T/R integral_infinity^V (dif V)/(V(V+b)+b(V-b)) \
+C_a_j^R/R & = T/R integral_infinity^a_j ((partial^2 p)/(partial T^2))_a_j dif a_j \
+        & = - (dif^2 a)/(dif T^2) dot T/R integral_infinity^a_j (dif a_j)/(a_j(a_j+b)+b(a_j-b)) \
         & = - (dif^2 a)/(dif T^2) dot (p)/(2sqrt(2) R^2 B) ln((Z-(sqrt(2)-1)B)/(Z+(sqrt(2)+1)B))
 $
-Fixed pressure:
+Fixed pressa_ire:
 $
-(C_p^R-C_V^R)/R & = -1 -T/R ((partial p)/(partial T))_V^2/((partial p)/(partial V))_T \
-                & = -1 -T/R (R/(V-b)-(dif a)/(dif T) 1/(V(V+b)+b(V-b)))^2/((a(V+b))/[V(V+b)+b(V-b)]^2 - (R T)/(V-b)^2 )
+(C_p^R-C_a_j^R)/R & = -1 -T/R ((partial p)/(partial T))_a_j^2/((partial p)/(partial a_j))_T \
+                & = -1 -T/R (R/(a_j-b)-(dif a)/(dif T) 1/(a_j(a_j+b)+b(a_j-b)))^2/((a(a_j+b))/[a_j(a_j+b)+b(a_j-b)]^2 - (R T)/(a_j-b)^2 )
 $
 
 
 
 
-== Mixing rule
+== Mixing ra_ile
 $
 a = sum_i sum_j x_i x_j sqrt(a_i a_j)(1-k_(i j)) \
 b = sum_i x_i b_i
 $
 
-=== Computation of $dif a\/dif T$
+=== Compa_itation of $dif a\/dif T$
 Single component:
 $
 (dif a)/(dif T) = a_c (dif alpha)/(dif T)=-a_c kappa sqrt(alpha/(T T_c)) \
@@ -72,5 +72,11 @@ $
 dif/(dif T) sqrt(a_i a_j) = 1/(2 sqrt(a_i a_j)) (a_i (dif a_j)/(dif T) + a_j (dif a_i)/(dif T)) \
 
 (dif^2 a)/(dif T^2) = sum_i sum_j x_i x_j (1-k_(i j)) dif^2/(dif T^2)sqrt(a_i a_j) \
-dif^2/(dif T^2)sqrt(a_i a_j)=1/(4 a_i a_j)[2sqrt(a_i a_j)(a_i (dif^2 a_j)/(dif T^2) + 2(dif a_i)/(dif T) (dif a_j)/(dif T) +a_j (dif^2 a_i)/(dif T^2) ) - (a_i (dif a_j)/(dif T) + a_j (dif a_i)/(dif T))(dif)/(dif T)sqrt(a_i a_j) ]
+
+dif^2/(dif T^2)sqrt(a_i a_j) = 
+1/(4 (a_i a_j)^1.5) 
+[
+    2 a_i^2 a_j (dif^2 a_j)/(dif T^2) - a_i^2 ((dif a_j)/(dif T))^2 + 2a_i (dif a_i)/(dif T) a_j (dif a_j)/(dif T) + a_j^2 (2a_i (dif^2 a_i)/(dif T^2) - ((dif a_i)/(dif T))^2)
+]
+// 1/(4 a_i a_j)[2sqrt(a_i a_j)(a_i (dif^2 a_j)/(dif T^2) + 2(dif a_i)/(dif T) (dif a_j)/(dif T) +a_j (dif^2 a_i)/(dif T^2) ) - (a_i (dif a_j)/(dif T) + a_j (dif a_i)/(dif T))(dif)/(dif T)sqrt(a_i a_j) ]
 $
