@@ -85,6 +85,16 @@ public:
             {
                 return thermo.Cp(p, T);
             }
+            // Ideal Heat capacity at constant pressure [J/kg/K]
+            scalar ideal_Cpv
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const
+            {
+                return thermo.ideal_Cp(p, T);
+            }
 
             // Sensible enthalpy [J/kg]
             scalar he
@@ -95,6 +105,15 @@ public:
             ) const
             {
                 return thermo.hs(p, T);
+            }
+
+            scalar ideal_he
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const {
+                return thermo.ideal_hs(p, T);
             }
 
             //- Temperature from sensible enthalpy

@@ -1,3 +1,12 @@
+inline scalar ideal_Cv
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return ideal_Cp(p, T) - this->R();
+}
+
 inline scalar Cv
 (
     const scalar p,
