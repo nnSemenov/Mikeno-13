@@ -178,21 +178,63 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::Func \
     return ideal + residual; \
 }
 
-thermoMixtureFunction(Cp)
-thermoMixtureFunction(Cv)
-thermoMixtureFunction(hs)
-thermoMixtureFunction(ha)
+// thermoMixtureFunction(Cp)
+// thermoMixtureFunction(Cv)
+// thermoMixtureFunction(hs)
+// thermoMixtureFunction(ha)
 
-// realThermoMixtureFunction(Cp, Cp)
-// realThermoMixtureFunction(Cv, Cv)
-// realThermoMixtureFunction(hs, h)
-// realThermoMixtureFunction(ha, h)
+realThermoMixtureFunction(Cp, Cp)
+realThermoMixtureFunction(Cv, Cv)
+realThermoMixtureFunction(hs, h)
+realThermoMixtureFunction(ha, h)
+realThermoMixtureFunction(es, e)
+realThermoMixtureFunction(ea, e)
 
-thermoMixtureFunction(Cpv)
+// Cp or Cv
+// thermoMixtureFunction(Cpv)
 
-thermoMixtureFunction(gamma)
+template<class ThermoType> 
+Foam::scalar 
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::Cpv(
+    scalar p, 
+    scalar T
+) const {
+    if (ThermoType::enthalpy()) { // can be constexpr on C++17
+        return this->Cp(p, T);
+    }else {
+        return this->Cv(p, T);
+    }
+}
+// hs, ha, es or ea
+template<class ThermoType> 
+Foam::scalar 
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::he(
+    scalar p,
+    scalar T
+) const {
+    constexpr bool absolute=ThermoType::absolute();
+    if (ThermoType::enthalpy()) { // can be constexpr on C++17
+        if(absolute) {
+            return this->ha(p, T);
+        }else {
+            return this->hs(p, T);
+        }
+    }else {
+        if(absolute) {
+            return this->ea(p, T);
+        }else {
+            return this->es(p, T);
+        }
+    }
+}
 
-thermoMixtureFunction(he)
+
+template<class ThermoType> 
+Foam::scalar 
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::gamma (
+    scalar p, scalar T ) const {
+        return this->Cp(p, T)/this->Cv(p, T);
+}
 
 
 template<class ThermoType>

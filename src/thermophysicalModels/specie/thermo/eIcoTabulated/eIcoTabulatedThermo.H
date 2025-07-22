@@ -136,6 +136,20 @@ public:
         inline scalar limit(const scalar) const;
 
 
+        // Fundamental ideal properties
+        
+            //- Ideal Heat capacity at constant volume [J/kg/K]
+            inline scalar ideal_Cv(const scalar p, const scalar T) const;
+
+            //- Ideal Sensible internal energy [J/kg]
+            inline scalar ideal_es(const scalar p, const scalar T) const;
+
+            //- Ideal Absolute internal energy [J/kg]
+            inline scalar ideal_ea(const scalar p, const scalar T) const;
+
+            //- Ideal Entropy [J/kg/K]
+            inline scalar ideal_s(const scalar p, const scalar T) const;
+
         // Fundamental properties
 
             //- Heat capacity at constant volume [J/kg/K]

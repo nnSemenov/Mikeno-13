@@ -246,7 +246,8 @@ namespace Foam {
 
             //- Return (Cp - Cv) [J/(kg K]
             inline scalar CpMCv(scalar p, scalar T, scalar W) const{
-                return this->residualSpecificHeat(p,T,W).Cp_R_minus_Cv_R;
+                // CpMCv should return Cp-Cv of real gas, instead of CpR-CvR.
+                return this->residualSpecificHeat(p,T,W).Cp_R_minus_Cv_R + this->R(W);
             }
 
             inline scalar alphav(const scalar p, const scalar T) const;

@@ -54,6 +54,13 @@ inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::limit
     return T;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_Cp(
+    const scalar p, 
+    const scalar T
+) const {
+    return Cp_.value(p, T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::Cp
@@ -62,9 +69,16 @@ inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::Cp
     const scalar T
 ) const
 {
-    return Cp_.value(p, T);
+    return ideal_Cp(p, T) + EquationOfState::Cp(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_Cv(
+    const scalar p, 
+    const scalar T
+) const {
+    return Cv_.value(p, T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::Cv
@@ -73,9 +87,16 @@ inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::Cv
     const scalar T
 ) const
 {
-    return Cv_.value(p, T);
+    return ideal_Cv(p, T) + EquationOfState::Cv(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_hs(
+    const scalar p, 
+    const scalar T
+) const {
+    return hs_.value(p, T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::hs
@@ -84,9 +105,16 @@ inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::hs
     const scalar T
 ) const
 {
-    return hs_.value(p, T);
+    return ideal_hs(p, T) + EquationOfState::h(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_ha(
+    const scalar p, 
+    const scalar T
+) const {
+    return ideal_hs(p, T) + hf_;
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ha
@@ -106,6 +134,13 @@ const
     return hf_;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_es(
+    const scalar p, 
+    const scalar T
+) const {
+    return ideal_hs(p, T) - p/EquationOfState::rho(p, T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::es
@@ -117,6 +152,13 @@ inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::es
     return hs(p, T) - p/EquationOfState::rho(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_ea(
+    const scalar p, 
+    const scalar T
+) const {
+    return ideal_ha(p, T) - p/EquationOfState::rho(p, T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ea
@@ -128,6 +170,14 @@ inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ea
     return ha(p, T) - p/EquationOfState::rho(p, T);
 }
 
+
+template<class EquationOfState>
+inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::ideal_s(
+    const scalar p, 
+    const scalar T
+) const {
+    NotImplemented;
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hTabulatedThermo<EquationOfState>::s
