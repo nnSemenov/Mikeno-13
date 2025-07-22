@@ -166,6 +166,20 @@ public:
         //- Limit the temperature to be in the range Tlow_ to Thigh_
         inline scalar limit(const scalar T) const;
 
+        // Fundamental ideal properties
+
+            // Ideal Heat capacity at constant pressure [J/kg/K]
+            inline scalar ideal_Cp(const scalar p, const scalar T) const;
+
+            // Ideal Sensible enthalpy [J/kg]
+            inline scalar ideal_hs(const scalar p, const scalar T) const;
+
+            // Ideal Absolute enthalpy [J/kg]
+            inline scalar ideal_ha(const scalar p, const scalar T) const;
+
+            // Ideal Entropy [J/kg/K]
+            inline scalar ideal_s(const scalar p, const scalar T) const;
+
 
         // Fundamental properties
 
