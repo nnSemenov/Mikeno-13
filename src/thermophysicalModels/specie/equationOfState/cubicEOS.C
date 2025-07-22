@@ -4,6 +4,8 @@
 #include "cubicEOS.H"
 #include "dictionary.H"
 
+#include <limits>
+
 using Foam::scalar;
 using Foam::word;
 
@@ -30,12 +32,12 @@ Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0) {
     } else {
         // One root is real
         const scalar D05 = sqrt(D);
-        const scalar S = pow(Rl + D05, 1.0 / 3.0);
+        const scalar S = cbrt(Rl + D05);
         scalar Tl = 0;
         if (D05 > Rl) {
-            Tl = -pow(mag(Rl - D05), 1.0 / 3.0);
+            Tl = -cbrt(mag(Rl - D05));
         } else {
-            Tl = pow(Rl - D05, 1.0 / 3.0);
+            Tl = cbrt(Rl - D05);
         }
 
         root = S + Tl - a2 / 3.0;
@@ -69,7 +71,7 @@ void Foam::parseBinaryInteractionMatrix(const dictionary&kDict,
                                         bool symmetry) {
 
     for(scalar &k:mat) {
-        k=std::nan("");
+        k=std::numeric_limits<scalar>::signaling_NaN();
     }
 
     auto set_k_ij=[&mat](label i, label j, scalar k) noexcept  {

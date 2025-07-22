@@ -1,0 +1,47 @@
+FoamFile {
+   format ascii;
+   class dictonary;
+   location "system";
+   object "blockMeshDict";
+   version 2.0;
+}
+
+scale 1;
+
+N_cells 6400;
+
+vertices (
+   (0 0 0)
+   (1 0 0)
+   (1 1 0)
+   (0 1 0)
+
+   (0 0 $N_cells)
+   (1 0 $N_cells)
+   (1 1 $N_cells)
+   (0 1 $N_cells)
+);
+
+
+blocks (
+   hex (0 1 2 3 4 5 6 7) (1 1 $N_cells) simpleGrading (1 1 1)
+);
+
+defaultPatch {
+    type empty;
+}
+
+boundary (
+   inlet {
+      type patch;
+      faces (
+         (0 1 2 3)
+      );
+   }
+   outlet {
+      type patch;
+      faces (
+         (4 5 6 7)
+      );
+   }
+);

@@ -1,0 +1,24 @@
+FoamFile {
+    format ascii;
+    class dictonary;
+    location "system";
+    object "controlDict";
+    version 2.0;
+}
+
+solver fluid;
+application foamRun;
+
+startTime 0;
+endTime   500;
+starFrom  startTime;
+stopAt    endTime;
+
+deltaT 1;
+
+writeControl runTime;
+writeInterval 10;
+
+writeFormat binary;
+timeFormat general;
+timePrecision   6;

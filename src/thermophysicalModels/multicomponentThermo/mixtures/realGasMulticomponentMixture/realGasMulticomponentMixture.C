@@ -167,13 +167,26 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::hf() const {
         return massWeighted(&ThermoType::Func, p, T);                          \
     }
 
+#define realThermoMixtureFunction(Func, eosFunc) \
+template<class ThermoType> \
+Foam::scalar \
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::Func \
+( scalar p, scalar T) const { \
+    const scalar ideal = massWeighted(&ThermoType::ideal_##Func, p, T); \
+    const auto core=this->mixedCore(p, T); \
+    const scalar residual=core.eosFunc(p, T, this->W()); \
+    return ideal + residual; \
+}
+
 thermoMixtureFunction(Cp)
-
 thermoMixtureFunction(Cv)
-
 thermoMixtureFunction(hs)
-
 thermoMixtureFunction(ha)
+
+// realThermoMixtureFunction(Cp, Cp)
+// realThermoMixtureFunction(Cv, Cv)
+// realThermoMixtureFunction(hs, h)
+// realThermoMixtureFunction(ha, h)
 
 thermoMixtureFunction(Cpv)
 

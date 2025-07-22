@@ -136,6 +136,29 @@ public:
         //- Name of Enthalpy/Internal energy
         static inline word heName();
 
+        // Fundamental ideal properties
+
+            // Ideal Heat capacity at constant pressure [J/kg/K]
+            // inline scalar ideal_Cp(const scalar p, const scalar T) const;
+
+            // Ideal Sensible enthalpy [J/kg]
+            // inline scalar ideal_hs(const scalar p, const scalar T) const;
+
+            // Ideal Absolute enthalpy [J/kg]
+            // inline scalar ideal_ha(const scalar p, const scalar T) const;
+
+            // HIdeal eat capacity at constant volume [J/kg/K]
+            // inline scalar ideal_Cv(const scalar p, const scalar T) const;
+
+            // Ideal Sensible internal energy [J/kg]
+            // inline scalar ideal_es(const scalar p, const scalar T) const;
+
+            // Ideal Absolute internal energy [J/kg]
+            // inline scalar ideal_ea(const scalar p, const scalar T) const;
+
+            // Ideal Entropy [J/kg/K]
+            // inline scalar ideal_s(const scalar p, const scalar T) const;
+
 
         // Fundamental properties
         // (These functions must be provided in derived types)
@@ -163,6 +186,12 @@ public:
 
             // Entropy [J/kg/K]
             // inline scalar s(const scalar p, const scalar T) const;
+
+            //- Heat capacity at constant pressure/volume [J/kg/K]
+            // inline scalar ideal_Cpv(const scalar p, const scalar T) const;
+
+            //- Enthalpy/Internal energy [J/kg]
+            // inline scalar ideal_he(const scalar p, const scalar T) const;
 
 
         // Derived properties

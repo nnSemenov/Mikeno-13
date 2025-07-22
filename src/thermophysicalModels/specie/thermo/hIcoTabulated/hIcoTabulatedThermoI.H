@@ -52,6 +52,15 @@ inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::limit
     return T;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::ideal_Cp
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return Cp_.value(T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::Cp
@@ -60,9 +69,19 @@ inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::Cp
     const scalar T
 ) const
 {
-    return Cp_.value(T) + EquationOfState::Cp(p, T);
+    return ideal_Cp(p, T) + EquationOfState::Cp(p, T);
 }
 
+
+template<class EquationOfState>
+inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::ideal_hs
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return Cp_.intfdT(T);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::hs
@@ -71,9 +90,19 @@ inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::hs
     const scalar T
 ) const
 {
-    return Cp_.intfdT(T) + EquationOfState::h(p, T);
+    return ideal_hs(p, T) + EquationOfState::h(p, T);
 }
 
+
+template<class EquationOfState>
+inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::ideal_ha
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return ideal_hs(p, T) + hf_;
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::ha
@@ -93,6 +122,15 @@ const
     return hf_;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::ideal_s
+(
+    const scalar p,
+    const scalar T
+) const
+{
+    return Cp_.intfByTdT(T) + sf_;
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::s
@@ -101,7 +139,7 @@ inline Foam::scalar Foam::hIcoTabulatedThermo<EquationOfState>::s
     const scalar T
 ) const
 {
-    return Cp_.intfByTdT(T) + EquationOfState::sp(p, T) + sf_;
+    return ideal_s(p, T) + EquationOfState::sp(p, T) ;
 }
 
 
