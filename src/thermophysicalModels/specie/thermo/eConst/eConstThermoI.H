@@ -80,6 +80,14 @@ inline Foam::scalar Foam::eConstThermo<EquationOfState>::limit
     return T;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::eConstThermo<EquationOfState>::eConstThermo::ideal_Cv(
+    const scalar p, 
+    const scalar T
+) const {
+    return Cv_;
+}
+
 
 template<class EquationOfState>
 inline Foam::scalar Foam::eConstThermo<EquationOfState>::Cv
@@ -88,9 +96,16 @@ inline Foam::scalar Foam::eConstThermo<EquationOfState>::Cv
     const scalar T
 ) const
 {
-    return Cv_ + EquationOfState::Cv(p, T);
+    return ideal_Cv(p, T) + EquationOfState::Cv(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::eConstThermo<EquationOfState>::eConstThermo::ideal_es(
+    const scalar p, 
+    const scalar T
+) const {
+    return Cv_*(T - Tref_) + esRef_;
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::eConstThermo<EquationOfState>::es
@@ -99,9 +114,17 @@ inline Foam::scalar Foam::eConstThermo<EquationOfState>::es
     const scalar T
 ) const
 {
-    return Cv_*(T - Tref_) + esRef_ + EquationOfState::e(p, T);
+    return ideal_es(p, T) + EquationOfState::e(p, T);
 }
 
+
+template<class EquationOfState>
+inline Foam::scalar Foam::eConstThermo<EquationOfState>::eConstThermo::ideal_ea(
+    const scalar p, 
+    const scalar T
+) const {
+    return ideal_es(p, T) + hf();
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::eConstThermo<EquationOfState>::ea
@@ -120,6 +143,13 @@ inline Foam::scalar Foam::eConstThermo<EquationOfState>::hf() const
     return hf_;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::eConstThermo<EquationOfState>::eConstThermo::ideal_s(
+    const scalar p, 
+    const scalar T
+) const {
+    return Cp(p, T)*log(T/Tstd);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::eConstThermo<EquationOfState>::s
@@ -128,7 +158,7 @@ inline Foam::scalar Foam::eConstThermo<EquationOfState>::s
     const scalar T
 ) const
 {
-    return Cp(p, T)*log(T/Tstd) + EquationOfState::sv(p, T);
+    return ideal_s(p, T) + EquationOfState::sv(p, T);
 }
 
 
