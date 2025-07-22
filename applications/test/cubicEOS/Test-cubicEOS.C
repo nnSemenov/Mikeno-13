@@ -234,6 +234,11 @@ std::unique_ptr<pureTestData> load_data(const std::string& filename) {
         for(size_t idx=0;idx<N_data;idx++) {
             if(not(ret->rho[idx]>0) or not(ret->Cp[idx]>0)) {
                 erase_idx.emplace_back(idx);
+                continue;
+            }
+            if(ret->T[idx]>5000) {
+                erase_idx.emplace_back(idx);
+                continue;
             }
         }
     
