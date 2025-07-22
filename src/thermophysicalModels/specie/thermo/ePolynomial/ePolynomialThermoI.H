@@ -74,6 +74,13 @@ inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::limit
     return T;
 }
 
+template<class EquationOfState, int PolySize>
+inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::ideal_Cv(
+    const scalar p, 
+    const scalar T
+) const {
+    return CvCoeffs_.value(T);
+}
 
 template<class EquationOfState, int PolySize>
 inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::Cv
@@ -82,9 +89,16 @@ inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::Cv
     const scalar T
 ) const
 {
-    return CvCoeffs_.value(T) + EquationOfState::Cv(p, T);
+    return ideal_Cv(p, T) + EquationOfState::Cv(p, T);
 }
 
+template<class EquationOfState, int PolySize>
+inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::ideal_es(
+    const scalar p, 
+    const scalar T
+) const {
+    return eCoeffs_.value(T);
+}
 
 template<class EquationOfState, int PolySize>
 inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::es
@@ -93,9 +107,16 @@ inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::es
     const scalar T
 ) const
 {
-    return eCoeffs_.value(T) + EquationOfState::e(p, T);
+    return ideal_es(p, T) + EquationOfState::e(p, T);
 }
 
+template<class EquationOfState, int PolySize>
+inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::ideal_ea(
+    const scalar p, 
+    const scalar T
+) const {
+    return ideal_es(p, T) + hf();
+}
 
 template<class EquationOfState, int PolySize>
 inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::ea
@@ -115,6 +136,13 @@ const
     return hf_;
 }
 
+template<class EquationOfState, int PolySize>
+inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::ideal_s(
+    const scalar p, 
+    const scalar T
+) const {
+    return sCoeffs_.value(T);
+}
 
 template<class EquationOfState, int PolySize>
 inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::s
@@ -123,7 +151,7 @@ inline Foam::scalar Foam::ePolynomialThermo<EquationOfState, PolySize>::s
     const scalar T
 ) const
 {
-    return sCoeffs_.value(T) + EquationOfState::sv(p, T);
+    return ideal_s(p, T) + EquationOfState::sv(p, T);
 }
 
 

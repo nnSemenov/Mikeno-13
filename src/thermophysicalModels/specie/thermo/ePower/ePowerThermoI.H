@@ -101,6 +101,13 @@ inline Foam::scalar Foam::ePowerThermo<EquationOfState>::limit
     return T;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::ePowerThermo<EquationOfState>::ideal_Cv(
+    const scalar p, 
+    const scalar T
+) const {
+    return c0_*pow(T/Tref_, n0_);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::ePowerThermo<EquationOfState>::Cv
@@ -109,9 +116,16 @@ inline Foam::scalar Foam::ePowerThermo<EquationOfState>::Cv
     const scalar T
 ) const
 {
-    return c0_*pow(T/Tref_, n0_) + EquationOfState::Cv(p, T);
+    return ideal_Cv(p, T) + EquationOfState::Cv(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::ePowerThermo<EquationOfState>::ideal_es(
+    const scalar p, 
+    const scalar T
+) const {
+    return c0_*(pow(T, n0_ + 1) - pow(Tstd, n0_ + 1))/(pow(Tref_, n0_)*(n0_ + 1));
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::ePowerThermo<EquationOfState>::es
@@ -121,10 +135,17 @@ inline Foam::scalar Foam::ePowerThermo<EquationOfState>::es
 ) const
 {
     return
-        c0_*(pow(T, n0_ + 1) - pow(Tstd, n0_ + 1))/(pow(Tref_, n0_)*(n0_ + 1))
+        ideal_es(p, T)
       + EquationOfState::e(p, T);
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::ePowerThermo<EquationOfState>::ideal_ea(
+    const scalar p, 
+    const scalar T
+) const {
+    return ideal_es(p, T) + hf();
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::ePowerThermo<EquationOfState>::ea
@@ -143,6 +164,13 @@ inline Foam::scalar Foam::ePowerThermo<EquationOfState>::hf() const
     return hf_;
 }
 
+template<class EquationOfState>
+inline Foam::scalar Foam::ePowerThermo<EquationOfState>::ideal_s(
+    const scalar p, 
+    const scalar T
+) const {
+    return c0_*(pow(T, n0_) - pow(Tstd, n0_))/(pow(Tref_, n0_)*n0_);
+}
 
 template<class EquationOfState>
 inline Foam::scalar Foam::ePowerThermo<EquationOfState>::s
@@ -152,7 +180,7 @@ inline Foam::scalar Foam::ePowerThermo<EquationOfState>::s
 ) const
 {
     return
-        c0_*(pow(T, n0_) - pow(Tstd, n0_))/(pow(Tref_, n0_)*n0_)
+        ideal_s(p, T)
       + EquationOfState::sv(p, T);
 }
 
