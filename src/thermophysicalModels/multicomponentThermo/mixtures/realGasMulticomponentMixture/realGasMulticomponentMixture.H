@@ -105,6 +105,12 @@ public:
         // Enthalpy of formation [J/kg]
         scalar hf() const;
 
+        // Sensible internal energy [J/kg]
+        scalar es(const scalar p, const scalar T) const;
+
+        // Absolute internal energy [J/kg]
+        scalar ea(const scalar p, const scalar T) const;
+
 
         // Mass specific derived properties
 
