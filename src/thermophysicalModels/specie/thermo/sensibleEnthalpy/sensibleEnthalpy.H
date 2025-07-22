@@ -65,9 +65,13 @@ public:
 
         // Fundamental properties
 
-            static bool enthalpy()
+            static constexpr bool enthalpy()
             {
                 return true;
+            }
+
+            static constexpr bool absolute() {
+                return false;
             }
 
             static word energyName()

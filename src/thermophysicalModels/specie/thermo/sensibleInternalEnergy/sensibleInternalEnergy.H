@@ -66,8 +66,12 @@ public:
 
         // Fundamental properties
 
-            static bool enthalpy()
+            static constexpr bool enthalpy()
             {
+                return false;
+            }
+            
+            static constexpr bool absolute() {
                 return false;
             }
 

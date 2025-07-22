@@ -65,14 +65,27 @@ public:
 
         // Fundamental properties
 
-            static bool enthalpy()
+            static constexpr bool enthalpy()
             {
+                return true;
+            }
+            
+            static constexpr bool absolute() {
                 return true;
             }
 
             static word energyName()
             {
                 return "ha";
+            }
+
+            scalar ideal_Cpv
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const {
+                return thermo.ideal_Cp(p, T);
             }
 
             // Heat capacity at constant pressure [J/kg/K]
@@ -84,6 +97,15 @@ public:
             ) const
             {
                 return thermo.Cp(p, T);
+            }
+
+            scalar ideal_he
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const {
+                return thermo.ideal_ha(p, T);
             }
 
             // Absolute enthalpy [J/kg]
