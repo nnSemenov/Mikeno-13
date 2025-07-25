@@ -34,4 +34,4 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 1. More equation of state: Patel-Teja, Martin-Hou.
 2. Porous media model in the spirit of AnsysFluent.
    1. (OpenFOAM doesn't consider heat transfer in porous media)
-3. Remove more redundant reference member in all solve modules.
+3. Remove more redundant reference member in all solver modules.
