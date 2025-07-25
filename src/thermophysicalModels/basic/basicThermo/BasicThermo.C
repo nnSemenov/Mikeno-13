@@ -30,6 +30,7 @@ License
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
+#include <cmath>
 #include <vector>
 #include <type_traits>
 
@@ -89,6 +90,10 @@ inline auto absolutePressureVol(const vF &p, const Foam::dimensionedScalar &pOff
 inline auto absolutePressureVol(const Foam::uniformGeometricScalarField &p, const Foam::dimensionedScalar &pOffset,
                                 const Foam::fvMesh &mesh) {
     using namespace Foam;
+    const scalar value=p[0];
+    if(not std::isfinite(p[0])) {
+        return p;
+    }
     return uniformGeometricScalarField(
             IOobject(
                     "pAbs",
@@ -98,7 +103,7 @@ inline auto absolutePressureVol(const Foam::uniformGeometricScalarField &p, cons
                     IOobject::NO_WRITE,
                     false // don't register
             ),
-            p[0] + pOffset);
+            value + pOffset);
 }
 
 template<class pF>
@@ -115,6 +120,9 @@ inline auto
 absolutePressurePatch(const Foam::UniformField<Foam::scalar> &p, const Foam::dimensionedScalar &pOffset,
                       const Foam::fvMesh &) {
     using namespace Foam;
+    if(not std::isfinite(p[0])) {
+        return p;
+    }
     return UniformField<scalar>(p[0] + pOffset.value());
 }
 
@@ -122,6 +130,9 @@ inline auto
 absolutePressurePatch(const Foam::UniformDimensionedField<Foam::scalar> &p, const Foam::dimensionedScalar &pOffset,
                       const Foam::fvMesh &mesh) {
     using namespace Foam;
+    if(not std::isfinite(p[0])) {
+        return p;
+    }
     return UniformDimensionedField<scalar>(
             IOobject(
                     "pAbs",
