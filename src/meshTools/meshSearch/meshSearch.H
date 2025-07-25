@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,8 +25,7 @@ Class
     Foam::meshSearch
 
 Description
-    Various (local, not parallel) searches on polyMesh;
-    uses (demand driven) octree to search.
+    Mesh object that implements searches within the local cells and faces
 
 SourceFiles
     meshSearch.C
@@ -36,136 +35,64 @@ SourceFiles
 #ifndef meshSearch_H
 #define meshSearch_H
 
-#include "pointIndexHit.H"
-#include "pointField.H"
-#include "polyMesh.H"
+#include "DemandDrivenMeshObject.H"
+#include "indexedOctree.H"
+#include "pointInCell.H"
+#include "treeDataCell.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-// Forward declaration of classes
-class treeDataCell;
-class treeDataFace;
-template<class Type> class indexedOctree;
-class treeBoundBox;
-
 /*---------------------------------------------------------------------------*\
                          Class meshSearch Declaration
 \*---------------------------------------------------------------------------*/
 
 class meshSearch
+:
+    public DemandDrivenMeshObject
+    <
+        polyMesh,
+        DeletableMeshObject,
+        meshSearch
+    >
 {
     // Private Data
 
-        //- Reference to mesh
-        const polyMesh& mesh_;
-
-        //- Whether to use cell decomposition for all geometric tests
-        const polyMesh::cellDecomposition cellDecompMode_;
-
-        //- Data bounding box
-        mutable autoPtr<treeBoundBox> overallBbPtr_;
-
-        //- Demand driven octrees
-        mutable autoPtr<indexedOctree<treeDataFace>> boundaryTreePtr_;
-        mutable autoPtr<indexedOctree<treeDataCell>> cellTreePtr_;
+        //- Cell tree
+        const indexedOctree<treeDataCell> cellTree_;
 
 
-    // Private Member Functions
+protected:
 
-        //- Updates nearestI, nearestDistSqr from any closer ones.
-        static bool findNearer
-        (
-            const point& sample,
-            const pointField& points,
-            label& nearestI,
-            scalar& nearestDistSqr
-        );
-
-        //- Updates nearestI, nearestDistSqr from any selected closer ones.
-        static bool findNearer
-        (
-            const point& sample,
-            const pointField& points,
-            const labelList& indices,
-            label& nearestI,
-            scalar& nearestDistSqr
-        );
+    friend class DemandDrivenMeshObject
+    <
+        polyMesh,
+        DeletableMeshObject,
+        meshSearch
+    >;
 
 
-        // Cells
+    // Protected Constructors
 
-            //- Nearest cell centre using octree
-            label findNearestCellTree(const point&) const;
-
-            //- Nearest cell centre going through all cells
-            label findNearestCellLinear(const point&) const;
-
-            //- Walk from seed. Does not 'go around' boundary, just returns
-            //  last cell before boundary.
-            label findNearestCellWalk(const point&, const label) const;
-
-            //- Cell containing location. Linear search.
-            label findCellLinear(const point&) const;
-
-            //- Walk from seed. Does not 'go around' boundary, just returns
-            //  last cell before boundary.
-            label findCellWalk(const point&, const label) const;
-
-
-        // Faces
-
-            label findNearestFaceTree(const point&) const;
-
-            label findNearestFaceLinear(const point&) const;
-
-            label findNearestFaceWalk(const point&, const label) const;
-
-
-
-        // Boundary faces
-
-            //- Walk from seed to find nearest boundary face. Gets stuck in
-            //  local minimum.
-            label findNearestBoundaryFaceWalk
-            (
-                const point& location,
-                const label seedFacei
-            ) const;
+        //- Construct from mesh
+        explicit meshSearch(const polyMesh& mesh);
 
 
 public:
 
-    // Declare name of the class and its debug switch
-    ClassName("meshSearch");
-
-
-    // Static Data Members
-
-        //- Tolerance on linear dimensions
-        static scalar tol_;
+    //- Run-time type information
+    TypeName("meshSearch");
 
 
     // Constructors
 
-        //- Construct from components. Constructs bb slightly bigger than
-        //  mesh points bb.
-        meshSearch
+        //- Lookup or construct from mesh and cell decomposition option
+        static const meshSearch& New
         (
             const polyMesh& mesh,
-            const polyMesh::cellDecomposition = polyMesh::CELL_TETS
-        );
-
-        //- Construct with a custom bounding box. Any mesh element outside
-        //  bb will not be found. Up to user to make sure bb
-        //  extends slightly beyond wanted elements.
-        meshSearch
-        (
-            const polyMesh& mesh,
-            const treeBoundBox& bb,
-            const polyMesh::cellDecomposition = polyMesh::CELL_TETS
+            const pointInCellShapes = pointInCellShapes::tets
         );
 
         //- Disallow default bitwise copy construction
@@ -173,97 +100,51 @@ public:
 
 
     //- Destructor
-    ~meshSearch();
+    virtual ~meshSearch();
 
 
     // Member Functions
 
         // Access
 
-            const polyMesh& mesh() const
+            //- Access the cell tree
+            inline const indexedOctree<treeDataCell>& cellTree() const
             {
-                return mesh_;
+                return cellTree_;
             }
-
-            polyMesh::cellDecomposition decompMode() const
-            {
-                return cellDecompMode_;
-            }
-
-            //- Get (demand driven) reference to octree holding all
-            //  boundary faces
-            const indexedOctree<treeDataFace>& boundaryTree() const;
-
-            //- Get (demand driven) reference to octree holding all cells
-            const indexedOctree<treeDataCell>& cellTree() const;
 
 
         // Queries
 
-            //- Find nearest cell in terms of cell centre.
-            //  Options:
-            //  - use octree
-            //  - use linear search
-            //  - if seed is provided walk. (uses findNearestCellWalk;
-            //    does not handle holes in domain)
-            label findNearestCell
-            (
-                const point& location,
-                const label seedCelli = -1,
-                const bool useTreeSearch = true
-            ) const;
+            //- Find the cell with centre closest to the given point
+            label findNearestCell(const point& p) const;
 
-            label findNearestFace
+            //- Find the cell with centre closest to the given point. Do a
+            //  linear search through all the cells instead of using the tree.
+            static label findNearestCellNoTree
             (
-                const point& location,
-                const label seedFacei = -1,
-                const bool useTreeSearch = true
-            ) const;
+                const polyMesh& mesh,
+                const point& p
+            );
 
-            //- Find cell containing location.
-            //  If seed provided walks and falls back to linear/tree search.
-            //  (so handles holes correctly)s
-            //  Returns -1 if not in domain.
+            //- Find the face with centre closest to the given point
+            label findNearestFace(const point& p) const;
+
+            //- Find the cell containing the given point
             label findCell
             (
-                const point& location,
-                const label seedCelli = -1,
-                const bool useTreeSearch = true
+                const point& p,
+                const pointInCellShapes = pointInCellShapes::tets
             ) const;
 
-            //- Find nearest boundary face
-            //  If seed provided walks but then does not pass local minima
-            //  in distance. Also does not jump from one connected region to
-            //  the next.
-            label findNearestBoundaryFace
+            //- Find the cell containing the given point. Do a
+            //  linear search through all the cells instead of using the tree.
+            static label findCellNoTree
             (
-                const point& location,
-                const label seedFacei = -1,
-                const bool useTreeSearch = true
-            ) const;
-
-            //- Find first intersection of boundary in segment [pStart, pEnd]
-            //  (so inclusive of endpoints). Always octree for now
-            pointIndexHit intersection(const point& pStart, const point& pEnd)
-            const;
-
-            //- Find all intersections of boundary within segment pStart .. pEnd
-            //  Always octree for now
-            List<pointIndexHit> intersections
-            (
-                const point& pStart,
-                const point& pEnd
-            ) const;
-
-            //- Determine inside/outside status
-            bool isInside(const point&) const;
-
-
-        //- Delete all storage
-        void clearOut();
-
-        //- Correct for mesh geom/topo changes
-        void correct();
+                const polyMesh& mesh,
+                const point& p,
+                const pointInCellShapes = pointInCellShapes::tets
+            );
 
 
     // Member Operators

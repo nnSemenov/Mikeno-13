@@ -45,7 +45,6 @@ Usage
             lowPressure
             {
                 type        box;
-                zoneType    cell;
 
                 box         (0 -1 -1) (5 1 1);
 
@@ -69,7 +68,6 @@ Usage
             cells
             {
                 type        box;
-                zoneType    cell;
 
                 box (-1e300 -1e300 -1e300) (1e300 0 1e300);
 
@@ -78,11 +76,11 @@ Usage
                     alpha.water 1;
                 }
             }
+        }
 
-            extrapolatePatches
-            {
-                "inlet|outlet"   (alpha.water);
-            }
+        extrapolatePatches
+        {
+            "inlet|outlet"   (alpha.water);
         }
     \endverbatim
     which sets the internal values of phase-fraction field and inlet and outlet
@@ -102,7 +100,6 @@ Usage
             cells
             {
                 type        box;
-                zoneType    cell;
 
                 box (-1e300 -1e300 -1e300) (1e300 0 1e300);
 
