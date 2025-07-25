@@ -170,6 +170,7 @@ inline Foam::scalar Foam::janafThermo<EquationOfState>::ideal_Cp(
     const scalar p, 
     const scalar T
 ) const {
+    const coeffArray& a = coeffs(T);
     return ((((a[4]*T + a[3])*T + a[2])*T + a[1])*T + a[0]);
 }
 
@@ -180,7 +181,6 @@ inline Foam::scalar Foam::janafThermo<EquationOfState>::Cp
     const scalar T
 ) const
 {
-    const coeffArray& a = coeffs(T);
     return
         ideal_Cp(p, T)
       + EquationOfState::Cp(p, T);
