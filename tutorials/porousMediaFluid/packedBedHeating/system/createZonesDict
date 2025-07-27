@@ -1,0 +1,16 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object createZonesDict;
+}
+
+#include "geometryInfo"
+
+inert_z_begin $inlet_length;
+inert_z_end #calc "$inlet_length + $inert_length";
+
+inert {
+    type box;
+    zoneType cell;
+    box (0 0 $inert_z_begin) ($tube_radius $tube_radius $inert_z_end);
+}

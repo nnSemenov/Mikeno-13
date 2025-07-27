@@ -1,0 +1,51 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object fvSolution;
+}
+
+solvers {
+    p {
+        solver smoothSolver;
+        smoother DICGaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-2;
+    }
+    U {
+        solver smoothSolver;
+        smoother DILUGaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-2;
+    }
+    "(e|h)" {
+        solver smoothSolver;
+        smoother DILUGaussSeidel;
+        tolerance 1e-4;
+        relTol 0.01;
+    }
+}
+
+SIMPLE {
+
+    consistent yes;
+    momentumPredictor yes;
+    nOuterCorrectors 1;
+    nCorrectors     1;
+    nNonOrthogonalCorrectors 0;
+
+    residualControl {
+        p               1e-3;
+        U               1e-3;
+        "(h|e)" 1e-3;
+    }
+}
+
+relaxationFactors {
+    equations {
+        U 0.95;
+        "(e|h)" 0.9;
+    }
+    fields {
+        p 0.95;
+    }
+}
