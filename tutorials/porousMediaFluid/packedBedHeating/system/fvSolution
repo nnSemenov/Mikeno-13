@@ -6,22 +6,22 @@ FoamFile {
 
 solvers {
     p {
-        solver smoothSolver;
-        smoother DICGaussSeidel;
+        solver GAMG;
+        smoother symGaussSeidel;
         tolerance 1e-4;
         relTol 1e-2;
     }
     U {
-        solver smoothSolver;
-        smoother DILUGaussSeidel;
+        solver GAMG;
+        smoother GaussSeidel;
         tolerance 1e-4;
-        relTol 1e-2;
+        relTol 1e-3;
     }
     "(e|h)" {
-        solver smoothSolver;
+        solver GAMG;
         smoother DILUGaussSeidel;
         tolerance 1e-4;
-        relTol 0.01;
+        relTol 1e-3;
     }
 }
 
@@ -36,16 +36,16 @@ SIMPLE {
     residualControl {
         p               1e-3;
         U               1e-3;
-        "(h|e)" 1e-3;
+        "(h|e)"         1e-3;
     }
 }
 
 relaxationFactors {
     equations {
-        U 0.95;
+        U 0.9;
         "(e|h)" 0.9;
     }
     fields {
-        p 0.95;
+        p 0.7;
     }
 }

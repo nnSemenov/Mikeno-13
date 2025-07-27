@@ -10,4 +10,4 @@ inert_length 10e-3;
 
 outlet_length 4e-3;
 
-grid_size 0.5e-3;
+grid_size 0.25e-3;
