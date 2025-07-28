@@ -1,3 +1,4 @@
 porousMediaFluid.C
+thermophysicalPredictor.C
 
-LIB = $(FOAM_LIBBIN)/porousMediaFluid
+LIB = $(FOAM_LIBBIN)/libporousMediaFluid

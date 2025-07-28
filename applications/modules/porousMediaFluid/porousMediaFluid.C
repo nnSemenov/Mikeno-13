@@ -27,10 +27,11 @@ Foam::solvers::porousMediaFluid::porousMediaFluid(fvMesh&mesh) :
             "porosity",
             runTime.name(),
             mesh,
-            IOobject::NO_READ, 
+            IOobject::READ_IF_PRESENT, 
             IOobject::AUTO_WRITE
         ),
-        mesh
+        mesh,
+        scalar{1}
     )
 {
     auto thermo=solidThermo::New(mesh, "porous");
@@ -38,13 +39,14 @@ Foam::solvers::porousMediaFluid::porousMediaFluid(fvMesh&mesh) :
     thermo->validate("solid", "h", "e");
     porousPhases.emplace_back(
         porousPhase {
-            .alpha=volScalarField (
+            .alpha = volScalarField (
                 IOobject (
                     "alpha.porous",
                     runTime.name(),
                     mesh,
                     IOobject::MUST_READ,
-                    IOobject::AUTO_WRITE
+                    IOobject::AUTO_WRITE,
+                    true // registered
                 ),
                 mesh
             ),
@@ -52,10 +54,12 @@ Foam::solvers::porousMediaFluid::porousMediaFluid(fvMesh&mesh) :
             .thermophysicalTransport=std::move(transport)
         }
     );
+    // force solver to write alpha (why AUTO_WRITE above doesn't work ?!)
+    porousPhases[0].alpha.writeOpt()=IOobject::AUTO_WRITE;
 
     this->updatePorosity();
-    // this->U_physical=this->U();
-    // this->U_physical /= this->porosity_;
+    this->U_physical=this->U();
+    this->U_physical /= this->porosity_;
 }
 
 Foam::solvers::porousMediaFluid::~porousMediaFluid() {}
