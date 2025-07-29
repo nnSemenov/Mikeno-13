@@ -164,7 +164,7 @@ protected:
             //- Dynamic viscosity [kg/m/s]
             volScalarField mu_;
 
-            //- Isothermal enthalpy/internal energy - pressure derivative [m/kg]
+            //- Isothermal enthalpy/internal energy - pressure derivative [m^3/kg]
             volScalarField dhedp_T_;
 public:
 
