@@ -17,7 +17,7 @@ solvers {
         tolerance 1e-4;
         relTol 1e-3;
     }
-    "(e|h)" {
+    "(e|h|T)" {
         solver GAMG;
         smoother DILUGaussSeidel;
         tolerance 1e-4;
@@ -36,14 +36,14 @@ SIMPLE {
     residualControl {
         p               1e-3;
         U               1e-3;
-        "(h|e)"         1e-3;
+        "(h|e|T)"         1e-3;
     }
 }
 
 relaxationFactors {
     equations {
         U 0.9;
-        "(e|h)" 0.9;
+        "(e|h|T)" 0.9;
     }
     fields {
         p 0.7;
