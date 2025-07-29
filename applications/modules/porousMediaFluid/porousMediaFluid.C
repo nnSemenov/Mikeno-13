@@ -36,7 +36,10 @@ Foam::solvers::porousMediaFluid::porousMediaFluid(fvMesh&mesh) :
 {
     auto thermo=solidThermo::New(mesh, "porous");
     auto transport=solidThermophysicalTransportModel::New(thermo());
-    thermo->validate("solid", "h", "e");
+    // should be either h or e
+    const word fluid_phase_thermo_name = this->thermo().he().name();
+    // Solid and fluid should have same energy type
+    thermo->validate("solid", fluid_phase_thermo_name);
     porousPhases.emplace_back(
         porousPhase {
             .alpha = volScalarField (
