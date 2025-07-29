@@ -44,3 +44,21 @@ $
 where $H$ is in J/mol, $h$ is in J/kg.
 
 For ideal gases, $Ж=0$.
+
+For Redlich-Kwong gases, $Ж$ is given as
+$
+  ((partial V)/(partial T))_p 
+    = ((R V^2)/p + (a/(2p sqrt(T))+(R b)/p )V + (a b)/(2 p T sqrt(T)) ) 
+      / ( 3V^2 - 2(R T)/p V + (a/(p sqrt(T)) - b^2 - (b R T)/p) )
+$
+
+== From Internal Energy
+
+Similar to enthalpy, isothermal energy to pressure derivative is given as
+$
+  ((partial U)/(partial p))_T = - T ((partial V)/(partial T))_p - p ((partial V)/(partial p))_T \
+
+  ((partial V)/(partial p))_T = 
+    ( -(R T )/p^2 V^2 -((b R T)/p - a/(p^2 sqrt(T)))V + (a b)/(p^2 sqrt(T)) )
+    / ( 3V^2 -2 (R T)/p V + a/(p sqrt(T)) - (b R T)/p - b^2 )
+$
