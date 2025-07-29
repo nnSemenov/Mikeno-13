@@ -130,6 +130,12 @@ public:
 
         //- Ideal gas heat capacity [J/kg/K]
         inline scalar Cpg(scalar p, scalar T) const;
+        
+        //- Isothermal compression enthalpy derivative to pressure [m^3/kg]
+        inline scalar dhdp_T(scalar p, scalar T) const;
+
+        //- Isothermal compression enthalpy derivative to pressure [m^3/kg]
+        inline scalar dedp_T(scalar p, scalar T) const;
 
         //- Second Virial Coefficient [m^3/kg]
         inline scalar B(scalar p, scalar T) const;
@@ -154,7 +160,6 @@ public:
 
         //- Vapour diffusivity [m^2/s] with specified binary pair
         inline scalar D(scalar p, scalar T, scalar Wb) const;
-
 
     // I-O
 

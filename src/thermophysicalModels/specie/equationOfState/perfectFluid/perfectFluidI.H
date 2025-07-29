@@ -154,6 +154,16 @@ inline Foam::scalar Foam::perfectFluid<Specie>::alphav(scalar p, scalar T) const
 }
 
 
+template<class Specie>
+inline Foam::scalar Foam::perfectFluid<Specie>::dhdp_T(const scalar p, const scalar T) const {
+    return 0;
+}
+
+template<class Specie>
+inline Foam::scalar Foam::perfectFluid<Specie>::dedp_T(const scalar p, const scalar T) const {
+    return 0;
+}
+
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 template<class Specie>

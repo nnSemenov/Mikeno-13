@@ -251,6 +251,12 @@ public:
 
             //- Liquid entropy [J/kg/K]
             scalar s(const scalar p, const scalar T) const;
+        
+            //- Isothermal compression enthalpy derivative to pressure [m^3/kg]
+            inline scalar dhdp_T(scalar p, scalar T) const;
+    
+            //- Isothermal compression enthalpy derivative to pressure [m^3/kg]
+            inline scalar dedp_T(scalar p, scalar T) const;
 
 
         // Physical properties

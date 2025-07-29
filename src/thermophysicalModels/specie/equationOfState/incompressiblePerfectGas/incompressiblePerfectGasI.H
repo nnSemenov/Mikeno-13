@@ -186,6 +186,16 @@ inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::alphav
 }
 
 
+template<class Specie>
+inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::dhdp_T(const scalar p, const scalar T) const {
+    return 0;
+}
+
+template<class Specie>
+inline Foam::scalar Foam::incompressiblePerfectGas<Specie>::dedp_T(const scalar p, const scalar T) const {
+    return 0;
+}
+
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 
 template<class Specie>

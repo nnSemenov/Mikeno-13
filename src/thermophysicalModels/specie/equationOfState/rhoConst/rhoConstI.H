@@ -137,6 +137,16 @@ inline Foam::scalar Foam::rhoConst<Specie>::alphav(scalar p, scalar T) const
     return 0;
 }
 
+template<class Specie>
+inline Foam::scalar Foam::rhoConst<Specie>::dhdp_T(const scalar p, const scalar T) const {
+    return 0;
+}
+
+template<class Specie>
+inline Foam::scalar Foam::rhoConst<Specie>::dedp_T(const scalar p, const scalar T) const {
+    return 0;
+}
+
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 

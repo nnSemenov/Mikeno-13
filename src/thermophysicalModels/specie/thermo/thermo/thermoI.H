@@ -111,6 +111,12 @@ Foam::species::thermo<Thermo, Type>::a(const scalar p, const scalar T) const
 
 template<class Thermo, template<class> class Type>
 inline Foam::scalar
+Foam::species::thermo<Thermo, Type>::dhedp_T(const scalar p, const scalar T) const {
+    return Type<thermo<Thermo, Type>>::dhedp_T(*this, p, T);
+}
+
+template<class Thermo, template<class> class Type>
+inline Foam::scalar
 Foam::species::thermo<Thermo, Type>::K(const scalar p, const scalar T) const
 {
     scalar arg = -this->Y()*this->gStd(T)/(RR*T);

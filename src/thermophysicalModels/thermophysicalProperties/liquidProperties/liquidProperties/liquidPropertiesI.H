@@ -122,6 +122,15 @@ inline Foam::scalar Foam::liquidProperties::ea(scalar p, const scalar T) const
     return ha(p, T);
 }
 
+inline Foam::scalar Foam::liquidProperties::dhdp_T(scalar p, scalar T) const
+{
+    return 0;
+}
+
+inline Foam::scalar Foam::liquidProperties::dedp_T(scalar p, scalar T) const 
+{
+    return 0;
+}
 
 template<class Func>
 inline void Foam::liquidProperties::readIfPresent
