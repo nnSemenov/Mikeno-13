@@ -6,7 +6,7 @@ FoamFile {
 
 dimensions [velocity];
 
-internalField uniform (0 0 1);
+internalField uniform (0 0 5);
 
 boundaryField {
     inlet {
