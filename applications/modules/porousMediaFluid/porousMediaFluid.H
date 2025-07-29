@@ -22,6 +22,8 @@ protected:
     volScalarField porosity_;
 
     void updatePorosity();
+    
+    tmp<volScalarField::Internal> TEqnNonIdealityPressureTerm(const volScalarField& dhedp_T) const;
 public:
     TypeName("porousMediaFluid");
 
