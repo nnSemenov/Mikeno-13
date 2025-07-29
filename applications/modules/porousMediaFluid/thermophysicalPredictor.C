@@ -26,8 +26,6 @@ void Foam::solvers::porousMediaFluid::thermophysicalPredictor() {
         rho_ * Cpv* fvm::ddt(T) 
         + fvm::div(phiCpv, T) 
             - fvm::SuSp(fvc::div(phiCpv), T)
-            
-        // + dhedp_T * rho_ * dpdt
         + TEqnNonIdealityPressureTerm(dhedp_T)
 
         + fvc::ddt(rho_, K) + fvc::div(phi_, K)
