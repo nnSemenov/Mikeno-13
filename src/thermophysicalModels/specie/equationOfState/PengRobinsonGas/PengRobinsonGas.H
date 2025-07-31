@@ -251,6 +251,41 @@ namespace Foam {
             }
 
             inline scalar alphav(const scalar p, const scalar T) const;
+
+            inline scalar dVdT_p(const scalar p, const scalar T,
+                                 const scalar z) const {
+              const scalar V = z * RR * T / p;
+              const scalar dVdT_p = (RR * sqr(V) + (2 * RR * b - da_dT) * V +
+                                     b * (da_dT - RR * b)) /
+                                    (3 * p * sqr(V) + 2 * V * (p * b - RR * T) +
+                                     a - 2 * b * RR * T - 3 * p * sqr(b));
+              return dVdT_p;
+            }
+
+            inline scalar dVdp_T(const scalar p, const scalar T,
+                                 const scalar z) const {
+              const scalar V = z * RR * T / p;
+              const scalar dVdp_T =
+                  (-RR * T * sqr(V) - (2 * RR * T * b - a) * V - a * b +
+                   sqr(b) * RR * T) /
+                  (3 * sqr(p * V) + 2 * p * V * (p * b - RR * T) + a * p -
+                   2 * b * RR * T * p - 3 * sqr(p * b));
+              return dVdp_T;
+            }
+
+            inline scalar dhdp_T(scalar p, scalar T, scalar W) const {
+                const scalar z = this->Z(p, T);
+                const scalar V = z * RR * T / p;
+                const scalar dHdp_T = V-T*dVdT_p(p, T, z);
+                return dHdp_T/this->R(W);
+            }
+
+            inline scalar dedp_T(scalar p, scalar T, scalar W) const {
+                const scalar z = this->Z(p, T);
+                const scalar V = z * RR * T / p;
+                const scalar dUdp_T = -T*dVdT_p(p, T, z) - p*dVdp_T(p, T, z);
+                return dUdp_T/this->R(W);
+            }
         };
 
     public:
@@ -348,17 +383,25 @@ namespace Foam {
 
         //- Return compressibility [s^2/m^2]
         inline scalar psi(scalar p, scalar T) const{
-            return this->core(p,T).psi(p,T,this->W());
+            return this->core(p,T).psi(p,T, this->W());
         }
 
         //- Return (Cp - Cv) [J/(kg K]
         inline scalar CpMCv(scalar p, scalar T) const{
-            return this->core(p,T).CpMCv(p,T,this->W());
+            return this->core(p,T).CpMCv(p,T, this->W());
         }
 
         //- Return volumetric coefficient of thermal expansion [1/T]
         inline scalar alphav(const scalar p, const scalar T) const{
-            return this->core(p,T).alphav(p,T,this->W());
+            return this->core(p,T).alphav(p,T, this->W());
+        }
+
+        inline scalar dhdp_T(const scalar p, const scalar T) const {
+            return this->core(p, T).dhdp_T(p, T, this->W());
+        }
+
+        inline scalar dedp_T(const scalar p, const scalar T) const {
+            return this->core(p, T).dedp_T(p, T, this->W());
         }
 
         // mixing
