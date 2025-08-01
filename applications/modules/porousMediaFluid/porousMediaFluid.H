@@ -3,23 +3,44 @@
 
 #include "fluid.H"
 #include "solidThermophysicalTransportModel.H"
+#include <map>
 
 namespace Foam {
-namespace solvers {
 
-class porousMediaFluid : public fluid {
-protected:
-
+class porousPhaseInfo {
+public:
     struct porousPhase {
         volScalarField alpha;
         autoPtr<solidThermo> thermo;
         autoPtr<solidThermophysicalTransportModel> thermophysicalTransport;
     };
 
-    std::vector<porousPhase> porousPhases;
+protected:
+    std::map<word, porousPhase> porousPhases_;
+
+public:
+    explicit porousPhaseInfo(fvMesh&mesh, const Time& runTime);
+    porousPhaseInfo(const porousPhaseInfo&)=delete;
+    ~porousPhaseInfo()=default;
+
+    auto& porousPhases() & {
+        return porousPhases_;
+    }
+    
+    const auto& porousPhases() const & {
+        return porousPhases_;
+    }
+};
+
+namespace solvers {
+
+class porousMediaFluid : public fluid {
+protected:
+
 
     volVectorField U_physical;
     volScalarField porosity_;
+    porousPhaseInfo porousPhases;
 
     void updatePorosity();
     

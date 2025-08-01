@@ -23,14 +23,17 @@ void Foam::solvers::porousMediaFluid::thermophysicalPredictor() {
 
     const volScalarField & alphaF = this->porosity_;
 
-    auto & porPhase=this->porousPhases[0];
-    const auto & alphaP=porPhase.alpha;
-    auto & thermoP=porPhase.thermo;
-    const volScalarField& rhoP=thermoP->rho();
-    const volScalarField& CpvP=thermoP->Cpv();
-    const volScalarField rhoCpEff = (alphaF* rho_ * Cpv + alphaP*rhoP*CpvP)();
 
-    const auto kappaEff = this->thermophysicalTransport->kappaEff() * alphaF + thermoP->kappa()*alphaP;
+    volScalarField kappaEff = (this->thermophysicalTransport->kappaEff() * alphaF)();
+    volScalarField rhoCpEff = (alphaF* rho_ * Cpv)();
+    for(auto & pair: this->porousPhases.porousPhases()) {
+        const auto & alphaP=pair.second.alpha;
+        auto & thermoP=pair.second.thermo;
+        const volScalarField& rhoP=thermoP->rho();
+        const volScalarField& CpvP=thermoP->Cpv();
+        rhoCpEff+=alphaP*rhoP*CpvP;
+        kappaEff+=alphaP*thermoP->kappa();
+    }
     // Thermal equilbrium 
     fvScalarMatrix TEqn (
 
@@ -85,12 +88,16 @@ void Foam::solvers::porousMediaFluid::thermophysicalPredictor() {
     TEqn.solve();
 
     fvConstraints().constrain(T);
-    thermoP->T()=T;
-
     // Update energy
     thermo.he() = thermo.he(this->p_(), T);
-    thermoP->he() = thermoP->he(this->p_(), T);
     // Update other properties
     this->thermoPtr_().correct();
-    thermoP->correct();
+
+    for(auto & pair: this->porousPhases.porousPhases()) {
+        auto & thermoP=pair.second.thermo;
+        thermoP->T()=T;
+        thermoP->he() = thermoP->he(this->p_(), T);
+        thermoP->correct();
+    }
+
 }
