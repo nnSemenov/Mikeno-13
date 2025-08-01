@@ -139,7 +139,7 @@ inline Foam::scalar Foam::rhoConst<Specie>::alphav(scalar p, scalar T) const
 
 template<class Specie>
 inline Foam::scalar Foam::rhoConst<Specie>::dhdp_T(const scalar p, const scalar T) const {
-    return 0;
+    return 1 / this->rho(p, T);
 }
 
 template<class Specie>
