@@ -10,7 +10,7 @@ inert_z_begin $inlet_length;
 inert_z_end #calc "$inlet_length + $inert_length";
 
 defaultValues {
-    alpha.porous 0;
+    alpha.inert 0;
 }
 
 zones {
@@ -19,7 +19,7 @@ zones {
         zoneType cell;
         box (0 0 $inert_z_begin) ($tube_radius $tube_radius $inert_z_end);
         values {
-            alpha.porous 0.6;
+            alpha.inert 0.6;
         }
     }
 }

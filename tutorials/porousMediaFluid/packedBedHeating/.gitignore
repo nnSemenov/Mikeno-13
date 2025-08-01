@@ -1,3 +1,4 @@
 constant/polyMesh
 dynamicCode
 0/alpha.porous
+0/alpha.inert
