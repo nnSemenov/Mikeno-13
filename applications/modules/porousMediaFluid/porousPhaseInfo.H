@@ -3,6 +3,7 @@
 
 #include <variant>
 #include <map>
+#include <optional>
 
 #include <boost/graph/undirected_graph.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -70,7 +71,24 @@ public:
     //- List of thermal equilibrium phases
     std::vector<std::vector<word>> thermalEquilibriumPhases() const;
 
-    
+    heatTransferGraph_type::vertex_descriptor vertexOfPhase(const word& phaseName) const;
+
+    const heatTransfer * heatTransferBetween(const word& phaseA, const word& phaseB) const;
+
+    const nonEquilibriumHeatTransfer * nonEquilibriumHeatTransferBetween(const word& phaseA, const word& phaseB) const;
+
+
+    struct heatTransferInfoNode {
+        struct heatTransferSource {
+            size_t phaseA_index;
+            word phaseB_name;
+            const nonEquilibriumHeatTransfer& heatTransferInfo;
+        };
+
+        std::vector<word> thermalEquilibriumPhaseNames;
+        std::vector<heatTransferSource> heatTransferSources;
+    };
+    std::vector<heatTransferInfoNode> heatTransferSummary() const;
 };
 
 }

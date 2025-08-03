@@ -9,6 +9,8 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/named_function_params.hpp>
 #include <cstdlib>
+#include <optional>
+#include <variant>
 #include <vector>
 
 #include "cubicEOS.H"
@@ -54,7 +56,9 @@ Foam::heatTransfer Foam::parse_heatTransfer(const Foam::dictionary& dict) {
     return {};
 }
 
-Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime): heatTransferGraph_(0) {
+Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime): 
+    heatTransferGraph_(0) 
+{
     IOdictionary porousPhaseDict (
         IOobject (
             "phaseProperties",
@@ -143,16 +147,30 @@ Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime): heatTr
     }
     Info<<"Added "<<boost::num_edges(this->heatTransferGraph_)<<" heat transfer pathes"<<endl;
 
-    auto eq_phase_list = this->thermalEquilibriumPhases();
-    Info<<"Thermal equilbrium phases: ";
-    for(auto & phase_list: eq_phase_list) {
-        Info<<"\n  (";
-        for(auto & phase: phase_list) {
-            Info<<phase<<" ";
+    auto summary = this->heatTransferSummary();
+    Info<<"Heat transfer summary: \n";
+    for(auto & node: summary) {
+        Info<<"  (";
+        for(const word& phaseName: node.thermalEquilibriumPhaseNames) {
+            Info<<phaseName<<", ";
         }
-        Info<<"\b)";
+        Info<<"\b\b) has following interaction(s): ";
+        for(const auto & source: node.heatTransferSources) {
+            Info<<"    "<<node.thermalEquilibriumPhaseNames[source.phaseA_index]<<"<->"<<source.phaseB_name<<'\n';
+        }
+        Info<<'\n';
     }
     Info<<endl;
+    // auto eq_phase_list = this->thermalEquilibriumPhases();
+    // Info<<"Thermal equilbrium phases: ";
+    // for(auto & phase_list: eq_phase_list) {
+    //     Info<<"\n  (";
+    //     for(auto & phase: phase_list) {
+    //         Info<<phase<<" ";
+    //     }
+    //     Info<<"\b)";
+    // }
+    // Info<<endl;
 }
 
 class DFSVisitor: public boost::default_dfs_visitor {
@@ -198,6 +216,70 @@ std::vector<std::vector<word>> Foam::porousPhaseInfo::thermalEquilibriumPhases()
             boost::remove_vertex(*it, graph);
         }
         ret.emplace_back(std::move(phases));
+    }
+
+    return ret;
+}
+
+Foam::porousPhaseInfo::heatTransferGraph_type::vertex_descriptor 
+Foam::porousPhaseInfo::vertexOfPhase(const word& phaseName) const {
+    if(phaseName==FLUID_PHASE_NAME) {
+        return fluid_vertex;
+    }
+    return porousPhases_.at(phaseName).vertex;
+}
+
+const Foam::heatTransfer *
+Foam::porousPhaseInfo::heatTransferBetween(
+    const word& phaseA, const word& phaseB) const {
+    auto vertA = this->vertexOfPhase(phaseA);
+    auto vertB = this->vertexOfPhase(phaseB);
+
+    auto pair = boost::edge(vertA, vertB, heatTransferGraph_);
+    if(pair.second) { // edge exist
+        return &heatTransferGraph_[pair.first].heatTransfer;
+    }
+    return nullptr;
+}
+
+const Foam::nonEquilibriumHeatTransfer* 
+Foam::porousPhaseInfo::nonEquilibriumHeatTransferBetween(
+    const word& phaseA, const word& phaseB) const{
+    const Foam::heatTransfer * ht = heatTransferBetween(phaseA, phaseB);
+    return std::get_if<nonEquilibriumHeatTransfer>(ht);
+}
+
+std::vector<Foam::porousPhaseInfo::heatTransferInfoNode>
+Foam::porousPhaseInfo::heatTransferSummary() const {
+    std::vector<Foam::porousPhaseInfo::heatTransferInfoNode> ret;
+    {
+        auto eq_phase_list = this->thermalEquilibriumPhases();
+        ret.reserve(eq_phase_list.size());
+        for(auto& phaseNames: eq_phase_list) {
+            ret.emplace_back(
+                heatTransferInfoNode {
+                    .thermalEquilibriumPhaseNames=std::move(phaseNames),
+                    .heatTransferSources={}
+                }
+            );
+        }
+    }
+    const size_t N = ret.size();
+    for(size_t i=0;i<N;i++) {
+        for(size_t phaseA_index=0;phaseA_index<ret[i].thermalEquilibriumPhaseNames.size();phaseA_index++) {
+            const word& phaseA= ret[i].thermalEquilibriumPhaseNames[phaseA_index];
+            for(size_t j=0;j<i;j++) {
+                for(size_t phaseB_index=0;phaseB_index<ret[j].thermalEquilibriumPhaseNames.size();phaseB_index++) {
+                    const word&phaseB= ret[j].thermalEquilibriumPhaseNames[phaseB_index];
+                    const nonEquilibriumHeatTransfer* nonEq=nonEquilibriumHeatTransferBetween(phaseA, phaseB);
+                    if(nonEq == nullptr) {
+                        continue;
+                    }
+                    ret[i].heatTransferSources.emplace_back(phaseA_index, phaseB, *nonEq);
+                    ret[j].heatTransferSources.emplace_back(phaseB_index, phaseA, *nonEq);
+                }
+            }
+        }
     }
 
     return ret;
