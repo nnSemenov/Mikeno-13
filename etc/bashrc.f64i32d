@@ -236,7 +236,6 @@ then
     cleaned=`$foamClean "$LD_PRELOAD"` && LD_PRELOAD="$cleaned"
     export LD_PRELOAD
 fi
-2
 
 # Cleanup environment:
 # ~~~~~~~~~~~~~~~~~~~~
