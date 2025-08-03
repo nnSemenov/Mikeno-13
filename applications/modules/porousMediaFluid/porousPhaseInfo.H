@@ -1,8 +1,6 @@
 #ifndef porousPhaseInfo_H
 #define porousPhaseInfo_H
 
-#include <boost/graph/graph_selectors.hpp>
-#include <boost/pending/property.hpp>
 #include <variant>
 #include <map>
 
@@ -28,9 +26,13 @@ class porousPhaseInfo {
 public:
     static const word FLUID_PHASE_NAME;
 
+    struct phaseTransferProperty {
+        heatTransfer heatTransfer;
+    };
+
     using heatTransferGraph_type = 
     boost::adjacency_list<boost::vecS,boost::vecS,
-        boost::undirectedS, std::string, heatTransfer>;
+        boost::undirectedS, std::string, phaseTransferProperty, boost::no_property>;
 
     struct porousPhase {
         volScalarField alpha;
@@ -38,6 +40,7 @@ public:
         autoPtr<solidThermophysicalTransportModel> thermophysicalTransport;
         heatTransferGraph_type::vertex_descriptor vertex{};
     };
+
 
 protected:
     std::map<word, porousPhase> porousPhases_;
@@ -48,7 +51,9 @@ protected:
 
 public:
     explicit porousPhaseInfo(fvMesh&mesh, const Time& runTime);
+
     porousPhaseInfo(const porousPhaseInfo&)=delete;
+    
     ~porousPhaseInfo()=default;
 
     auto& porousPhases() & {
@@ -62,6 +67,10 @@ public:
     bool isValidPhase(const word& phaseName) const {
         return this->porousPhases_.contains(phaseName) or (phaseName==FLUID_PHASE_NAME);
     }
+    //- List of thermal equilibrium phases
+    std::vector<std::vector<word>> thermalEquilibriumPhases() const;
+
+    
 };
 
 }

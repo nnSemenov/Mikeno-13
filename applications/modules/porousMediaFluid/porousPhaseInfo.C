@@ -1,11 +1,19 @@
 #include "porousPhaseInfo.H"
 #include "IOdictionary.H"
-#include <boost/graph/detail/adjacency_list.hpp>
-#include <boost/graph/graph_mutability_traits.hpp>
-#include <boost/graph/undirected_graph.hpp>
+// #include <boost/graph/detail/adjacency_list.hpp>
+// #include <boost/graph/graph_mutability_traits.hpp>
+// #include <boost/graph/graph_traits.hpp>
+// #include <boost/graph/properties.hpp>
+// #include <boost/graph/undirected_graph.hpp>
+#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/named_function_params.hpp>
 #include <cstdlib>
+#include <vector>
 
 #include "cubicEOS.H"
+
+using Foam::word, Foam::List;
 
 const Foam::word Foam::porousPhaseInfo::FLUID_PHASE_NAME{"fluid"};
 
@@ -128,8 +136,69 @@ Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime): heatTr
             auto heatTransfer = parse_heatTransfer(heatTransferDict.subDict(key));
 
             auto & g=this->heatTransferGraph_;
-            boost::add_edge(getPhaseVertex(phaseA),getPhaseVertex(phaseB),heatTransfer,g);
+            boost::add_edge(getPhaseVertex(phaseA),getPhaseVertex(phaseB),
+                phaseTransferProperty{.heatTransfer=heatTransfer},
+                g);
         }
     }
     Info<<"Added "<<boost::num_edges(this->heatTransferGraph_)<<" heat transfer pathes"<<endl;
+
+    auto eq_phase_list = this->thermalEquilibriumPhases();
+    Info<<"Thermal equilbrium phases: ";
+    for(auto & phase_list: eq_phase_list) {
+        Info<<"\n  (";
+        for(auto & phase: phase_list) {
+            Info<<phase<<" ";
+        }
+        Info<<"\b)";
+    }
+    Info<<endl;
+}
+
+class DFSVisitor: public boost::default_dfs_visitor {
+    public:
+    std::vector<word> * phase_list;
+    std::vector<Foam::porousPhaseInfo::heatTransferGraph_type::vertex_descriptor> * vert_list;
+
+    template<typename vertex,typename Graph>
+     void discover_vertex(vertex v, Graph g) const {
+        word phaseName = g[v];
+        phase_list->emplace_back(phaseName);
+        vert_list->emplace_back(v);
+     }
+};
+
+std::vector<std::vector<word>> Foam::porousPhaseInfo::thermalEquilibriumPhases() const {
+    heatTransferGraph_type graph{this->heatTransferGraph_};
+
+    // Remove all non-thermal-equilibrium heat transfer links
+    auto pred = [&](auto edge)->bool {
+        const heatTransfer&ht = graph[edge].heatTransfer;
+        if(std::get_if<equilibriumHeatTransfer>(&ht)==nullptr) {
+            return true;
+        }
+        return false;
+    };
+    boost::remove_edge_if(pred, graph);
+    
+    std::vector<std::vector<word>> ret;
+    while (true) {
+        if(boost::num_vertices(graph)<=0) {
+            break;
+        }
+        std::vector<word> phases;
+        std::vector<heatTransferGraph_type::vertex_descriptor> verts;
+        DFSVisitor vis;
+        vis.phase_list=&phases;
+        vis.vert_list=&verts;
+        boost::depth_first_search(graph, boost::visitor(vis));
+        // Info<<"Found "<<phases.size()<<" isothermal phase(s) from "<<boost::num_vertices(graph)<<" phase(s)"<<endl;
+
+        for(auto it=verts.rbegin();it not_eq verts.rend();++it) {
+            boost::remove_vertex(*it, graph);
+        }
+        ret.emplace_back(std::move(phases));
+    }
+
+    return ret;
 }
