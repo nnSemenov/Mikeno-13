@@ -8,9 +8,23 @@ FoamFile {
 
 inert_z_begin $inlet_length;
 inert_z_end #calc "$inlet_length + $inert_length";
+catA_z_end #calc "$inert_z_end + $catA_length";
+catB_z_end #calc "$catA_z_end + $catB_length";
 
 inert {
     type box;
     zoneType cell;
     box (0 0 $inert_z_begin) ($tube_radius $tube_radius $inert_z_end);
+}
+
+catA {
+    type box;
+    zoneType cell;
+    box (0 0 $inert_z_end) ($tube_radius $tube_radius $catA_z_end);
+}
+
+catB {
+    type box;
+    zoneType cell;
+    box (0 0 $catA_z_end) ($tube_radius $tube_radius $catB_z_end);
 }

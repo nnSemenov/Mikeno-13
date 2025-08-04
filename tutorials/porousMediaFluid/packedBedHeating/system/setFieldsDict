@@ -8,9 +8,18 @@ FoamFile {
 
 inert_z_begin $inlet_length;
 inert_z_end #calc "$inlet_length + $inert_length";
+catA_z_end #calc "$inert_z_end + $catA_length";
+catB_z_end #calc "$catA_z_end + $catB_length";
 
 defaultValues {
     alpha.inert 0;
+    alpha.Pt 0;
+    alpha.MCH 0;
+    alpha.H2 0;
+    alpha.TOL 0;
+    alpha.catA 0;
+    alpha.ZrO2 0;
+    alpha.Al2O3 0;
 }
 
 zones {
@@ -20,6 +29,29 @@ zones {
         box (0 0 $inert_z_begin) ($tube_radius $tube_radius $inert_z_end);
         values {
             alpha.inert 0.6;
+        }
+    }
+
+    catA {
+        type box;
+        zoneType cell;
+        box (0 0 $inert_z_end) ($tube_radius $tube_radius $catA_z_end);
+        values {
+            alpha.catA 0.5;
+            alpha.H2 0.1;
+            alpha.MCH 0.1;
+            alpha.TOL 0.1;
+        }
+    }
+
+    catB {
+        type box;
+        zoneType cell;
+        box (0 0 $catA_z_end) ($tube_radius $tube_radius $catB_z_end);
+        values {
+            alpha.Al2O3 0.3;
+            alpha.ZrO2 0.3;
+            alpha.Pt 1e-5;
         }
     }
 }

@@ -2,3 +2,10 @@ constant/polyMesh
 dynamicCode
 0/alpha.porous
 0/alpha.inert
+0/alpha.H2
+0/alpha.Al2O3
+0/alpha.catA
+0/alpha.MCH
+0/alpha.Pt
+0/alpha.TOL
+0/alpha.ZrO2

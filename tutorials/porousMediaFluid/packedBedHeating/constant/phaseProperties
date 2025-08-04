@@ -6,6 +6,13 @@ FoamFile {
 
 porousPhases (
     inert
+    catA
+    H2
+    MCH 
+    TOL
+    Al2O3
+    ZrO2
+    Pt
 );
 
 heatTransfer {
@@ -14,5 +21,12 @@ heatTransfer {
         // type nonEquilibrium;
         // heatTransferCoeff 40[W/m^2/K];
         // specificSurfaceArea  1e3[m^2/m^3];
+    }
+
+    "catA:H2" {
+        type equilibrium;
+    }
+    "H2:MCH" {
+        type equilibrium;
     }
 }

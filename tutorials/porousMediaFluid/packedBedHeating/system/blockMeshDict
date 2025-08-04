@@ -6,7 +6,7 @@ FoamFile {
 
 #include "geometryInfo"
 
-total_length #calc "$inlet_length + $inert_length + $outlet_length";
+total_length #calc "$inlet_length + $inert_length + $catA_length + $catB_length + $outlet_length";
 
 vertices (
     (0 0 0)

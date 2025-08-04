@@ -4,12 +4,12 @@ FoamFile {
     object fvModels;
 }
 
-porosity {
+inertForce {
     type            porosityForce;
 
     porosityForceCoeffs
     {
-        cellZone        inert;
+        cellZone        "inert";
 
         type            DarcyForchheimer;
 
@@ -17,6 +17,48 @@ porosity {
         // D 200;  // Some blockage but steady flow
         // D 500;  // Slight waviness in the far wake
         D 1e8; // Fully shedding behavior
+
+        d   ($D $D $D);
+        f   (0 0 0);
+
+        coordinateSystem porousBlockage;
+    }
+}
+
+catAForce {
+    type            porosityForce;
+
+    porosityForceCoeffs
+    {
+        cellZone        "inert";
+
+        type            DarcyForchheimer;
+
+        // D 100;  // Very little blockage
+        // D 200;  // Some blockage but steady flow
+        // D 500;  // Slight waviness in the far wake
+        D 2e8; // Fully shedding behavior
+
+        d   ($D $D $D);
+        f   (0 0 0);
+
+        coordinateSystem porousBlockage;
+    }
+}
+
+catBForce {
+    type            porosityForce;
+
+    porosityForceCoeffs
+    {
+        cellZone        "inert";
+
+        type            DarcyForchheimer;
+
+        // D 100;  // Very little blockage
+        // D 200;  // Some blockage but steady flow
+        // D 500;  // Slight waviness in the far wake
+        D 3e8; // Fully shedding behavior
 
         d   ($D $D $D);
         f   (0 0 0);

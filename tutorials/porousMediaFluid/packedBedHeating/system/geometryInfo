@@ -6,7 +6,9 @@ FoamFile {
 
 tube_radius 5e-3;
 inlet_length 4e-3;
-inert_length 10e-3;
+inert_length 4e-3;
+catA_length 3e-3;
+catB_length 3e-3;
 
 outlet_length 4e-3;
 

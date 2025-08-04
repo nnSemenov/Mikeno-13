@@ -1,0 +1,39 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object physicalProperties.porous;
+}
+
+thermoType
+{
+    type            heSolidThermo;
+    mixture         pureMixture;
+    transport       constIsoSolid;
+    thermo          eConst;
+    equationOfState rhoConst;
+    specie          specie;
+    energy          sensibleInternalEnergy;
+}
+
+mixture
+{
+    // Aluminium
+
+    specie
+    {
+        molWeight       195.084;
+    }
+    equationOfState
+    {
+        rho             21.45e3;
+    }
+    transport
+    {
+        kappa           72;
+    }
+    thermodynamics
+    {
+        hf              0;
+        Cv              130;
+    }
+}
