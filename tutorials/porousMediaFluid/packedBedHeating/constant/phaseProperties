@@ -18,9 +18,6 @@ porousPhases (
 heatTransfer {
     "inert:fluid" {
         type equilibrium;
-        // type nonEquilibrium;
-        // heatTransferCoeff 40[W/m^2/K];
-        // specificSurfaceArea  1e3[m^2/m^3];
     }
 
     "catA:H2" {
@@ -29,4 +26,26 @@ heatTransfer {
     "H2:MCH" {
         type equilibrium;
     }
+
+    "MCH:TOL" {
+        type equilibrium;
+    }
+    "Al2O3:ZrO2" {
+        type equilibrium;
+    }
+    "ZrO2:Pt" {
+        type equilibrium;
+    }
+
+    "fluid:catA" {
+        type nonEquilibrium;
+        heatTransferCoeff 40[W/m^2/K];
+        specificSurfaceArea  1e3[m^2/m^3];
+    }
+    "fluid:Al2O3" {
+        type nonEquilibrium;
+        heatTransferCoeff 40[W/m^2/K];
+        specificSurfaceArea  2e3[m^2/m^3];
+    }
+
 }

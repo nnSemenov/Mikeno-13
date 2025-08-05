@@ -1,7 +1,7 @@
 FoamFile {
     class dictionary;
     format ascii;
-    object physicalProperties.porous;
+    object physicalProperties.MCH;
 }
 
 thermoType

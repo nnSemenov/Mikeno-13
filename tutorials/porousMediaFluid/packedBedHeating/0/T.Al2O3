@@ -1,7 +1,7 @@
 FoamFile {
     format ascii;
     class volScalarField;
-    object T.porous;
+    object T.Al2O3;
 }
 
 dimensions [temperature];
