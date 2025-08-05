@@ -1,13 +1,10 @@
 #include "porousPhaseInfo.H"
 #include "IOdictionary.H"
-// #include <boost/graph/detail/adjacency_list.hpp>
-// #include <boost/graph/graph_mutability_traits.hpp>
-// #include <boost/graph/graph_traits.hpp>
-// #include <boost/graph/properties.hpp>
-// #include <boost/graph/undirected_graph.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
-#include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/named_function_params.hpp>
+#include <boost/graph/undirected_graph.hpp>
+#include <boost/graph/breadth_first_search.hpp>
+#include <cassert>
 #include <cstdlib>
 #include <optional>
 #include <variant>
@@ -96,12 +93,14 @@ Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime):
                     ),
                     mesh
                 ),
-                .thermo=std::move(thermo),
-                .thermophysicalTransport=std::move(transport)
+                .thermo=thermo,
+                .thermophysicalTransport=transport
             }
         );
         // force solver to write alpha (why AUTO_WRITE above doesn't work ?!)
         it.first->second.alpha.writeOpt()=IOobject::AUTO_WRITE;
+        const word pN = it.first->second.thermo->phaseName();
+        assert(pN==phaseName);
     }
 
     Info<<"Create "<<phaseNameList.size()<<" porous phases: "<<phaseNameList<<endl;
@@ -154,26 +153,16 @@ Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime):
         for(const word& phaseName: node.thermalEquilibriumPhaseNames) {
             Info<<phaseName<<", ";
         }
-        Info<<"\b\b) has following interaction(s): ";
+        Info<<"\b\b) has following interaction(s): \n";
         for(const auto & source: node.heatTransferSources) {
             Info<<"    "<<node.thermalEquilibriumPhaseNames[source.phaseA_index]<<"<->"<<source.phaseB_name<<'\n';
         }
         Info<<'\n';
     }
     Info<<endl;
-    // auto eq_phase_list = this->thermalEquilibriumPhases();
-    // Info<<"Thermal equilbrium phases: ";
-    // for(auto & phase_list: eq_phase_list) {
-    //     Info<<"\n  (";
-    //     for(auto & phase: phase_list) {
-    //         Info<<phase<<" ";
-    //     }
-    //     Info<<"\b)";
-    // }
-    // Info<<endl;
 }
 
-class DFSVisitor: public boost::default_dfs_visitor {
+class Visitor: public boost::default_bfs_visitor {
     public:
     std::vector<word> * phase_list;
     std::vector<Foam::porousPhaseInfo::heatTransferGraph_type::vertex_descriptor> * vert_list;
@@ -206,17 +195,20 @@ std::vector<std::vector<word>> Foam::porousPhaseInfo::thermalEquilibriumPhases()
         }
         std::vector<word> phases;
         std::vector<heatTransferGraph_type::vertex_descriptor> verts;
-        DFSVisitor vis;
+        Visitor vis;
         vis.phase_list=&phases;
         vis.vert_list=&verts;
-        boost::depth_first_search(graph, boost::visitor(vis));
-        // Info<<"Found "<<phases.size()<<" isothermal phase(s) from "<<boost::num_vertices(graph)<<" phase(s)"<<endl;
-
+        heatTransferGraph_type::vertex_iterator start_node = boost::vertices(graph).first;
+        boost::breadth_first_search(graph, *start_node,boost::visitor(vis));
+        
+        std::sort(verts.begin(), verts.end());
         for(auto it=verts.rbegin();it not_eq verts.rend();++it) {
             boost::remove_vertex(*it, graph);
         }
+        assert(phases.size()>0);
         ret.emplace_back(std::move(phases));
     }
+    assert(ret.size()>0);
 
     return ret;
 }

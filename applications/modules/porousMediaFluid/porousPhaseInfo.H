@@ -5,8 +5,8 @@
 #include <map>
 #include <optional>
 
-#include <boost/graph/undirected_graph.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/undirected_graph.hpp>
 
 #include "volFieldsFwd.H"
 #include "solidThermophysicalTransportModel.H"

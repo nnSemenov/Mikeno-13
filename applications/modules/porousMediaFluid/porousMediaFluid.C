@@ -1,6 +1,7 @@
 
 #include "volFieldsFwd.H"
 #include "porousMediaFluid.H"
+#include <cstdlib>
 
 namespace Foam {
 namespace solvers {
@@ -38,6 +39,12 @@ Foam::solvers::porousMediaFluid::porousMediaFluid(fvMesh&mesh) :
     const word fluid_phase_thermo_name = this->thermo().he().name();
     // Solid and fluid should have same energy type
     for(auto & porPhase: this->porousPhases.porousPhases()) {
+        Info<<"validating phase \""<<porPhase.first<<'\"'<<endl;
+        std::string phaseNameFromThermo = porPhase.second.thermo->phaseName();
+        if(phaseNameFromThermo.empty()) {
+            Info<<"thermo of phase "<<porPhase.first<<" have invalid phase name \""<<phaseNameFromThermo<<"\", must crash."<<endl;
+            std::abort();
+        }
         porPhase.second.thermo->validate("solid", fluid_phase_thermo_name);
     }
 
