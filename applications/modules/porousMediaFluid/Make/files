@@ -1,5 +1,6 @@
 porousMediaFluid.C
 porousPhaseInfo.C
 thermophysicalPredictor.C
+effectiveHeatConductivity.C
 
 LIB = $(FOAM_LIBBIN)/libporousMediaFluid

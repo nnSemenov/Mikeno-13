@@ -8,10 +8,14 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/undirected_graph.hpp>
 
+#include "effectiveHeatConductivity.H"
+
 #include "volFieldsFwd.H"
+#include "IOdictionary.H"
 #include "solidThermophysicalTransportModel.H"
 
 namespace Foam {
+
 
 struct equilibriumHeatTransfer {
 };
@@ -49,6 +53,7 @@ protected:
     heatTransferGraph_type heatTransferGraph_;
     heatTransferGraph_type::vertex_descriptor fluid_vertex{};
 
+    std::map<word, autoPtr<effectiveHeatConductivity>> effectiveHeatConductivityModels;
 
 public:
     explicit porousPhaseInfo(fvMesh&mesh, const Time& runTime);
@@ -77,6 +82,9 @@ public:
 
     const nonEquilibriumHeatTransfer * nonEquilibriumHeatTransferBetween(const word& phaseA, const word& phaseB) const;
 
+    word combinedPhaseName(std::vector<word> phaseNames) const;
+
+    effectiveHeatConductivity* effectiveKappaModelForPhaseList(std::vector<word> phaseNames) const;
 
     struct heatTransferInfoNode {
         struct heatTransferSource {
@@ -86,6 +94,8 @@ public:
         };
 
         std::vector<word> thermalEquilibriumPhaseNames;
+        // Not used for single phase
+        effectiveHeatConductivity* effectiveKappaModel;
         std::vector<heatTransferSource> heatTransferSources;
     };
     std::vector<heatTransferInfoNode> heatTransferSummary() const;

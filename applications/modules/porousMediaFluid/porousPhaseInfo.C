@@ -1,10 +1,11 @@
 #include "porousPhaseInfo.H"
-#include "IOdictionary.H"
+#include <algorithm>
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/named_function_params.hpp>
 #include <boost/graph/undirected_graph.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <cassert>
+#include <cstddef>
 #include <cstdlib>
 #include <optional>
 #include <variant>
@@ -146,6 +147,19 @@ Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime):
     }
     Info<<"Added "<<boost::num_edges(this->heatTransferGraph_)<<" heat transfer pathes"<<endl;
 
+    // Create effective kappa models
+    {
+        const dictionary& eKDict = porousPhaseDict.subDict("effectiveHeatConductivity");
+        List<keyType> keys = eKDict.keys(true);
+        keys.append(eKDict.keys(false));
+        for(const word & key :keys) {
+            const dictionary& dict = eKDict.subDict(key);
+            auto ek = effectiveHeatConductivity::New(dict);
+            this->effectiveHeatConductivityModels.emplace(key, ek);
+        }
+        Info<<"Loaded "<<keys.size()<<" effective heat conductivity model(s): \n"<<keys<<endl;
+    }
+
     auto summary = this->heatTransferSummary();
     Info<<"Heat transfer summary: \n";
     for(auto & node: summary) {
@@ -206,6 +220,7 @@ std::vector<std::vector<word>> Foam::porousPhaseInfo::thermalEquilibriumPhases()
             boost::remove_vertex(*it, graph);
         }
         assert(phases.size()>0);
+        std::sort(phases.begin(), phases.end());
         ret.emplace_back(std::move(phases));
     }
     assert(ret.size()>0);
@@ -241,16 +256,50 @@ Foam::porousPhaseInfo::nonEquilibriumHeatTransferBetween(
     return std::get_if<nonEquilibriumHeatTransfer>(ht);
 }
 
+Foam::word Foam::porousPhaseInfo::combinedPhaseName(std::vector<word> phaseNames) const {
+    std::sort(phaseNames.begin(), phaseNames.end());
+    word phaseList;
+    for(const word & ph: phaseNames) {
+        phaseList+=ph;
+        phaseList+=':';
+    }
+    phaseList.pop_back();
+    return phaseList;
+}
+
+Foam::effectiveHeatConductivity* Foam::porousPhaseInfo::effectiveKappaModelForPhaseList(std::vector<word> phaseNames) const {
+    const word combinedName = combinedPhaseName(phaseNames);
+
+    auto it = this->effectiveHeatConductivityModels.find(combinedName);
+    if(it not_eq this->effectiveHeatConductivityModels.end()) {
+        return const_cast<Foam::effectiveHeatConductivity*>(&it->second());
+    }
+    it=this->effectiveHeatConductivityModels.find("default");
+    if(it not_eq this->effectiveHeatConductivityModels.end()) {
+        return const_cast<Foam::effectiveHeatConductivity*>(&it->second());
+    }
+    return nullptr;
+}
+
 std::vector<Foam::porousPhaseInfo::heatTransferInfoNode>
 Foam::porousPhaseInfo::heatTransferSummary() const {
     std::vector<Foam::porousPhaseInfo::heatTransferInfoNode> ret;
     {
         auto eq_phase_list = this->thermalEquilibriumPhases();
         ret.reserve(eq_phase_list.size());
+
         for(auto& phaseNames: eq_phase_list) {
+            effectiveHeatConductivity* effKappaModel = this->effectiveKappaModelForPhaseList(phaseNames);
+            if(phaseNames.size()>1 and effKappaModel==nullptr) {
+                const word key = this->combinedPhaseName(phaseNames);
+                Info<<"Missing effective heat conducitivty model for multiple thermal equilibrium phases: "<<key;
+                Info<<"\n You should specify effective heat conducitivty model either for this phase combination or \"default\""<<endl;
+                std::abort();
+            }
             ret.emplace_back(
                 heatTransferInfoNode {
                     .thermalEquilibriumPhaseNames=std::move(phaseNames),
+                    .effectiveKappaModel=effKappaModel,
                     .heatTransferSources={}
                 }
             );
