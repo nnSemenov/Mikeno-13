@@ -21,14 +21,16 @@ public:
         if(ki.size()<=0) {
             return tmp<volScalarField>(nullptr);
         }
-        volScalarField alphaSum=ki[0].alpha;
-        tmp<volScalarField> ret = ki[0].kappa* ki[0].alpha;
+        auto alphaEff = max(ki[0].alpha, alpha_small_);
+        tmp<volScalarField> ret = ki[0].kappa* alphaEff.ref();
+        volScalarField alphaSum=alphaEff();
         volScalarField & result = ret.ref();
         for(size_t idx=1;idx<ki.size();idx++) {
-            result += ki[idx].kappa* ki[idx].alpha;
-            alphaSum+=ki[idx].alpha;
+            auto alphaEff = max(ki[idx].alpha, alpha_small_);
+            result += ki[idx].kappa* alphaEff.ref();
+            alphaSum += alphaEff.ref();
         }
-        alphaSum=max(alphaSum, this->alpha_small_);
+        // alphaSum=max(alphaSum, this->alpha_small_);
         result/=alphaSum;
         return ret;
     }

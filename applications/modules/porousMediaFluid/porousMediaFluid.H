@@ -17,11 +17,27 @@ protected:
     volScalarField porosity_;
     porousPhaseInfo porousPhases;
 
+    scalar alpha_small_{1e-6};
+
     void updatePorosity();
     
     tmp<volScalarField::Internal> TEqnNonIdealityPressureTerm(const volScalarField& dhedp_T) const;
 
-    tmp<fvScalarMatrix> TEqnCore(porousPhaseInfo::heatTransferInfoNode& node);
+    fvScalarMatrix TEqnCore(porousPhaseInfo::heatTransferInfoNode& node);
+
+    volScalarField& getTFieldRef(const word & phaseName) {
+        if(phaseName==porousPhaseInfo::FLUID_PHASE_NAME) {
+            return this->thermoPtr_->T();
+        }
+        return this->porousPhases.porousPhases().at(phaseName).thermo->T();
+    }
+
+    basicThermo& getThermo(const word & phaseName) {
+        if(phaseName==porousPhaseInfo::FLUID_PHASE_NAME) {
+            return this->thermoPtr_();
+        }
+        return this->porousPhases.porousPhases().at(phaseName).thermo();
+    }
 public:
     TypeName("porousMediaFluid");
 

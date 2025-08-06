@@ -1,6 +1,7 @@
 #include "porousMediaFluid.H"
 #include "fvcDdt.H"
 #include "fvmDiv.H"
+#include <cassert>
 #include <optional>
 
 using namespace Foam;
@@ -13,7 +14,8 @@ solvers::porousMediaFluid::TEqnNonIdealityPressureTerm(const volScalarField& dhe
         + rho_.internalField() * dpdt
     );
 }
-tmp<fvScalarMatrix> solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTransferInfoNode& node) {
+
+fvScalarMatrix solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTransferInfoNode& node) {
     auto getAlpha = [&](const word& phaseName) ->const volScalarField& {
         if(phaseName==porousPhaseInfo::FLUID_PHASE_NAME) {
             return this->porosity_;
@@ -37,12 +39,6 @@ tmp<fvScalarMatrix> solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTra
             return this->thermophysicalTransport->kappaEff();
         }
         return this->porousPhases.porousPhases().at(phaseName).thermo->kappa();
-    };
-    auto getTFieldRef = [&](const word& phaseName) -> volScalarField& {
-        if(phaseName==porousPhaseInfo::FLUID_PHASE_NAME) {
-            return this->thermoPtr_->T();
-        }
-        return this->porousPhases.porousPhases().at(phaseName).thermo->T();
     };
 
     volScalarField alphaRhoCp(
@@ -84,6 +80,7 @@ tmp<fvScalarMatrix> solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTra
         );
         alphaSum += getAlpha(phaseName);
     }
+    alphaSum.max(this->alpha_small_);
     tmp<volScalarField> kappaEff{nullptr};
     const bool singlePhase = node.thermalEquilibriumPhaseNames.size()==1;
     if(singlePhase) {
@@ -91,11 +88,14 @@ tmp<fvScalarMatrix> solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTra
     }else {
         kappaEff=node.effectiveKappaModel->kappaEff(kappaInfos);
     }
+    assert(min(kappaEff.ref()).value() > 0);
+    kappaEff.ref() *= alphaSum;
+    assert(min(kappaEff.ref()).value() > 0);
     // Build fvMatrix
     volScalarField&T = getTFieldRef(node.thermalEquilibriumPhaseNames[0]);
     fvScalarMatrix TEqn(
         alphaRhoCp*fvm::ddt(T)
-        - fvm::laplacian(alphaSum*kappaEff, T)
+        - fvm::laplacian(kappaEff, T)
         - fvModels().source(alphaRhoCp, T)
     );
     // add fluid terms
@@ -134,51 +134,81 @@ tmp<fvScalarMatrix> solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTra
 }
 
 void solvers::porousMediaFluid::thermophysicalPredictor() {
-    auto & thermo=this->thermoPtr_();
-    volScalarField & T=thermo.T();
-    const volScalarField& he = thermo.he();
-    const bool internalEnergy = he.name() == "e";
-    const auto Cpv=thermo.Cpv();
-    const surfaceScalarField phiCpv =(fvc::interpolate(Cpv) * phi_)();
-
-    const volScalarField & dhedp_T = thermo.dhedp_T();
-
-    const volScalarField & alphaF = this->porosity_;
-
-
-    volScalarField kappaEff = (this->thermophysicalTransport->kappaEff() * alphaF)();
-    volScalarField rhoCpEff = (alphaF* rho_ * Cpv)();
-    for(auto & pair: this->porousPhases.porousPhases()) {
-        const auto & alphaP=pair.second.alpha;
-        auto & thermoP=pair.second.thermo;
-        const volScalarField& rhoP=thermoP->rho();
-        const volScalarField& CpvP=thermoP->Cpv();
-        rhoCpEff+=alphaP*rhoP*CpvP;
-        kappaEff+=alphaP*thermoP->kappa();
+    auto htGraph = this->porousPhases.heatTransferSummary();
+    const size_t N_eqn = htGraph.size();
+    std::vector<fvScalarMatrix> TEqnList;
+    for(auto & node: htGraph) {
+        TEqnList.emplace_back(
+            this->TEqnCore(node)
+        );
     }
-    // Thermal equilbrium 
-    fvScalarMatrix TEqn (
+    assert(TEqnList.size()==N_eqn);
+    for(size_t i=0;i<N_eqn;i++) {
+        fvScalarMatrix & TEqn = TEqnList[i];
+        TEqn.relax();
+        fvConstraints().constrain(TEqn);
+        TEqn.solve();
 
-        rhoCpEff* fvm::ddt(T) 
-        + alphaF*(fvm::div(phiCpv, T) 
-            - fvm::SuSp(fvc::div(phiCpv), T))
-        + alphaF*TEqnNonIdealityPressureTerm(dhedp_T)
+        volScalarField&T = getTFieldRef(htGraph[i].thermalEquilibriumPhaseNames[0]);
+        fvConstraints().constrain(T);
+        const auto & p_ = this->p_();
+        for(size_t phIdx=0;phIdx<htGraph[i].thermalEquilibriumPhaseNames.size();phIdx++) {
+            const word & phaseName = htGraph[i].thermalEquilibriumPhaseNames[phIdx];
 
-        + alphaF*(fvc::ddt(rho_, K) + fvc::div(phi_, K)) // Fluid kinetic
-        - fvm::laplacian(kappaEff, T)
-        + alphaF*pressureWork
-          (
-            internalEnergy
-            ? fvc::div(phi_, p_()/rho_)()
-            : -dpdt
-          )
-        ==
-        (
-            buoyancy.valid()
-        ? fvModels().source(rhoCpEff, T) + alphaF*rho_*(U_ & buoyancy->g)
-        : fvModels().source(rhoCpEff, T)
-        )
-    );
+            basicThermo& thermo = getThermo(phaseName);
+            if(phIdx>0) {
+                thermo.T()=T;
+            }
+            thermo.he() = thermo.he(p_, T);
+            thermo.correct();
+        }
+    }
+
+    // auto & thermo=this->thermoPtr_();
+    // volScalarField & T=thermo.T();
+    // const volScalarField& he = thermo.he();
+    // const bool internalEnergy = he.name() == "e";
+    // const auto Cpv=thermo.Cpv();
+    // const surfaceScalarField phiCpv =(fvc::interpolate(Cpv) * phi_)();
+
+    // const volScalarField & dhedp_T = thermo.dhedp_T();
+
+    // const volScalarField & alphaF = this->porosity_;
+
+
+    // volScalarField kappaEff = (this->thermophysicalTransport->kappaEff() * alphaF)();
+    // volScalarField rhoCpEff = (alphaF* rho_ * Cpv)();
+    // for(auto & pair: this->porousPhases.porousPhases()) {
+    //     const auto & alphaP=pair.second.alpha;
+    //     auto & thermoP=pair.second.thermo;
+    //     const volScalarField& rhoP=thermoP->rho();
+    //     const volScalarField& CpvP=thermoP->Cpv();
+    //     rhoCpEff+=alphaP*rhoP*CpvP;
+    //     kappaEff+=alphaP*thermoP->kappa();
+    // }
+    // // Thermal equilbrium 
+    // fvScalarMatrix TEqn (
+
+    //     rhoCpEff* fvm::ddt(T) 
+    //     + alphaF*(fvm::div(phiCpv, T) 
+    //         - fvm::SuSp(fvc::div(phiCpv), T))
+    //     + alphaF*TEqnNonIdealityPressureTerm(dhedp_T)
+
+    //     + alphaF*(fvc::ddt(rho_, K) + fvc::div(phi_, K)) // Fluid kinetic
+    //     - fvm::laplacian(kappaEff, T)
+    //     + alphaF*pressureWork
+    //       (
+    //         internalEnergy
+    //         ? fvc::div(phi_, p_()/rho_)()
+    //         : -dpdt
+    //       )
+    //     ==
+    //     (
+    //         buoyancy.valid()
+    //     ? fvModels().source(rhoCpEff, T) + alphaF*rho_*(U_ & buoyancy->g)
+    //     : fvModels().source(rhoCpEff, T)
+    //     )
+    // );
 
     // Fluid only
     // fvScalarMatrix TEqn (
@@ -203,23 +233,23 @@ void solvers::porousMediaFluid::thermophysicalPredictor() {
     //         )
     // );
 
-    TEqn.relax();
+    // TEqn.relax();
 
-    fvConstraints().constrain(TEqn);
+    // fvConstraints().constrain(TEqn);
 
-    TEqn.solve();
+    // TEqn.solve();
 
-    fvConstraints().constrain(T);
-    // Update energy
-    thermo.he() = thermo.he(this->p_(), T);
-    // Update other properties
-    this->thermoPtr_().correct();
+    // fvConstraints().constrain(T);
+    // // Update energy
+    // thermo.he() = thermo.he(this->p_(), T);
+    // // Update other properties
+    // this->thermoPtr_().correct();
 
-    for(auto & pair: this->porousPhases.porousPhases()) {
-        auto & thermoP=pair.second.thermo;
-        thermoP->T()=T;
-        thermoP->he() = thermoP->he(this->p_(), T);
-        thermoP->correct();
-    }
+    // for(auto & pair: this->porousPhases.porousPhases()) {
+    //     auto & thermoP=pair.second.thermo;
+    //     thermoP->T()=T;
+    //     thermoP->he() = thermoP->he(this->p_(), T);
+    //     thermoP->correct();
+    // }
 
 }
