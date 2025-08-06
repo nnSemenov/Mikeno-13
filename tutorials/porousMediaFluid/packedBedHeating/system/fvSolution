@@ -23,6 +23,12 @@ solvers {
         tolerance 1e-4;
         relTol 1e-3;
     }
+    "T.*" {
+        solver GAMG;
+        smoother symGaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-3;
+    }
 }
 
 SIMPLE {
@@ -36,14 +42,14 @@ SIMPLE {
     residualControl {
         p               1e-3;
         U               1e-3;
-        "(h|e|T)"         1e-3;
+        "(h|e|T|T.*)"         1e-3;
     }
 }
 
 relaxationFactors {
     equations {
         U 0.95;
-        "(e|h|T)" 0.9;
+        "(e|h|T|T.*)" 0.9;
     }
     fields {
         p 0.7;
