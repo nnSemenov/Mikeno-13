@@ -20,6 +20,8 @@ protected:
     void updatePorosity();
     
     tmp<volScalarField::Internal> TEqnNonIdealityPressureTerm(const volScalarField& dhedp_T) const;
+
+    tmp<fvScalarMatrix> TEqnCore(porousPhaseInfo::heatTransferInfoNode& node);
 public:
     TypeName("porousMediaFluid");
 

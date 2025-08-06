@@ -82,7 +82,7 @@ public:
 
     const nonEquilibriumHeatTransfer * nonEquilibriumHeatTransferBetween(const word& phaseA, const word& phaseB) const;
 
-    word combinedPhaseName(std::vector<word> phaseNames) const;
+    static word combinedPhaseName(std::vector<word> phaseNames);
 
     effectiveHeatConductivity* effectiveKappaModelForPhaseList(std::vector<word> phaseNames) const;
 
@@ -97,6 +97,16 @@ public:
         // Not used for single phase
         effectiveHeatConductivity* effectiveKappaModel;
         std::vector<heatTransferSource> heatTransferSources;
+
+        std::optional<size_t> fluidPhaseIndex() const {
+            for(size_t idx=0;idx<thermalEquilibriumPhaseNames.size();idx++) {
+                const word& phaseName = thermalEquilibriumPhaseNames[idx];
+                if(phaseName==FLUID_PHASE_NAME) {
+                    return idx;
+                }
+            }
+            return std::nullopt;
+        }
     };
     std::vector<heatTransferInfoNode> heatTransferSummary() const;
 };

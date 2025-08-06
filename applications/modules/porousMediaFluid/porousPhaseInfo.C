@@ -256,7 +256,7 @@ Foam::porousPhaseInfo::nonEquilibriumHeatTransferBetween(
     return std::get_if<nonEquilibriumHeatTransfer>(ht);
 }
 
-Foam::word Foam::porousPhaseInfo::combinedPhaseName(std::vector<word> phaseNames) const {
+Foam::word Foam::porousPhaseInfo::combinedPhaseName(std::vector<word> phaseNames) {
     std::sort(phaseNames.begin(), phaseNames.end());
     word phaseList;
     for(const word & ph: phaseNames) {
