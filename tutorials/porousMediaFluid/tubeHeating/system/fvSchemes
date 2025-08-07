@@ -13,8 +13,8 @@ gradSchemes {
 }
 
 divSchemes {
-    default Gauss limitedLinear 1;
-    div(phi,U) Gauss limitedLinearV 1;
+    default Gauss linearUpwind cyka;
+    div(phi,U) Gauss linearUpwindV cyka;
 }
 
 snGradSchemes {
