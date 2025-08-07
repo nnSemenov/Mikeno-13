@@ -1,0 +1,26 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object fvModels;
+}
+
+inertForce {
+    type            porosityForce;
+
+    porosityForceCoeffs
+    {
+        cellZone        porous;
+
+        type            DarcyForchheimer;
+
+        // D 100;  // Very little blockage
+        // D 200;  // Some blockage but steady flow
+        // D 500;  // Slight waviness in the far wake
+        D 1e8; // Fully shedding behavior
+
+        d   ($D $D $D);
+        f   (0 0 0);
+
+        coordinateSystem porousBlockage;
+    }
+}

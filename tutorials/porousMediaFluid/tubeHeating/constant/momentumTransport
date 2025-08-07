@@ -1,0 +1,7 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object momentumTransport;
+}
+
+simulationType laminar;

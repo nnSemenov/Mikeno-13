@@ -1,0 +1,25 @@
+FoamFile {
+    class volScalarField;
+    object p;
+    format ascii;
+}
+
+dimensions [pressure];
+
+internalField uniform 0;
+
+boundaryField {
+    "(gas_wall|porous_wall)" {
+        type zeroGradient;
+    }
+    symmetry {
+        type symmetry;
+    }
+    inlet {
+        type zeroGradient;
+    }
+    outlet {
+        type fixedValue;
+        value $internalField;
+    }
+}

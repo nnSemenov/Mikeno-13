@@ -1,0 +1,36 @@
+FoamFile {
+    class dictionary;
+    object controlDict;
+    format ascii;
+}
+
+
+solver porousMediaFluid;
+
+libs ("libporousMediaFluid.so")
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         200;
+
+deltaT          1;
+
+writeInterval   20;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
