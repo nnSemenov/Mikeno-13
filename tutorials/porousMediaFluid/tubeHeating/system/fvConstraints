@@ -22,7 +22,15 @@ limitT {
     cellZone   all;
     min        200;
     max        5000;
-    field T;
+    field      T;
+}
+
+limitT.porous {
+    type limitTemperature;
+    cellZone   all;
+    min        200;
+    max        5000;
+    field      T.porous;
 }
 
 limitp {

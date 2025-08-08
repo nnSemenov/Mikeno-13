@@ -12,7 +12,7 @@ libs (
     "libfieldFunctionObjects.so"
 );
 
-startFrom       startTime;
+startFrom       latestTime;
 
 startTime       0;
 
@@ -50,5 +50,9 @@ functions {
             type cellSet;
             set inlet_cells;
         }
+        executeControl      none;
+        // executeInterval     ;
+        writeControl        none;
+        // writeInterval       1;
     }
 }
