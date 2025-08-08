@@ -7,7 +7,10 @@ FoamFile {
 
 solver porousMediaFluid;
 
-libs ("libporousMediaFluid.so")
+libs (
+    "libporousMediaFluid.so"
+    "libfieldFunctionObjects.so"
+);
 
 startFrom       startTime;
 
@@ -34,3 +37,18 @@ timeFormat      general;
 timePrecision   6;
 
 runTimeModifiable true;
+
+functions {
+    streamLine {
+        type streamlines;
+        fields (T p);
+        direction forward;
+        lifeTime 500;
+        trackLength 500;
+        setFormat vtk;
+        seedSampleSet {
+            type cellSet;
+            set inlet_cells;
+        }
+    }
+}
