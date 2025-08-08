@@ -43,9 +43,12 @@ Foam::heatTransfer Foam::parse_heatTransfer(const Foam::dictionary& dict) {
             std::abort();
         }
 
+        const bool explicitTerm = dict.lookupOrDefault<bool>("explicit", false);
+
         return nonEquilibriumHeatTransfer {
             .heatTransferCoefficient=alpha,
-            .effectiveSpecificSurfaceArea=area
+            .effectiveSpecificSurfaceArea=area,
+            .explicitTerm=explicitTerm
         };
     }
 

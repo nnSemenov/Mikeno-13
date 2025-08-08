@@ -84,7 +84,7 @@ fvScalarMatrix solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTransfer
     tmp<volScalarField> kappaEff{nullptr};
     const bool singlePhase = node.thermalEquilibriumPhaseNames.size()==1;
     if(singlePhase) {
-        kappaEff=kappaInfos[0].kappa;
+        kappaEff=kappaInfos[0].kappa().clone();
     }else {
         kappaEff=node.effectiveKappaModel->kappaEff(kappaInfos);
     }
@@ -127,7 +127,12 @@ fvScalarMatrix solvers::porousMediaFluid::TEqnCore(porousPhaseInfo::heatTransfer
         const volScalarField& Tsrc = getTFieldRef(phaseSrc);
         const auto & htInfo = htSource.heatTransferInfo;
         const auto hsAs = getAlpha(phaseSrc)*getAlpha(phaseDest) * htInfo.heatTransferCoefficient * htInfo.effectiveSpecificSurfaceArea;
-        TEqn -= hsAs*(Tsrc-Tdest);
+        if(htInfo.explicitTerm) {
+            TEqn -= hsAs*(Tsrc-Tdest);
+        }else {
+            TEqn -= hsAs.ref()*Tsrc;
+            TEqn += fvm::Sp(hsAs, Tdest);
+        }
     }
 
     return TEqn;

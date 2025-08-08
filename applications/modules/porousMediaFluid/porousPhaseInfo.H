@@ -22,6 +22,7 @@ struct equilibriumHeatTransfer {
 struct nonEquilibriumHeatTransfer {
     dimensionedScalar heatTransferCoefficient;
     dimensionedScalar effectiveSpecificSurfaceArea;
+    bool explicitTerm;
 };
 using heatTransfer = std::variant<equilibriumHeatTransfer, nonEquilibriumHeatTransfer>;
 
