@@ -115,6 +115,7 @@ class eIcoTabulatedThermo
 
 public:
 
+    using EOS_type = EquationOfState;
     // Constructors
 
         //- Construct from name and dictionary

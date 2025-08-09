@@ -1,0 +1,19 @@
+FoamFile {
+    class dictionary;
+    object geometryInfo;
+    format ascii;
+}
+
+tube_radius 10e-3;
+
+
+inlet_length 20e-3;
+porous_length 10e-3;
+outlet_length 20e-3;
+
+base_size 0.75e-3;
+
+inlet_z_begin 0.;
+porous_z_begin #calc "$inlet_z_begin + $inlet_length";
+outlet_z_begin #calc "$porous_z_begin + $porous_length";
+outlet_z_end   #calc "$outlet_z_begin + $outlet_length";

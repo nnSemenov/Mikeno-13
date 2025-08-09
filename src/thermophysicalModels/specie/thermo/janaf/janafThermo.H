@@ -173,6 +173,7 @@ private:
 
 public:
 
+    using EOS_type = EquationOfState;
     // Constructors
 
         //- Construct from components

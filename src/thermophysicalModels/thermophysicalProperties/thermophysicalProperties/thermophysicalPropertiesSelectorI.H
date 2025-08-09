@@ -193,6 +193,29 @@ Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::s
 
 template<class ThermophysicalProperties>
 inline Foam::scalar
+Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::dhdp_T
+(
+    scalar p,
+    scalar T
+) const
+{
+    return propertiesPtr_->dhdp_T(p, T);
+}
+
+template<class ThermophysicalProperties>
+inline Foam::scalar
+Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::dedp_T
+(
+    scalar p,
+    scalar T
+) const
+{
+    return propertiesPtr_->dedp_T(p, T);
+}
+
+
+template<class ThermophysicalProperties>
+inline Foam::scalar
 Foam::thermophysicalPropertiesSelector<ThermophysicalProperties>::kappa
 (
     scalar p,

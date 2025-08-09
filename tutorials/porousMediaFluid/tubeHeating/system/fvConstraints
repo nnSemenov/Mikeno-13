@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvConstraints;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// include packaged fvConstraints using #includeConstraint
+// #includeConstraint
+
+limitT {
+    type limitTemperature;
+    cellZone   all;
+    min        200;
+    max        5000;
+    field      T;
+}
+
+limitT.porous {
+    type limitTemperature;
+    cellZone   all;
+    min        200;
+    max        5000;
+    field      T.porous;
+}
+
+limitp {
+    type limitPressure;
+    min -9.9e7;
+    max 1e10;
+}
+
+// ************************************************************************* //

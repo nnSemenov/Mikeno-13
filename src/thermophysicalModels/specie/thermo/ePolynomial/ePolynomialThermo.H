@@ -158,6 +158,7 @@ class ePolynomialThermo
 
 
 public:
+    using EOS_type = EquationOfState;
 
     // Constructors
 

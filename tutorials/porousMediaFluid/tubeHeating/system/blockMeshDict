@@ -1,0 +1,150 @@
+FoamFile {
+    class dictionary;
+    object blockMeshDict;
+    format ascii;
+}
+
+#include "geometryInfo";
+
+out_xz #calc "$tube_radius * sqrt(2.0)/2.0";
+
+iCore_ratio 0.5;
+jCore_ratio 0.6;
+sym_xz   #calc "$tube_radius * $iCore_ratio";
+inner_xz #calc "$out_xz * $jCore_ratio";
+
+geometry {
+    tube_cylinder {
+        type searchableCylinder;
+        point1 (0 0 #calc "$inlet_z_begin - 1");
+        point2 (0 0 #calc "$outlet_z_end + 1");
+        radius $tube_radius;
+    }
+}
+
+vertices (
+    name i0 (0 0 $inlet_z_begin)
+    name i1 ($sym_xz 0 $inlet_z_begin)
+    name i2 ($inner_xz $inner_xz $inlet_z_begin)
+    name i3 (0 $sym_xz $inlet_z_begin)
+    name i4 ($tube_radius 0 $inlet_z_begin)
+    name i5 ($out_xz $out_xz $inlet_z_begin)
+    name i6 (0 $tube_radius $inlet_z_begin)
+
+    name j0 (0 0 $porous_z_begin)
+    name j1 ($sym_xz 0 $porous_z_begin)
+    name j2 ($inner_xz $inner_xz $porous_z_begin)
+    name j3 (0 $sym_xz $porous_z_begin)
+    name j4 ($tube_radius 0 $porous_z_begin)
+    name j5 ($out_xz $out_xz $porous_z_begin)
+    name j6 (0 $tube_radius $porous_z_begin)
+
+    name k0 (0 0 $outlet_z_begin)
+    name k1 ($sym_xz 0 $outlet_z_begin)
+    name k2 ($inner_xz $inner_xz $outlet_z_begin)
+    name k3 (0 $sym_xz $outlet_z_begin)
+    name k4 ($tube_radius 0 $outlet_z_begin)
+    name k5 ($out_xz $out_xz $outlet_z_begin)
+    name k6 (0 $tube_radius $outlet_z_begin)
+
+    name o0 (0 0 $outlet_z_end)
+    name o1 ($sym_xz 0 $outlet_z_end)
+    name o2 ($inner_xz $inner_xz $outlet_z_end)
+    name o3 (0 $sym_xz $outlet_z_end)
+    name o4 ($tube_radius 0 $outlet_z_end)
+    name o5 ($out_xz $out_xz $outlet_z_end)
+    name o6 (0 $tube_radius $outlet_z_end)
+);
+
+edges (
+    project i4 i5 (tube_cylinder)
+    project i5 i6 (tube_cylinder)
+
+    project j4 j5 (tube_cylinder)
+    project j5 j6 (tube_cylinder)
+
+    project k4 k5 (tube_cylinder)
+    project k5 k6 (tube_cylinder)
+
+    project o4 o5 (tube_cylinder)
+    project o5 o6 (tube_cylinder)
+);
+
+inlet_z_cells #calc "std::ceil($inlet_length / $base_size)";
+porous_z_cells #calc "std::ceil($porous_length / $base_size)";
+outlet_z_cells #calc "std::ceil($outlet_length / $base_size)";
+
+circ_cells #calc "std::ceil($tube_radius * $iCore_ratio / $base_size)";
+radial_cells #calc "std::ceil($tube_radius * (1 - $iCore_ratio) / $base_size)";
+
+blocks (
+    hex (i0 i1 i2 i3 j0 j1 j2 j3) ($circ_cells $circ_cells $inlet_z_cells) simpleGrading (1 1 1)
+    hex (i1 i4 i5 i2 j1 j4 j5 j2) ($radial_cells $circ_cells $inlet_z_cells) simpleGrading (1 1 1)
+    hex (i2 i5 i6 i3 j2 j5 j6 j3) ($radial_cells $circ_cells $inlet_z_cells) simpleGrading (1 1 1)
+
+    hex (j0 j1 j2 j3 k0 k1 k2 k3) ($circ_cells $circ_cells $porous_z_cells) simpleGrading (1 1 1)
+    hex (j1 j4 j5 j2 k1 k4 k5 k2) ($radial_cells $circ_cells $porous_z_cells) simpleGrading (1 1 1)
+    hex (j2 j5 j6 j3 k2 k5 k6 k3) ($radial_cells $circ_cells $porous_z_cells) simpleGrading (1 1 1)
+
+    hex (k0 k1 k2 k3 o0 o1 o2 o3) ($circ_cells $circ_cells $outlet_z_cells) simpleGrading (1 1 1)
+    hex (k1 k4 k5 k2 o1 o4 o5 o2) ($radial_cells $circ_cells $outlet_z_cells) simpleGrading (1 1 1)
+    hex (k2 k5 k6 k3 o2 o5 o6 o3) ($radial_cells $circ_cells $outlet_z_cells) simpleGrading (1 1 1)
+);
+
+boundary (
+    inlet {
+        type patch;
+        faces (
+            (i0 i1 i2 i3)
+            (i1 i4 i5 i2)
+            (i2 i5 i6 i3)
+        );
+    }
+    outlet {
+        type patch;
+        faces (
+            (o0 o1 o2 o3)
+            (o1 o4 o5 o2)
+            (o2 o5 o6 o3)
+        );
+    }
+    symmetry {
+        type symmetry;
+        faces (
+            (i0 i1 j1 j0)
+            (j0 j1 k1 k0)
+            (k0 k1 o1 o0)
+
+            (i1 i4 j4 j1)
+            (j1 j4 k4 k1)
+            (k1 k4 o4 o1)
+
+            (i0 i3 j3 j0)
+            (j0 j3 k3 k0)
+            (k0 k3 o3 o0)
+
+            (i3 i6 j6 j3)
+            (j3 j6 k6 k3)
+            (k3 k6 o6 o3)
+        );
+    }
+
+    gas_wall {
+        type wall;
+        faces (
+            (i4 i5 j5 j4)
+            (k4 k5 o5 o4)
+
+            (i5 i6 j6 j5)
+            (k5 k6 o6 o5)
+        );
+    }
+
+    porous_wall {
+        type wall;
+        faces (
+            (j4 j5 k5 k4)
+            (j5 j6 k6 k5)
+        );
+    }
+);

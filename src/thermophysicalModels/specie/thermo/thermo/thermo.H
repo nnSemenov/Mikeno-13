@@ -211,6 +211,8 @@ public:
             //- Helmholtz free energy [J/kg]
             inline scalar a(const scalar p, const scalar T) const;
 
+        // isothermal compression enthalpy
+            inline scalar dhedp_T(const scalar p, const scalar T) const;
 
         // Equilibrium reaction thermodynamics
 

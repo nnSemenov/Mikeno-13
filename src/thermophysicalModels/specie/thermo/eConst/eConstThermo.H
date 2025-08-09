@@ -124,6 +124,7 @@ class eConstThermo
 
 public:
 
+        using EOS_type = EquationOfState;
     // Constructors
 
         //- Construct from components

@@ -190,6 +190,20 @@ realThermoMixtureFunction(ha, h)
 realThermoMixtureFunction(es, e)
 realThermoMixtureFunction(ea, e)
 
+template<class ThermoType>
+Foam::scalar
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::dhdp_T(scalar p, scalar T) const {
+    const auto core=this->mixedCore(p, T);
+    return core.dhdp_T(p, T, this->W());
+}
+template<class ThermoType>
+Foam::scalar
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::dedp_T(scalar p, scalar T) const {
+    const auto core=this->mixedCore(p, T);
+    return core.dedp_T(p, T, this->W());
+}
+
+
 // Cp or Cv
 // thermoMixtureFunction(Cpv)
 

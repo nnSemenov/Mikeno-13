@@ -194,6 +194,10 @@ thermoMixtureFunction(Cpv)
 thermoMixtureFunction(gamma)
 thermoMixtureFunction(he)
 
+thermoMixtureFunction(dhdp_T)
+thermoMixtureFunction(dedp_T)
+thermoMixtureFunction(dhedp_T)
+
 
 template<class ThermoType>
 Foam::scalar

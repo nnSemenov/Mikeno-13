@@ -44,3 +44,19 @@ inline scalar ea
 {
     return ha(p, T) - p/EquationOfState::rho(p, T);
 }
+
+inline scalar dedp_T
+(
+    const scalar p,
+    const scalar T
+) const {
+    return EquationOfState::dedp_T(p, T);
+}
+
+inline scalar dhdp_T
+(
+    const scalar p,
+    const scalar T
+) const {
+    return EquationOfState::dhdp_T(p, T);
+}

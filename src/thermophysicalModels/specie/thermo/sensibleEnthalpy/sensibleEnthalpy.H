@@ -100,6 +100,15 @@ public:
                 return thermo.ideal_Cp(p, T);
             }
 
+            scalar ideal_he
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const {
+                return thermo.ideal_hs(p, T);
+            }
+            
             // Sensible enthalpy [J/kg]
             scalar he
             (
@@ -111,14 +120,16 @@ public:
                 return thermo.hs(p, T);
             }
 
-            scalar ideal_he
+            //- Partial enthalpy by partial pressure, isothermal [m^3/kg]
+            scalar dhedp_T
             (
                 const Thermo& thermo,
                 const scalar p,
                 const scalar T
             ) const {
-                return thermo.ideal_hs(p, T);
+                return thermo.dhdp_T(p, T);
             }
+
 
             //- Temperature from sensible enthalpy
             //  given an initial temperature T0
