@@ -42,6 +42,7 @@ void Foam::RhoFluidThermo<BaseThermo>::calculate()
     scalarField& rhoCells = this->rho_.primitiveFieldRef();
     scalarField& muCells = this->mu_.primitiveFieldRef();
     scalarField& kappaCells = this->kappa_.primitiveFieldRef();
+    scalarField& dhedp_T = this->dhedp_T_.primitiveFieldRef();
 
     auto Yslicer = this->Yslicer();
 
@@ -67,6 +68,7 @@ void Foam::RhoFluidThermo<BaseThermo>::calculate()
         CvCells[celli] = thermoMixture.Cv(pCells[celli]+pressureOffset, TCells[celli]);
         psiCells[celli] = thermoMixture.psi(pCells[celli]+pressureOffset, TCells[celli]);
         rhoCells[celli] = thermoMixture.rho(pCells[celli]+pressureOffset, TCells[celli]);
+        dhedp_T[celli]=thermoMixture.dhedp_T(pCells[celli]+pressureOffset, TCells[celli]);
 
         muCells[celli] = transportMixture.mu(pCells[celli]+pressureOffset, TCells[celli]);
         kappaCells[celli] =
@@ -93,6 +95,9 @@ void Foam::RhoFluidThermo<BaseThermo>::calculate()
 
     volScalarField::Boundary& heBf =
         this->he().boundaryFieldRef();
+        
+    volScalarField::Boundary& dhedp_TBf =
+        this->kappa_.boundaryFieldRef();
 
     volScalarField::Boundary& muBf =
         this->mu_.boundaryFieldRef();
@@ -108,6 +113,7 @@ void Foam::RhoFluidThermo<BaseThermo>::calculate()
         fvPatchScalarField& pCv = CvBf[patchi];
         fvPatchScalarField& ppsi = psiBf[patchi];
         fvPatchScalarField& prho = rhoBf[patchi];
+        fvPatchScalarField& pdhedp_T = dhedp_TBf[patchi];
         fvPatchScalarField& phe = heBf[patchi];
         fvPatchScalarField& pmu = muBf[patchi];
         fvPatchScalarField& pkappa = kappaBf[patchi];
@@ -132,6 +138,7 @@ void Foam::RhoFluidThermo<BaseThermo>::calculate()
                 pCv[facei] = thermoMixture.Cv(pp[facei]+pressureOffset, pT[facei]);
                 ppsi[facei] = thermoMixture.psi(pp[facei]+pressureOffset, pT[facei]);
                 prho[facei] = thermoMixture.rho(pp[facei]+pressureOffset, pT[facei]);
+                pdhedp_T[facei] = thermoMixture.dhedp_T(pp[facei]+pressureOffset, pT[facei]);
 
                 pmu[facei] = transportMixture.mu(pp[facei]+pressureOffset, pT[facei]);
                 pkappa[facei] = transportMixture.kappa(pp[facei]+pressureOffset, pT[facei]);
@@ -157,6 +164,7 @@ void Foam::RhoFluidThermo<BaseThermo>::calculate()
                 pCv[facei] = thermoMixture.Cv(pp[facei]+pressureOffset, pT[facei]);
                 ppsi[facei] = thermoMixture.psi(pp[facei]+pressureOffset, pT[facei]);
                 prho[facei] = thermoMixture.rho(pp[facei]+pressureOffset, pT[facei]);
+                pdhedp_T[facei] = thermoMixture.dhedp_T(pp[facei]+pressureOffset, pT[facei]);
 
                 pmu[facei] = transportMixture.mu(pp[facei]+pressureOffset, pT[facei]);
                 pkappa[facei] = transportMixture.kappa(pp[facei]+pressureOffset, pT[facei]);

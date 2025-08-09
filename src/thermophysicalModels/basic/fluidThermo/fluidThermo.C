@@ -71,6 +71,18 @@ Foam::fluidThermo::implementation::implementation
         ),
         mesh,
         dimensionSet(1, -1, -1, 0, 0)
+    ),
+    dhedp_T_(
+        IOobject
+        (
+            phasePropertyName("dhedp_T", phaseName),
+            mesh.time().name(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionSet(-1, 3, 0, 0, 0)
     )
 {}
 
@@ -123,6 +135,15 @@ Foam::volScalarField& Foam::fluidThermo::implementation::p()
     return p_;
 }
 
+Foam::volScalarField& Foam::fluidThermo::implementation::dhedp_T()
+{
+    return dhedp_T_;
+}
+
+const Foam::volScalarField& Foam::fluidThermo::implementation::dhedp_T() const
+{
+    return dhedp_T_;
+}
 
 const Foam::volScalarField& Foam::fluidThermo::implementation::psi() const
 {

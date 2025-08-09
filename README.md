@@ -11,6 +11,8 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 
 1. The `pOffset` keyword can be added to `physicalProperites`, allowing gauge pressure for p-V coupling, and absolute pressure for thermophysical. **Small pressure difference will never be flooded by floating point rounding error(espicially single precision)**.
 
+### Porous media heat transfer
+1. `porousMediaFluid` supporting arbitary number of porous phases, heat transfer between fluid-porous and porous-porous, both supporting thermal equilibrium and non-equilibrium.
 
 ### More rigous thermodynamics
 1. Equation of state: add `RedlichKwongGas`, rewrite `PengRobinsonGas`
@@ -32,6 +34,6 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 
 ## Pending works
 1. More equation of state: Patel-Teja, Martin-Hou.
-2. Porous media model in the spirit of AnsysFluent.
-   1. (OpenFOAM doesn't consider heat transfer in porous media)
-3. Remove more redundant reference member in all solver modules.
+2. Extend porous media heat transfer to multicomponent and multiphase
+3. Stabilize `porousMediaFluid` for non-equilibrium heat transfer with large coefficient or specific area.
+4. Remove more redundant reference member in all solver modules.

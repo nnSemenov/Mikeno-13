@@ -106,6 +106,11 @@ public:
             //- Compressibility [s^2/m^2]
             virtual const volScalarField& psi() const = 0;
 
+            //- Isothermal enthalpy/internal energy - pressure derivative [m/kg]
+            virtual volScalarField & dhedp_T() = 0;
+            
+            //- Isothermal enthalpy/internal energy - pressure derivative [m/kg]
+            virtual const volScalarField & dhedp_T() const = 0;
 
         // Derived thermodynamic properties
 
@@ -132,6 +137,7 @@ public:
 
             //- Kinematic viscosity of mixture for patch [m^2/s]
             tmp<scalarField> nu(const label patchi) const;
+
 };
 
 
@@ -158,7 +164,8 @@ protected:
             //- Dynamic viscosity [kg/m/s]
             volScalarField mu_;
 
-
+            //- Isothermal enthalpy/internal energy - pressure derivative [m^3/kg]
+            volScalarField dhedp_T_;
 public:
 
     // Constructors
@@ -188,11 +195,18 @@ public:
             //- Compressibility [s^2/m^2]
             virtual const volScalarField& psi() const;
 
+            //- Isothermal enthalpy/internal energy - pressure derivative [m^3/kg]
+            virtual volScalarField & dhedp_T();
+            
+            //- Isothermal enthalpy/internal energy - pressure derivative [m^3/kg]
+            virtual const volScalarField & dhedp_T() const;
 
         // Transport state
 
             //- Dynamic viscosity of mixture [kg/m/s]
             virtual const volScalarField& mu() const;
+
+
 
 
     // Member Operators

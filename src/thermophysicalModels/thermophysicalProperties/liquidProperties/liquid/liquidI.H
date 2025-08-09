@@ -120,4 +120,14 @@ inline Foam::scalar Foam::liquid::D(scalar p, scalar T, scalar Wb) const
 }
 
 
+inline Foam::scalar Foam::liquid::dhdp_T(scalar p, scalar T) const
+{
+    return 0;
+}
+
+inline Foam::scalar Foam::liquid::dedp_T(scalar p, scalar T) const
+{
+    return 0;
+}
+
 // ************************************************************************* //

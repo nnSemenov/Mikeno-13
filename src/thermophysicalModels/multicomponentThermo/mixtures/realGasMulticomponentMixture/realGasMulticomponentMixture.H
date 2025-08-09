@@ -124,6 +124,12 @@ public:
         scalar he(const scalar p, const scalar T) const;
 
 
+        //- Return isothermal enthalpy-pressure derivative [m^3/kg]
+        scalar dhdp_T(const scalar p, const scalar T) const;
+
+        //- Return isothermal internal energy-pressure derivative [m^3/kg]
+        scalar dedp_T(const scalar p, const scalar T) const;
+
         // Energy->temperature  inversion functions
 
         //- Temperature from enthalpy or internal energy

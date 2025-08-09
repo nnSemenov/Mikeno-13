@@ -1,0 +1,28 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object phaseProperties;
+}
+
+porousPhases (
+    porous
+);
+
+heatTransfer {
+    "porous:fluid" {
+        type nonEquilibrium;
+        // explicit no;
+        explicit yes; // optional, default to no
+        heatTransferCoeff 40[W/m^2/K];
+        specificSurfaceArea 5e4[m^-1];
+    }
+}
+
+effectiveHeatConductivity {
+    // default {
+    //     type parallel;
+    // }
+    // "fluid:inert:catA" {
+    //     type parallel;
+    // }
+}

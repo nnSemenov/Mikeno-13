@@ -1,0 +1,57 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object fvSolution;
+}
+
+solvers {
+    p {
+        solver GAMG;
+        smoother symGaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-2;
+    }
+    U {
+        solver GAMG;
+        smoother GaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-3;
+    }
+    "(e|h|T)" {
+        solver GAMG;
+        smoother DILUGaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-3;
+    }
+    "T.*" {
+        solver GAMG;
+        smoother symGaussSeidel;
+        tolerance 1e-4;
+        relTol 1e-3;
+    }
+}
+
+SIMPLE {
+
+    consistent yes;
+    momentumPredictor yes;
+    nOuterCorrectors 1;
+    nCorrectors     1;
+    nNonOrthogonalCorrectors 0;
+
+    residualControl {
+        p               1e-3;
+        U               1e-3;
+        "(h|e|T|T.*)"         1e-3;
+    }
+}
+
+relaxationFactors {
+    equations {
+        U 0.95;
+        "(e|h|T|T.*)" 0.9;
+    }
+    fields {
+        p 0.7;
+    }
+}

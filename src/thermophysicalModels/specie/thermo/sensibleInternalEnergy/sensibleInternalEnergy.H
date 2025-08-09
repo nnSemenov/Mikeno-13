@@ -102,6 +102,16 @@ public:
                 return thermo.es(p, T);
             }
 
+            //- Partial internal energy by partial pressure, isothermal [m^3/kg]
+            scalar dhedp_T
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const {
+                return thermo.dedp_T(p, T);
+            }
+
             //- Temperature from sensible internal energy
             //  given an initial temperature T0
             scalar The

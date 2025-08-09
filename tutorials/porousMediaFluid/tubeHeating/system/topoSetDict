@@ -1,0 +1,23 @@
+FoamFile {
+    class dictionary;
+    object topoSetDict;
+    format ascii;
+}
+
+actions (
+    {
+        name inlet_faces;
+        type faceSet;
+        action new;
+        source patchToFace;
+        patch inlet;
+    }
+    {
+        name inlet_cells;
+        type cellSet;
+        action new;
+        source faceToCell;
+        set inlet_faces;
+        option any;
+    }
+);

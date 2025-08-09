@@ -1,0 +1,58 @@
+FoamFile {
+    class dictionary;
+    object controlDict;
+    format ascii;
+}
+
+
+solver porousMediaFluid;
+
+libs (
+    "libporousMediaFluid.so"
+    "libfieldFunctionObjects.so"
+);
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         200;
+
+deltaT          1;
+
+writeInterval   20;
+
+purgeWrite      0;
+
+writeFormat     binary;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+functions {
+    streamLine {
+        type streamlines;
+        fields (T p);
+        direction forward;
+        lifeTime 500;
+        trackLength 500;
+        setFormat vtk;
+        seedSampleSet {
+            type cellSet;
+            set inlet_cells;
+        }
+        executeControl      none;
+        // executeInterval     ;
+        writeControl        none;
+        // writeInterval       1;
+    }
+}

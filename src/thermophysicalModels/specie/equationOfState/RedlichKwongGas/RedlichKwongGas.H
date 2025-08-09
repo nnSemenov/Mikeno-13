@@ -155,6 +155,7 @@ public:
 
         //- Return compressibility [s^2/m^2]
         inline scalar psi(scalar p, scalar T, scalar W) const {
+            #warning Non-precise implementation
             return 1/(this->Z(p,T)*this->R(W)*T);
         }
 
@@ -166,6 +167,48 @@ public:
 
         //- Return volumetric coefficient of thermal expansion [1/T]
         inline scalar alphav(const scalar p, const scalar T) const;
+
+        //- Return isobaric expansion coeff [m^3/mol/K]
+        inline scalar dVdT_p(const scalar p, const scalar T, const scalar z) const {
+            const scalar V = z*RR*T/p;
+            const scalar dVdT_p = 
+                (
+                    RR*sqr(V)/p + V*(a/(2*p*sqrt(T)) + RR*b/p) + a*b/(2*p*T*sqrt(T))
+                ) / 
+                (
+                    3*sqr(V) - 2 *RR*T/p*V + a/(p*sqrt(T)) - sqr(b) - b*RR*T/p
+                );
+            return dVdT_p;
+        }
+
+        //- Return isothermal compress coeff [m^3/mol/Pa]
+        inline scalar dVdp_T(const scalar p, const scalar T, const scalar z) const {
+            const scalar V = z*RR*T/p;
+            const scalar dVdp_T = 
+            (
+                -RR*T/sqr(p)*sqr(V) - (b*RR*T/p - a/sqr(p)/sqrt(T))*V + a*b/(sqr(p)*sqrt(T))
+            ) / 
+            (
+                3*sqr(V) - 2*RR*T/p*V + a/p/sqrt(T) - b*RR*T/p - sqr(b)
+            );
+            return dVdp_T;
+        }
+
+        //- Return isothermal enthalpy-pressure derivative [m/kg]
+        inline scalar dhdp_T(const scalar p, const scalar T, scalar W) const {
+            const auto z=this->Z(p, T);
+            const scalar V = z*RR*T/p;
+            const scalar dHdp_T = V - T*dVdT_p(p, T, z);
+            return dHdp_T/W;
+        }
+
+        //- Return isothermal internal energy-pressure derivative [m/kg]
+        inline scalar dedp_T(const scalar p, const scalar T, scalar W) const {
+            const auto z=this->Z(p, T);
+            const scalar V = z*RR*T/p;
+            const scalar dUdp_T = - T*dVdT_p(p, T, z) - p*dVdp_T(p, T, z);
+            return dUdp_T/W;
+        }
     };
 
 public:
@@ -257,6 +300,16 @@ public:
     //- Return volumetric coefficient of thermal expansion [1/T]
     inline scalar alphav(const scalar p, const scalar T) const{
         return this->core(p,T).alphav(p,T,this->W());
+    }
+
+    //- Return isothermal enthalpy-pressure derivative [m/kg]
+    inline scalar dhdp_T(const scalar p, const scalar T) const {
+        return this->core(p, T).dhdp_T(p, T, this->W());
+    }
+
+    //- Return isothermal internal energy-pressure derivative [m/kg]
+    inline scalar dedp_T(const scalar p, const scalar T) const {
+        return this->core(p, T).dedp_T(p, T, this->W());
     }
 
 

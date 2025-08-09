@@ -128,6 +128,7 @@ class ePowerThermo
 
 
 public:
+    using EOS_type = EquationOfState;
 
     // Constructors
 

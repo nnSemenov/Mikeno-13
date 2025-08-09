@@ -1,0 +1,29 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object setFieldsDict;
+}
+
+
+#include "geometryInfo";
+
+porous {
+    type box;
+    zoneType cell;
+    box (0 0 $porous_z_begin) ($tube_radius $tube_radius $outlet_z_begin);
+}
+
+defaultValues {
+    alpha.porous 0;
+}
+
+zones {
+    porous {
+        type box;
+        zoneType cell;
+        box (0 0 $porous_z_begin) ($tube_radius $tube_radius $outlet_z_begin);
+        values {
+            alpha.porous 0.6;
+        }
+    }
+}
