@@ -252,3 +252,5 @@ unset cleaned foamClean foamOldDirs
 [ "$BASH" ] && . $WM_PROJECT_DIR/etc/config.sh/bash_completion
 
 #------------------------------------------------------------------------------
+
+export LIBRARY_PATH="$LIBRARY_PATH:$FOAM_LIBBIN/$FOAM_MPI"

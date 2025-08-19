@@ -203,7 +203,6 @@ cleaned=`$foamClean "$MANPATH" "$foamOldDirs"` && MANPATH="$cleaned"
 
 export PATH LD_LIBRARY_PATH MANPATH
 
-
 # Source project setup files
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 _foamSource $WM_PROJECT_DIR/etc/config.sh/settings
@@ -238,7 +237,6 @@ then
     export LD_PRELOAD
 fi
 
-
 # Cleanup environment:
 # ~~~~~~~~~~~~~~~~~~~~
 unset cleaned foamClean foamOldDirs
@@ -252,3 +250,6 @@ unset cleaned foamClean foamOldDirs
 [ "$BASH" ] && . $WM_PROJECT_DIR/etc/config.sh/bash_completion
 
 #------------------------------------------------------------------------------
+
+
+export LIBRARY_PATH="$LIBRARY_PATH:$FOAM_LIBBIN/$FOAM_MPI"

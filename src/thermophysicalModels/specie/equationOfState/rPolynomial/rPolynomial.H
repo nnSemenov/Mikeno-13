@@ -208,12 +208,10 @@ public:
             inline scalar alphav(const scalar p, const scalar T) const;
             
             inline scalar dedp_T(const scalar p, const scalar T) const {
-                NotImplemented;
                 return 0;
             }
 
             inline scalar dhdp_T(const scalar p, const scalar T) const {
-                NotImplemented;
                 return 0;
             }
 
