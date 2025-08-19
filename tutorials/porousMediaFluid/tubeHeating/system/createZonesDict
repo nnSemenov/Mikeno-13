@@ -1,0 +1,13 @@
+FoamFile {
+    class dictionary;
+    object createZonesDict;
+    format ascii;
+}
+
+#include "geometryInfo";
+
+porous {
+    type box;
+    zoneType cell;
+    box (0 0 $porous_z_begin) ($tube_radius $tube_radius $outlet_z_begin);
+}

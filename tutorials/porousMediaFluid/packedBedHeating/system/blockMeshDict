@@ -1,0 +1,56 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object blockMeshDict;
+}
+
+#include "geometryInfo"
+
+total_length #calc "$inlet_length + $inert_length + $catA_length + $catB_length + $outlet_length";
+
+vertices (
+    (0 0 0)
+    ($tube_radius 0 0)
+    ($tube_radius $tube_radius 0)
+    (0 $tube_radius 0)
+
+    (0 0 $total_length)
+    ($tube_radius 0 $total_length)
+    ($tube_radius $tube_radius $total_length)
+    (0 $tube_radius $total_length)
+);
+
+xy_grids #calc "std::ceil($tube_radius / $grid_size)";
+z_grids #calc "std::ceil($total_length / $grid_size)";
+
+blocks (
+    hex (0 1 2 3 4 5 6 7) ($xy_grids $xy_grids $z_grids) simpleGrading (1 1 1)
+);
+
+defaultPatch {
+    type empty;
+}
+
+boundary (
+    inlet {
+        type patch;
+        faces (
+            (0 1 2 3)
+        );
+    }
+    outlet {
+        type patch;
+        faces (
+            (4 5 6 7)
+        );
+    }
+    walls {
+        type wall;
+        faces (
+            (0 1 5 4)
+            (1 2 6 5)
+            (2 3 7 6)
+            (0 3 7 4)
+        );
+    }
+);

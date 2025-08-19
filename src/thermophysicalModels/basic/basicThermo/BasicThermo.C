@@ -528,7 +528,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::he
                     dimEnergy / dimMass,
                     &MixtureType::thermoMixture,
                     &MixtureType::thermoMixtureType::he,
-                    p,
+                    absolutePressureVol(p, this->pOffset()),
                     T
             );
 }
@@ -547,7 +547,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::he
                     dimEnergy / dimMass,
                     &MixtureType::thermoMixture,
                     &MixtureType::thermoMixtureType::he,
-                    p,
+                    absolutePressurePatch(p,this->pOffset()),
                     T
             );
 }

@@ -1,0 +1,30 @@
+FoamFile {
+    class dictionary;
+    format ascii;
+    object fvSchemes;
+}
+
+ddtSchemes {
+    default steadyState;
+}
+
+gradSchemes {
+    default leastSquares;
+}
+
+divSchemes {
+    default Gauss linearUpwind cyka;
+    div(phi,U) Gauss linearUpwindV cyka;
+}
+
+snGradSchemes {
+    default corrected;
+}
+
+laplacianSchemes {
+    default Gauss linear corrected;
+}
+
+interpolationSchemes {
+    default linear;
+}

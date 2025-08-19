@@ -191,6 +191,13 @@ public:
             //- Return volumetric coefficient of thermal expansion [1/T]
             inline scalar alphav(const scalar p, const scalar T) const;
 
+            inline scalar dedp_T(const scalar p, const scalar T) const {
+                return 0;
+            }
+
+            inline scalar dhdp_T(const scalar p, const scalar T) const {
+                return 0;
+            }
 
         // IO
 

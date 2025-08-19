@@ -119,6 +119,16 @@ public:
                 return thermo.ha(p, T);
             }
 
+            //- Partial enthalpy by partial pressure, isothermal [m^3/kg]
+            scalar dhedp_T
+            (
+                const Thermo& thermo,
+                const scalar p,
+                const scalar T
+            ) const {
+                return thermo.dedp_T(p, T);
+            }
+
             //- Temperature from absolute enthalpy
             //  given an initial temperature T0
             scalar The

@@ -1,0 +1,27 @@
+FoamFile {
+    class volScalarField;
+    object T.porous;
+    format ascii;
+}
+
+dimensions [];
+internalField uniform 0;
+
+
+boundaryField {
+    gas_wall {
+        type zeroGradient;
+    }
+    porous_wall {
+        type zeroGradient;
+    }
+    symmetry {
+        type symmetry;
+    }
+    inlet {
+        type zeroGradient;
+    }
+    outlet {
+        type zeroGradient;
+    }
+}

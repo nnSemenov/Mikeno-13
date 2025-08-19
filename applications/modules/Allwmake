@@ -11,6 +11,7 @@ wmake $targetType incompressibleFluid
 wmake $targetType isothermalFluid
 wmake $targetType fluid
 wmake $targetType multicomponentFluid
+wmake $targetType porousMediaFluid
 wmake $targetType XiFluid
 wmake $targetType shockFluid
 wmake $targetType VoFSolver

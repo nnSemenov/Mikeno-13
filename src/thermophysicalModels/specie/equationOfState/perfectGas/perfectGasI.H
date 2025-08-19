@@ -132,6 +132,16 @@ inline Foam::scalar Foam::perfectGas<Specie>::alphav(scalar p, scalar T) const
     return 1/T;
 }
 
+template<class Specie>
+inline Foam::scalar Foam::perfectGas<Specie>::dhdp_T(scalar p, scalar T) const {
+    return 0;
+}
+
+template<class Specie>
+inline Foam::scalar Foam::perfectGas<Specie>::dedp_T(scalar p, scalar T) const {
+    return 0;
+}
+
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 

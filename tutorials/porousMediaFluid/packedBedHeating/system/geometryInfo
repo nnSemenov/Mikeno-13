@@ -1,0 +1,15 @@
+FoamFile {
+    version 2.0;
+    class dictionary;
+    format ascii;
+}
+
+tube_radius 5e-3;
+inlet_length 4e-3;
+inert_length 4e-3;
+catA_length 3e-3;
+catB_length 3e-3;
+
+outlet_length 4e-3;
+
+grid_size 0.25e-3;

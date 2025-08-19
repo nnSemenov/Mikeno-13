@@ -130,6 +130,13 @@ public:
                 // Enthalpy of formation [J/kg]
                 scalar hf() const;
 
+                //- Return isothermal enthalpy-pressure derivative [m^3/kg]
+                scalar dhdp_T(const scalar p, const scalar T) const;
+                
+                //- Return isothermal internal energy-pressure derivative [m^3/kg]
+                scalar dedp_T(const scalar p, const scalar T) const;
+
+                scalar dhedp_T(const scalar p, const scalar T) const;
 
             // Mass specific derived properties
 

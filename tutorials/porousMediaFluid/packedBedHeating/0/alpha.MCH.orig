@@ -1,0 +1,16 @@
+FoamFile {
+    format ascii;
+    class volScalarField;
+    object alpha.porous;
+}
+
+dimensions [0 0 0 0 0 0 0];
+
+internalField uniform 0;
+
+boundaryField {
+    "(inlet|outlet|walls)" {
+        type zeroGradient;
+    }
+}
+
