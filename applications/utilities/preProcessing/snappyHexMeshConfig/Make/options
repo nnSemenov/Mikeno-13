@@ -10,4 +10,5 @@ EXE_LIBS = \
     -ltriSurface \
     -lfileFormats \
     -lmeshTools \
-    -lblockMesh
+    -lblockMesh \
+    -lPstream

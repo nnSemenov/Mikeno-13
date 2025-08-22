@@ -2,4 +2,5 @@ EXE_INC = \
     -I$(LIB_SRC)/fileFormats/lnInclude
 
 EXE_LIBS = \
-    -lfileFormats
+    -lfileFormats \
+    -lPstream

@@ -7,6 +7,7 @@ EXE_INC = \
     -I$(LIBCCMIO_DIR)/lnInclude
 
 EXE_LIBS = \
+    -lPstream \
     -lfiniteVolume \
     -lmeshTools \
     -L$(FOAM_EXT_LIBBIN) -lccmio
