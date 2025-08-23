@@ -28,7 +28,7 @@ public:
         return this->alpha_small_;
     }
 
-    scalar & alpha_small() & {
+    scalar & alpha_small() {
         return this->alpha_small_;
     }
 

@@ -2,4 +2,6 @@ EXE_INC = \
     -I$(LIB_SRC)/meshTools/lnInclude
 
 EXE_LIBS = \
-    -lmeshTools
+    -lmeshTools \
+    -lphysicalProperties \
+    -lPstream

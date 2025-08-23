@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
-
+#include <cstdlib>
 #include "domainDecomposition.H"
 #include "decompositionMethod.H"
 #include "IOobjectList.H"
@@ -637,19 +637,24 @@ void Foam::domainDecomposition::decompose()
                 pointLabels[facePoints[pointi]] = true;
             }
         }
-
+        
         // Collect the used points
         labelList& procPointLabels = procPointAddressing_[proci];
 
         procPointLabels.setSize(pointLabels.size());
-
+	
         label nUsedPoints = 0;
 
         forAll(pointLabels, pointi)
         {
             if (pointLabels[pointi])
             {
-                procPointLabels[nUsedPoints] = pointi;
+		// This won't happen, but this line prevents a bug in AOCC 5.0.0 (with -O3 -march-native)
+                if(nUsedPoints>=procPointLabels.size()) [[unlikely]] {
+		  Info<<"Fatal: nUsedPoints = "<<nUsedPoints<<" but procPointLabels.size() = "<<procPointLabels.size()<<endl;
+		  ::abort();
+		}
+		procPointLabels[nUsedPoints] = pointi;
 
                 nUsedPoints++;
             }

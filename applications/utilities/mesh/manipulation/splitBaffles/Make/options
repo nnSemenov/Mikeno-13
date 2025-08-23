@@ -4,6 +4,7 @@ EXE_INC = \
     -I$(LIB_SRC)/polyTopoChange/lnInclude
 
 EXE_LIBS = \
+    -lPstream \
     -lfiniteVolume \
     -lmeshTools \
     -lgenericPatches \

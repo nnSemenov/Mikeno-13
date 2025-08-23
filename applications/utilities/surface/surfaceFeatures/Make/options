@@ -10,4 +10,5 @@ EXE_LIBS = \
     -lmeshTools \
     -ltriSurface \
     -lsampling \
-    -lfileFormats
+    -lfileFormats \
+    -lPstream

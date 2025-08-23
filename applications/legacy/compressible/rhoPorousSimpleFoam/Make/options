@@ -16,8 +16,9 @@ EXE_INC = \
 EXE_LIBS = \
     -lfluidThermophysicalModels \
     -lspecie \
-    -lmomentumTransportModels \
+    -lphysicalProperties \
     -lcompressibleMomentumTransportModels \
+    -lmomentumTransportModels \
     -lcoupledThermophysicalTransportModels \
     -lfiniteVolume \
     -lsampling \
