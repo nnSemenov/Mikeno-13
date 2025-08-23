@@ -7,4 +7,5 @@ EXE_LIBS = \
     -lmeshTools \
     -lgenericPatches \
     -lpolyTopoChange \
-    -lconversion
+    -lconversion \
+    -lPstream

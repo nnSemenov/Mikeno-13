@@ -12,4 +12,5 @@ EXE_INC = \
 EXE_LIBS = \
     -lpolyTopoChange \
     -lgenericPatches \
-    -lconversion
+    -lconversion \
+    -lPstream

@@ -4,4 +4,5 @@ EXE_INC = \
 
 EXE_LIBS = \
     -ltriSurface \
-    -lmeshTools
+    -lmeshTools \
+    -lPstream

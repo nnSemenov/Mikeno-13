@@ -10,4 +10,5 @@ EXE_LIBS = \
     -lpolyTopoChange \
     -lextrude2DMesh \
     -lgenericPatches \
-    -lextrudeModel
+    -lextrudeModel \
+    -lPstream

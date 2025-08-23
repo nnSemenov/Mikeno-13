@@ -3,4 +3,5 @@ EXE_INC = \
     -I$(FOAM_UTILITIES)/mesh/manipulation/transformPoints
 
 EXE_LIBS = \
-    -lsurfMesh
+    -lsurfMesh \
+    -lPstream

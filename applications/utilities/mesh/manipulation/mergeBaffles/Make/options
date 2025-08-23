@@ -5,6 +5,8 @@ EXE_INC = \
 
 EXE_LIBS = \
     -lfiniteVolume \
+    -lPstream \
     -lgenericFvFields \
     -lmeshTools \
-    -lpolyTopoChange
+    -lpolyTopoChange \
+    -lPstream
