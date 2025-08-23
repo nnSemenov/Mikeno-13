@@ -37,3 +37,9 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 2. Extend porous media heat transfer to multicomponent and multiphase
 3. Stabilize `porousMediaFluid` for non-equilibrium heat transfer with large coefficient or specific area.
 4. Remove more redundant reference member in all solver modules.
+
+
+## Existing Bugs(Up to 20250823):
+1. `decomposePar` crashes with Largrangian fields(Some cases in `test/Largrangian` fail)
+2. Some postprocessing fails (`test/postProcessing/channel`)
+3. `blockMesh` will be trapped by SIGFPE in single precision (Existed for a long time.)
