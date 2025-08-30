@@ -53,12 +53,14 @@ inline Foam::sutherlandTransport<Thermo>::sutherlandTransport
 (
     const Thermo& t,
     const scalar As,
-    const scalar Ts
+    const scalar Ts,
+    const EuckenCoeff& eu
 )
 :
     Thermo(t),
     As_(As),
-    Ts_(Ts)
+    Ts_(Ts),
+    Eucken_(eu)
 {}
 
 
@@ -87,7 +89,8 @@ inline Foam::sutherlandTransport<Thermo>::sutherlandTransport
 :
     Thermo(name, st),
     As_(st.As_),
-    Ts_(st.Ts_)
+    Ts_(st.Ts_),
+    Eucken_(st.Eucken_)
 {}
 
 
@@ -123,7 +126,7 @@ inline Foam::scalar Foam::sutherlandTransport<Thermo>::kappa
 ) const
 {
     scalar Cv_ = this->Cv(p, T);
-    return mu(p, T)*Cv_*(1.32 + 1.77*this->R()/Cv_);
+    return mu(p, T)*Cv_*(Eucken_.A + Eucken_.B*this->R()/Cv_);
 }
 
 
@@ -146,6 +149,8 @@ inline void Foam::sutherlandTransport<Thermo>::operator+=
 
         As_ = Y1*As_ + Y2*st.As_;
         Ts_ = Y1*Ts_ + Y2*st.Ts_;
+        Eucken_.A = Y1*Eucken_.A + Y2*st.Eucken_.A;
+        Eucken_.B = Y1*Eucken_.B + Y2*st.Eucken_.B;
     }
 }
 
@@ -181,7 +186,8 @@ inline Foam::sutherlandTransport<Thermo> Foam::operator+
             t,
             0,
             st1.As_,
-            st1.Ts_
+            st1.Ts_,
+            st1.Eucken_
         );
     }
     else
@@ -193,7 +199,11 @@ inline Foam::sutherlandTransport<Thermo> Foam::operator+
         (
             t,
             Y1*st1.As_ + Y2*st2.As_,
-            Y1*st1.Ts_ + Y2*st2.Ts_
+            Y1*st1.Ts_ + Y2*st2.Ts_,
+            EuckenCoeff{
+                Y1*st1.Eucken_.A + Y2*st2.Eucken_.A,
+                Y1*st1.Eucken_.B + Y2*st2.Eucken_.B
+            }
         );
     }
 }
@@ -210,7 +220,8 @@ inline Foam::sutherlandTransport<Thermo> Foam::operator*
     (
         s*static_cast<const Thermo&>(st),
         st.As_,
-        st.Ts_
+        st.Ts_,
+        st.Eucken_
     );
 }
 

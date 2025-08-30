@@ -97,6 +97,15 @@ Ostream& operator<<
                      Class sutherlandTransport Declaration
 \*---------------------------------------------------------------------------*/
 
+struct EuckenCoeff {
+    scalar A{1.32};
+    scalar B{1.77};
+
+    EuckenCoeff(const EuckenCoeff&)=default;
+    // inline EuckenCoeff
+};
+
+
 template<class Thermo>
 class sutherlandTransport
 :
@@ -106,6 +115,9 @@ class sutherlandTransport
 
         // Sutherland's coefficients
         scalar As_, Ts_;
+        EuckenCoeff Eucken_{1.32, 1.77};
+        // scalar EuckenCoeffA_{1.32};
+        // scalar EuckenCoeffB_{1.77};
 
 
     // Private Member Functions
@@ -133,7 +145,8 @@ public:
         (
             const Thermo& t,
             const scalar As,
-            const scalar Ts
+            const scalar Ts,
+            const EuckenCoeff& eu
         );
 
         //- Construct from two viscosities
