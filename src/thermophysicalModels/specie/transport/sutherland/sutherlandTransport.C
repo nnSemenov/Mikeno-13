@@ -50,7 +50,9 @@ Foam::sutherlandTransport<Thermo>::sutherlandTransport
 :
     Thermo(name, dict),
     As_(readCoeff("As", dict)),
-    Ts_(readCoeff("Ts", dict))
+    Ts_(readCoeff("Ts", dict)),
+    Eucken_{dict.subDict("transport").lookupOrDefault<scalar>("EuckenCoeffA", 1.32), 
+        dict.subDict("transport").lookupOrDefault<scalar>("EuckenCoeffB", 1.77)}
 {}
 
 
@@ -63,7 +65,9 @@ Foam::sutherlandTransport<Thermo>::sutherlandTransport
 :
     Thermo(t),
     As_(readCoeff("As", dict)),
-    Ts_(readCoeff("Ts", dict))
+    Ts_(readCoeff("Ts", dict)),
+    Eucken_{dict.subDict("transport").lookupOrDefault<scalar>("EuckenCoeffA", 1.32), 
+        dict.subDict("transport").lookupOrDefault<scalar>("EuckenCoeffB", 1.77)}
 {}
 
 
@@ -80,6 +84,8 @@ void Foam::sutherlandTransport<Thermo>::write(Ostream& os) const
     dictionary dict("transport");
     dict.add("As", As_);
     dict.add("Ts", Ts_);
+    dict.add("EuckenCoeffA", Eucken_.A);
+    dict.add("EuckenCoeffB", Eucken_.B);
 
     os  << indent << dict.dictName() << dict
         << decrIndent << token::END_BLOCK << nl;

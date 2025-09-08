@@ -39,6 +39,8 @@ O2
     {
         As              1.67212e-06;
         Ts              170.672;
+        EuckenCoeffA    1.429;
+        EuckenCoeffB    0;
     }
 }
 
@@ -60,6 +62,8 @@ CH4
     {
         As              1.67212e-06;
         Ts              170.672;
+        EuckenCoeffA    1.429;
+        EuckenCoeffB    0;
     }
 }
 
@@ -81,6 +85,8 @@ N2
     {
         As              1.67212e-06;
         Ts              170.672;
+        EuckenCoeffA    1.429;
+        EuckenCoeffB    0;
     }
 }
 
