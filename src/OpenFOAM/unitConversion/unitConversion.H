@@ -107,7 +107,7 @@ private:
 
         //- The conversion multiplier with which to multiply quantities
         //  in this unit in order to recover the quantity in standard units
-        scalar multiplier_;
+        scalar multiplier_{1};
 
 
     // Private Member Functions

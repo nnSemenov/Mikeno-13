@@ -25,6 +25,9 @@ License
 
 #include "unitConversion.H"
 
+
+// restrict compiler optimization, avoid generating xmm code which may cause "divide by zero"
+#pragma clang fp exceptions(maytrap)
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class T>
@@ -106,7 +109,10 @@ void Foam::unitConversion::makeStandard(List<T>& l) const
 template<class T>
 T Foam::unitConversion::toUser(const T& t) const
 {
-    return standard() ? t : t/multiplier_;
+    if(standard()) {
+        return t;
+    }
+    return t/multiplier_;
 }
 
 

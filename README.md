@@ -6,6 +6,7 @@ OpenFOAMCE 是 OpenFOAM 的魔改版（分支），面向化工应用。
 ## 这个分支的目标
 1. 更好的支持化工CFD模拟
 2. 删除代码（求解器模块）中的冗余引用。这些冗余的引用阻止二次开发者替换父类成员（引用没法改变，比如`thermo_`引用了`thermoPtr`），限制了二次开发。
+3. 修复编译器优化后意外触发SIGFPE的bug，主要针对双精度（编译器会用向量化指令加速浮点运算，但有时会产生不应该出现的NAN。这些NAN值不会被使用，却触发SIGFPE）
 
 ## 修改内容
 
@@ -26,6 +27,9 @@ OpenFOAMCE 是 OpenFOAM 的魔改版（分支），面向化工应用。
    1. 依靠混合气体的混合状态方程计算 `rho`
    2. 从剩余性质计算以下物性的真实性质： `Cp` `Cv` `hs` `ha` `es` `ea`。所有剩余性质都是从混合状态方程计算的。
 
+## 修复意外触发SIGFPE（括号备注编译选项）
+1. 修复`flowRateInletVelocity`在写出流场时触发SIGFPE。该bug来自于`unitConversion::toUser(const T& t) const`中的除法。（`Clang DP Opt`）
+
 ### 代码与编译器
 1. 支持 `AOCC`.
 2. 在 `specie` 字典中添加 `Tc_` `Pc_` `Vc_` `omega_` 字段，从 `equationOfState`字典中删除相应字段。在编写 `physicalProperties` 时，用户应该把临界性质和偏心因子写入 `specie` 字典。
@@ -33,7 +37,6 @@ OpenFOAMCE 是 OpenFOAM 的魔改版（分支），面向化工应用。
    - 这样更方便添加其他真实气体状态方程
 3. 删除一些求解器模块代码中的冗余引用
    1. 目前清理了 `isothermalFluid`、`fluid`、`multicomponentFluid`、`XiFluid`。
-
 
 ## 计划添加的
 1. 更多状态方程：Patel-Teja、Martin-Hou等
