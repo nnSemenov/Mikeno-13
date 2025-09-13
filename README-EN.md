@@ -6,6 +6,7 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 ## Goal of this fork
 1. Better support for modeling chemical engineering process.
 2. Remove redundant reference in modules. These redundant references forbids subclass from changing parent class's member(e.g. `thermo_` references `thermoPtr`), thus limiting liberty of secondary developing.
+3. Fix unexpected SIGFPE trapping, mainly for double-precision. (Compiler optimizes float-point computation with SIMD, but they generates unexpected NAN sometimes. These NAN are never used, but emits SIGFPE)
 
 ## Modifications
 
@@ -25,6 +26,10 @@ OpenFOAMCE is a fork of OpenFOAM, it's Frankensteined for chemical engineering u
 5. New mixture model `realGasMulticomponentMixture` 
    1. Compute `rho` from mixed real gas EOS
    2. Compute and add residual properties of `Cp` `Cv` `hs` `ha` `es` `ea`. All residual properties are computed from mixed EOS
+
+## Fix unexpected SIGFPE trapping (compile option in brackes)
+1. Fix `flowRateInletVelocity` trapped by SIGFPE when writting flow field. This is caused by division in `unitConversion::toUser(const T& t) const`. (`Clang DP Opt`)
+
 ### Code and compiler
 1. Support `AOCC`.
 2. Add `Tc_` `Pc_` `Vc_` `omega_` to `specie` and remove revelant member from `PengRobinsonGas`. In `physicalProperties`, user should write them into `specie` dictionary.
