@@ -3,7 +3,7 @@
 == PengRobinson Equation
 
 $
-p = (R T)/(V-b) - a/(V(V+b)+b(V-b)) \
+p = (R T)/(tilde(V)-b) - a/(tilde(V)(tilde(V)+b)+b(tilde(V)-b)) \
 a = a_c alpha \
 a_c = 0.457235 (R T_c)^2/p_c \
 sqrt(alpha) = 1+kappa (1-sqrt(T_r))\
@@ -11,13 +11,25 @@ kappa=0.37464+1.54226 omega - 0.26992 omega^2 \
 b = 0.077796 (R T_c)/p_c
 $
 
-=== Dimensionless polynomial form
+Volume shifting
 $
-z^3 + (B-1)z^2 + (A-2B-3B^2)z + (B^3+B^2-A B)=0 \
-z = (p a_j)/(R T) \
-A = (p a)/(R T)^2\
-B = (p b)/(R T)
+  V = tilde(V) - c \
+  tilde(V) = V + c \
+  c = 0.50033 (R T_c)/p_c (0.25969 - z_(R A))
 $
+
+=== polynomial form
+$
+tilde(V)^3 + (b-(R T)/p)tilde(V)^2 + (a/p - 2 (b R T)/p -3 b^2) tilde(V) + (b^3 - (a b)/p + (b^2 R T)/p) =0
+$
+
+// Dimensionless
+// $
+// z^3 + (B-1)z^2 + (A-2B-3B^2)z + (B^3+B^2-A B)=0 \
+// z = (p a_j)/(R T) \
+// A = (p a)/(R T)^2\
+// B = (p b)/(R T)
+// $
 
 === Residual Energy
 
@@ -25,8 +37,12 @@ Internal energy
 $
 U^R/(R T) & = 1/(R T) integral_infinity^V [T((partial p)/(partial T))_V - p] dif V \
           & = (a - T (dif a)/(dif T))/(R T) integral_infinity^V (dif V)/(V(V+b)+b(V-b)) \
-          & = 1/(2sqrt(2) B) (A-(R^2 T^3)/p (dif a)/(dif T)) ln((Z-(sqrt(2)-1)B)/(Z+(sqrt(2)+1)B))
+          & = (a - T (dif a)/(dif T))/(R T) integral_infinity^(tilde(V)-c) (dif tilde(V))/(tilde(V)(tilde(V)+b)+b(tilde(V)-b)) \
+          & = (a - A (dif a)/(dif T))/(2 sqrt(2) b R T) ln (tilde(V) - c + (1-sqrt(2))b)/(tilde(V) -c +(1+sqrt(2))b)\
+          & = (a - A (dif a)/(dif T))/(2 sqrt(2) b R T) ln (V + (1-sqrt(2))b)/(V +(1+sqrt(2))b)
 $
+
+Volume shifting doesn't change the form of residual properties, nor does it affect partial derivatives.
 
 Enthalpy
 $
@@ -52,7 +68,8 @@ $
 == Mixing rule
 $
 a = sum_i sum_j x_i x_j sqrt(a_i a_j)(1-k_(i j)) \
-b = sum_i x_i b_i
+b = sum_i x_i b_i \
+c = sum_i x_i c_i
 $
 
 === Computation of $dif a\/dif T$
