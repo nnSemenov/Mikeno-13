@@ -5,9 +5,14 @@ add_library(Pstream_dummy SHARED
     UOPwrite.C
 )
 
+target_compile_definitions(Pstream_dummy PRIVATE
+    LIB_NAME=libPstream.so
+)
+
 target_include_directories(Pstream_dummy PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/lnInclude
+    lnInclude
     ${OpenFOAM_lnInclude_dir}
+    "${CMAKE_SOURCE_DIR}/src/OSspecific/POSIX/lnInclude"
 )
 set_target_properties(Pstream_dummy
     PROPERTIES
@@ -15,6 +20,7 @@ set_target_properties(Pstream_dummy
 )
 target_link_libraries(Pstream_dummy PUBLIC
     OpenFOAM_Defines
+    pthread
 )
 
 install(TARGETS Pstream_dummy

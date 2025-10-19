@@ -22,21 +22,22 @@ target_compile_definitions(OpenFOAM_Defines INTERFACE
 target_compile_definitions(OpenFOAM_Defines INTERFACE
     ${WM_ARCH}
     WM_ARCH_OPTION=${WM_ARCH_OPTION}
+    NoRepository
 )
 
 target_compile_options(OpenFOAM_Defines INTERFACE
-#    -Wall
-#    -Wextra
-#    -Wold-style-cast
-#    -Wnon-virtual-dtor
-#    -Wno-unused-parameter
-#    -Wno-invalid-offsetof
-#    -Wno-undefined-var-template
-#    -Wno-unqualified-std-cast-call
+    -Wall
+    -Wextra
+    -Wold-style-cast
+    -Wnon-virtual-dtor
+    -Wno-unused-parameter
+    -Wno-invalid-offsetof
+    -Wno-undefined-var-template
+    -Wno-unqualified-std-cast-call
 
 # less warn
-    -Wno-old-style-cast
-    -Wno-unused-local-typedefs
-    -Wno-tautological-undefined-compare
-    -Wno-shift-negative-value
+#    -Wno-old-style-cast
+#    -Wno-unused-local-typedefs
+#    -Wno-tautological-undefined-compare
+#    -Wno-shift-negative-value
 )
