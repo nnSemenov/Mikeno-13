@@ -937,10 +937,12 @@ target_link_libraries(OpenFOAM PRIVATE
     ZLIB::ZLIB
 )
 
+target_compile_definitions(OpenFOAM PRIVATE
+    LIB_NAME=libOpenFOAM.so
+)
+
 target_include_directories(OpenFOAM PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
 )
 
-install(TARGETS OpenFOAM
-    DESTINATION lib
-)
+set(FOAM_regular_libraries "${FOAM_regular_libraries};OpenFOAM" PARENT_SCOPE)

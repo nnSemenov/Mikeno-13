@@ -48,6 +48,10 @@ target_link_libraries(fluidThermophysicalModels PRIVATE
     meshTools
 )
 
-install(TARGETS fluidThermophysicalModels
-    DESTINATION lib
+target_compile_definitions(fluidThermophysicalModels PRIVATE
+    LIB_NAME=libfluidThermophysicalModels.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};fluidThermophysicalModels" PARENT_SCOPE)
+
+

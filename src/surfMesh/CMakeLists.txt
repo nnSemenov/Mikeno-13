@@ -49,6 +49,10 @@ target_include_directories(surfMesh PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
 )
 
+target_compile_definitions(surfMesh PRIVATE
+    LIB_NAME=libsurfMesh.so
+)
+
 target_link_libraries(surfMesh PRIVATE
     OpenFOAM_Defines
     OpenFOAM
@@ -56,6 +60,7 @@ target_link_libraries(surfMesh PRIVATE
     fileFormats
 )
 
-install(TARGETS surfMesh
-    DESTINATION lib
-)
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};surfMesh" PARENT_SCOPE)
+
+

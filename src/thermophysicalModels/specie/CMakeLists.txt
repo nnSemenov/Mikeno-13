@@ -37,6 +37,10 @@ target_link_libraries(specie PRIVATE
     OSspecific
 )
 
-install(TARGETS specie
-    DESTINATION lib
+target_compile_definitions(specie PRIVATE
+    LIB_NAME=libspecie.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};specie" PARENT_SCOPE)
+
+

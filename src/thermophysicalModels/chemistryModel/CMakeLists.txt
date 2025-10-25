@@ -57,6 +57,10 @@ target_link_libraries(chemistryModel PRIVATE
     meshTools
 )
 
-install(TARGETS chemistryModel
-    DESTINATION lib
+target_compile_definitions(chemistryModel PRIVATE
+    LIB_NAME=libchemistryModel.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};chemistryModel" PARENT_SCOPE)
+
+

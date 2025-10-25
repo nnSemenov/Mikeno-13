@@ -17,6 +17,10 @@ target_link_libraries(genericFvPatches PRIVATE
     finiteVolume
 )
 
-install(TARGETS genericFvPatches
-    DESTINATION lib
+target_compile_definitions(genericFvPatches PRIVATE
+    LIB_NAME=libgenericFvPatches.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};genericFvPatches" PARENT_SCOPE)
+
+

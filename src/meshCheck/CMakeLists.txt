@@ -30,6 +30,10 @@ target_link_libraries(meshCheck PRIVATE
     sampling
 )
 
-install(TARGETS meshCheck
-    DESTINATION lib
+target_compile_definitions(meshCheck PRIVATE
+    LIB_NAME=libmeshCheck.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};meshCheck" PARENT_SCOPE)
+
+

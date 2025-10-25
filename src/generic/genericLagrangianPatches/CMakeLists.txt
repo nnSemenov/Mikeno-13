@@ -17,6 +17,10 @@ target_link_libraries(genericLagrangianPatches PRIVATE
     Lagrangian
 )
 
-install(TARGETS genericLagrangianPatches
-    DESTINATION lib
+target_compile_definitions(genericLagrangianPatches PRIVATE
+    LIB_NAME=libgenericLagrangianPatches.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};genericLagrangianPatches" PARENT_SCOPE)
+
+

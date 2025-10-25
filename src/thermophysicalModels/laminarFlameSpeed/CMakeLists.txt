@@ -25,6 +25,10 @@ target_link_libraries(laminarFlameSpeedModels PRIVATE
     finiteVolume
 )
 
-install(TARGETS laminarFlameSpeedModels
-    DESTINATION lib
+target_compile_definitions(laminarFlameSpeedModels PRIVATE
+    LIB_NAME=liblaminarFlameSpeedModels.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};laminarFlameSpeedModels" PARENT_SCOPE)
+
+

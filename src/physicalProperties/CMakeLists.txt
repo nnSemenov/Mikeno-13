@@ -19,6 +19,11 @@ target_link_libraries(physicalProperties PRIVATE
     Pstream_dummy
 )
 
-install(TARGETS physicalProperties
-    DESTINATION lib
+
+target_compile_definitions(physicalProperties PRIVATE
+    LIB_NAME=libphysicalProperties.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};physicalProperties" PARENT_SCOPE)
+
+

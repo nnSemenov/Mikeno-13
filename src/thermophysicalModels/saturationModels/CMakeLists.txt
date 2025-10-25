@@ -40,6 +40,10 @@ target_link_libraries(saturationModels PRIVATE
     specie
 )
 
-install(TARGETS saturationModels
-    DESTINATION lib
+target_compile_definitions(saturationModels PRIVATE
+    LIB_NAME=libsaturationModels.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};saturationModels" PARENT_SCOPE)
+
+

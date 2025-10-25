@@ -17,6 +17,10 @@ target_link_libraries(genericFields PRIVATE
     genericPatches
 )
 
-install(TARGETS genericFields
-    DESTINATION lib
+target_compile_definitions(genericFields PRIVATE
+    LIB_NAME=libgenericFields.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};genericFields" PARENT_SCOPE)
+
+

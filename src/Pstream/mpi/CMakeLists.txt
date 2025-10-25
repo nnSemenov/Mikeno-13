@@ -29,3 +29,6 @@ target_link_libraries(Pstream_mpi PUBLIC
 install(TARGETS Pstream_mpi
     DESTINATION lib/${FOAM_MPI}
 )
+
+
+set(FOAM_special_libraries "${FOAM_special_libraries};Pstream_mpi" PARENT_SCOPE)

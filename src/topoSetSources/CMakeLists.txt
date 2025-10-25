@@ -83,6 +83,10 @@ target_link_libraries(topoSetSources PRIVATE
     meshCheck
 )
 
-install(TARGETS topoSetSources
-    DESTINATION lib
+target_compile_definitions(topoSetSources PRIVATE
+    LIB_NAME=libtopoSetSources.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};topoSetSources" PARENT_SCOPE)
+
+

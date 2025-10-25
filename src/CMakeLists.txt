@@ -1,5 +1,8 @@
 
-
+# libraries that are installed to lib.
+set(FOAM_regular_libraries)
+# libraries that don't install to lib, but different destination
+set(FOAM_special_libraries)
 
 lnInclude(OpenFOAM RESULT_DIR OpenFOAM_lnInclude_dir)
 message(STATUS "OpenFOAM_lnInclude_dir = ${OpenFOAM_lnInclude_dir}")
@@ -29,3 +32,10 @@ add_subdirectory(sampling)
 add_subdirectory(meshCheck)
 add_subdirectory(topoSetSources)
 add_subdirectory(fvTopoSetSources)
+
+message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
+message(STATUS "Non-regular libraries: ${FOAM_special_libraries}")
+
+install(TARGETS ${FOAM_regular_libraries}
+    DESTINATION lib
+)

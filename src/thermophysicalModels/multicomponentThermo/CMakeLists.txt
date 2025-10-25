@@ -41,6 +41,10 @@ target_link_libraries(multicomponentThermophysicalModels PRIVATE
     Pstream_dummy
 )
 
-install(TARGETS multicomponentThermophysicalModels
-    DESTINATION lib
+target_compile_definitions(multicomponentThermophysicalModels PRIVATE
+    LIB_NAME=libmulticomponentThermophysicalModels.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};multicomponentThermophysicalModels" PARENT_SCOPE)
+
+

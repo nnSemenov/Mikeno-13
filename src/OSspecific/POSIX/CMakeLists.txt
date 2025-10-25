@@ -1,7 +1,7 @@
 
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(OSspecific OBJECT
+add_library(OSspecific STATIC
     signals/sigFpe.C
     signals/sigSegv.C
     signals/sigInt.C
@@ -49,3 +49,9 @@ target_include_directories(OSspecific PUBLIC
     ${OpenFOAM_lnInclude_dir}
     lnInclude
 )
+
+install(TARGETS OSspecific
+    DESTINATION lib
+)
+
+set(FOAM_special_libraries "${FOAM_special_libraries};OSspecific" PARENT_SCOPE)

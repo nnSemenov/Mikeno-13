@@ -19,6 +19,10 @@ target_link_libraries(fvTopoSetSources PRIVATE
     topoSetSources
 )
 
-install(TARGETS fvTopoSetSources
-    DESTINATION lib
+target_compile_definitions(fvTopoSetSources PRIVATE
+    LIB_NAME=libfvTopoSetSources.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};fvTopoSetSources" PARENT_SCOPE)
+
+

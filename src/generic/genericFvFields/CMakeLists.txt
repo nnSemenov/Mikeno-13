@@ -20,6 +20,10 @@ target_link_libraries(genericFvFields PRIVATE
     finiteVolume
 )
 
-install(TARGETS genericFvFields
-    DESTINATION lib
+target_compile_definitions(genericFvFields PRIVATE
+    LIB_NAME=libgenericFvFields.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};genericFvFields" PARENT_SCOPE)
+
+

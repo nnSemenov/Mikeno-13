@@ -33,6 +33,11 @@ target_link_libraries(ODE PRIVATE
     OSspecific
 )
 
-install(TARGETS ODE
-    DESTINATION lib
+
+target_compile_definitions(ODE PRIVATE
+    LIB_NAME=libODE.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};ODE" PARENT_SCOPE)
+
+

@@ -15,6 +15,10 @@ target_link_libraries(genericPatches PRIVATE
     OSspecific
 )
 
-install(TARGETS genericPatches
-    DESTINATION lib
+target_compile_definitions(genericPatches PRIVATE
+    LIB_NAME=libgenericPatches.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};genericPatches" PARENT_SCOPE)
+
+

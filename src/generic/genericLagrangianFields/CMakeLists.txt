@@ -20,6 +20,10 @@ target_link_libraries(genericLagrangianFields PRIVATE
     Lagrangian
 )
 
-install(TARGETS genericLagrangianFields
-    DESTINATION lib
+target_compile_definitions(genericLagrangianFields PRIVATE
+    LIB_NAME=libgenericLagrangianFields.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};genericLagrangianFields" PARENT_SCOPE)
+
+

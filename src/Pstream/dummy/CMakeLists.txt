@@ -28,3 +28,5 @@ target_link_libraries(Pstream_dummy PUBLIC
 install(TARGETS Pstream_dummy
     DESTINATION lib/dummy
 )
+
+set(FOAM_special_libraries "${FOAM_special_libraries};Pstream_dummy" PARENT_SCOPE)

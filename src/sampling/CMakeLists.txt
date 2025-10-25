@@ -94,6 +94,10 @@ target_link_libraries(sampling PRIVATE
     lagrangian
 )
 
-install(TARGETS sampling
-    DESTINATION lib
+target_compile_definitions(sampling PRIVATE
+    LIB_NAME=libsampling.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};sampling" PARENT_SCOPE)
+
+

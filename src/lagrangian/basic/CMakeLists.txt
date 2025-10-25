@@ -26,6 +26,10 @@ target_link_libraries(lagrangian PRIVATE
     tracking
 )
 
-install(TARGETS lagrangian
-    DESTINATION lib
+target_compile_definitions(lagrangian PRIVATE
+    LIB_NAME=liblagrangian.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};lagrangian" PARENT_SCOPE)
+
+

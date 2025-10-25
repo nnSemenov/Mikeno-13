@@ -11,12 +11,17 @@ target_include_directories(fileFormats PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
 )
 
+target_compile_definitions(fileFormats PRIVATE
+    LIB_NAME=libfileFormats.so
+)
+
 target_link_libraries(fileFormats PRIVATE
     OpenFOAM_Defines
     OpenFOAM
     OSspecific
 )
 
-install(TARGETS fileFormats
-    DESTINATION lib
-)
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};fileFormats" PARENT_SCOPE)
+
+

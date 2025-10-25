@@ -15,6 +15,10 @@ target_link_libraries(tracking PRIVATE
     meshTools
 )
 
-install(TARGETS tracking
-    DESTINATION lib
+target_compile_definitions(tracking PRIVATE
+    LIB_NAME=libtracking.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};tracking" PARENT_SCOPE)
+
+

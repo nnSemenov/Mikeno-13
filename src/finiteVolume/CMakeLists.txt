@@ -658,6 +658,11 @@ target_link_libraries(finiteVolume PRIVATE
     Pstream_dummy
 )
 
-install(TARGETS finiteVolume
-    DESTINATION lib
+
+target_compile_definitions(finiteVolume PRIVATE
+    LIB_NAME=libfiniteVolume.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};finiteVolume" PARENT_SCOPE)
+
+

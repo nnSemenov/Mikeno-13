@@ -30,6 +30,10 @@ target_link_libraries(solidThermo PRIVATE
     multicomponentThermophysicalModels
 )
 
-install(TARGETS solidThermo
-    DESTINATION lib
+target_compile_definitions(solidThermo PRIVATE
+    LIB_NAME=libsolidThermo.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};solidThermo" PARENT_SCOPE)
+
+

@@ -62,6 +62,10 @@ target_link_libraries(thermophysicalProperties PRIVATE
     specie
 )
 
-install(TARGETS thermophysicalProperties
-    DESTINATION lib
+target_compile_definitions(thermophysicalProperties PRIVATE
+    LIB_NAME=libthermophysicalProperties.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};thermophysicalProperties" PARENT_SCOPE)
+
+

@@ -293,6 +293,11 @@ target_link_libraries(meshTools PRIVATE
     Pstream_dummy
 )
 
-install(TARGETS meshTools
-    DESTINATION lib
+
+target_compile_definitions(meshTools PRIVATE
+    LIB_NAME=libmeshTools.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};meshTools" PARENT_SCOPE)
+
+

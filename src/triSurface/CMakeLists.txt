@@ -53,6 +53,11 @@ target_link_libraries(triSurface PRIVATE
     surfMesh
 )
 
-install(TARGETS triSurface
-    DESTINATION lib
+
+target_compile_definitions(triSurface PRIVATE
+    LIB_NAME=libtriSurface.so
 )
+
+set(FOAM_regular_libraries "${FOAM_regular_libraries};triSurface" PARENT_SCOPE)
+
+
