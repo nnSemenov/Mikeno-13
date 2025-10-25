@@ -12,3 +12,8 @@ add_subdirectory(fileFormats)
 add_subdirectory(surfMesh)
 add_subdirectory(triSurface)
 add_subdirectory(meshTools)
+
+add_subdirectory(finiteVolume)
+
+add_subdirectory(ODE)
+add_subdirectory(physicalProperties)

@@ -18,7 +18,5 @@ include(cmake/3rdParty/MPI.cmake)
 
 include(cmake/lnInclude.cmake)
 
-#set(CMAKE_CXX_STANDARD 17)
-#add_compile_options(-Wunqualified-std-cast-call)
 
 add_subdirectory(src)
