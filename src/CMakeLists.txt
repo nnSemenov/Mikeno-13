@@ -40,6 +40,8 @@ add_subdirectory(polyTopoChange)
 
 add_subdirectory(conversion)
 
+add_subdirectory(parallel)
+
 ###############################################
 
 message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
