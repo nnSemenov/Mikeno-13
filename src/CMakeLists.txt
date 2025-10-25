@@ -24,3 +24,8 @@ add_subdirectory(lagrangian/basic)
 add_subdirectory(Lagrangian/Lagrangian)
 
 add_subdirectory(generic)
+
+add_subdirectory(sampling)
+add_subdirectory(meshCheck)
+add_subdirectory(topoSetSources)
+add_subdirectory(fvTopoSetSources)
