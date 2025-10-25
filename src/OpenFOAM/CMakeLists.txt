@@ -933,7 +933,7 @@ target_sources(OpenFOAM PRIVATE
 
 target_link_libraries(OpenFOAM PRIVATE
     OSspecific
-    Pstream
+    Pstream_dummy
     ZLIB::ZLIB
 )
 

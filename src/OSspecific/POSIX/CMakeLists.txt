@@ -1,4 +1,6 @@
 
+lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(OSspecific OBJECT
     signals/sigFpe.C
     signals/sigSegv.C
@@ -28,15 +30,22 @@ else()
     )
 endif ()
 
+
+target_compile_definitions(OSspecific PRIVATE
+    LIB_NAME=libOSspecific.o
+)
+
 if(EXISTS "/usr/include/sys/inotify.h")
-    target_compile_definitions(OSspecific PUBLIC FOAM_USE_INOTIFY)
+    target_compile_definitions(OSspecific PRIVATE FOAM_USE_INOTIFY)
 endif()
+
+target_compile_options(OSspecific PRIVATE -fPIC)
 
 target_link_libraries(OSspecific PUBLIC
     OpenFOAM_Defines
 )
 
 target_include_directories(OSspecific PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
     ${OpenFOAM_lnInclude_dir}
+    lnInclude
 )

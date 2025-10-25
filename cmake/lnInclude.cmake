@@ -21,12 +21,15 @@ function(lnInclude dir)
 
 
     file(GLOB_RECURSE headers "${dir}/*.H")
+    file(GLOB_RECURSE h_headers "${dir}/*.h")
     file(GLOB_RECURSE sources "${dir}/*.C")
+    set(full_sources "${headers};${h_headers};${sources}")
 
-    foreach (file ${headers}${sources})
+    foreach (file ${full_sources})
         if(${file} MATCHES "lnInclude")
             continue()
         endif ()
+
         cmake_path(GET file FILENAME link_name)
         set(link_name "${lnInclude_dir}/${link_name}")
         cmake_path(RELATIVE_PATH file BASE_DIRECTORY ${lnInclude_dir} OUTPUT_VARIABLE link_target)

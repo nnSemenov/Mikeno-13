@@ -1,4 +1,6 @@
 
+lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(Pstream_dummy SHARED
     UPstream.C
     UIPread.C
