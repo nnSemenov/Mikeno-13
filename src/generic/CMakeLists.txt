@@ -1,0 +1,7 @@
+
+add_subdirectory(genericPatches)
+add_subdirectory(genericFields)
+add_subdirectory(genericFvPatches)
+add_subdirectory(genericFvFields)
+add_subdirectory(genericLagrangianPatches)
+add_subdirectory(genericLagrangianFields)
