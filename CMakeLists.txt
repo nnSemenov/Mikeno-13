@@ -14,6 +14,7 @@ set(WM_ARCH_OPTION 64 CACHE STRING "Computer arch option")
 include(cmake/process_options.cmake)
 
 include(cmake/3rdParty/zlib.cmake)
+include(cmake/3rdParty/MPI.cmake)
 
 include(cmake/lnInclude.cmake)
 
