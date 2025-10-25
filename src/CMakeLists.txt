@@ -17,3 +17,4 @@ add_subdirectory(finiteVolume)
 
 add_subdirectory(ODE)
 add_subdirectory(physicalProperties)
+add_subdirectory(thermophysicalModels)

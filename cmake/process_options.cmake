@@ -41,3 +41,5 @@ target_compile_options(OpenFOAM_Defines INTERFACE
 #    -Wno-tautological-undefined-compare
 #    -Wno-shift-negative-value
 )
+
+set(LIB_SRC "${CMAKE_SOURCE_DIR}/src")
