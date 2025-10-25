@@ -33,6 +33,15 @@ add_subdirectory(meshCheck)
 add_subdirectory(topoSetSources)
 add_subdirectory(fvTopoSetSources)
 
+add_subdirectory(motionSolvers)
+
+add_subdirectory(mesh/extrudeModel)
+add_subdirectory(polyTopoChange)
+
+add_subdirectory(conversion)
+
+###############################################
+
 message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
 message(STATUS "Non-regular libraries: ${FOAM_special_libraries}")
 
