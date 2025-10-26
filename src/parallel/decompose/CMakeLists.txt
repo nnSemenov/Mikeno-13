@@ -1,5 +1,6 @@
 add_subdirectory(decompositionMethods)
 add_subdirectory(metis)
+add_subdirectory(parMetis)
 add_subdirectory(scotch)
 add_subdirectory(ptscotch)
 

@@ -1,14 +1,15 @@
-set(target_name metisDecomp)
+set(target_name parMetisDecomp)
 
-if(NOT TARGET metis_imported)
+if(NOT TARGET parmetis_imported)
     message(STATUS "Skip ${target_name} because metis not found")
     return()
 endif ()
 
+
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${target_name} SHARED
-    metis.C
+    parMetis.C
 )
 
 target_include_directories(${target_name} PUBLIC
@@ -17,6 +18,7 @@ target_include_directories(${target_name} PUBLIC
 
 target_include_directories(${target_name} PRIVATE
     ../decompositionMethods/lnInclude
+    ${LIB_SRC}/Pstream/mpi/lnInclude
 )
 
 target_link_libraries(${target_name} PRIVATE
@@ -24,7 +26,7 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    metis_imported
+    parmetis_imported
 )
 
 target_compile_definitions(${target_name} PRIVATE
