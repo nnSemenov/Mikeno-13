@@ -38,6 +38,17 @@ include(cmake/process_options.cmake)
 
 include(cmake/lnInclude.cmake)
 
-
+# libraries that are installed to lib.
+set(FOAM_regular_libraries)
+# libraries that don't install to lib, but different destination
+set(FOAM_special_libraries)
 
 add_subdirectory(src)
+
+
+message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
+message(STATUS "Non-regular libraries: ${FOAM_special_libraries}")
+
+install(TARGETS ${FOAM_regular_libraries}
+    DESTINATION lib
+)

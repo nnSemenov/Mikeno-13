@@ -1,8 +1,4 @@
 
-# libraries that are installed to lib.
-set(FOAM_regular_libraries)
-# libraries that don't install to lib, but different destination
-set(FOAM_special_libraries)
 
 lnInclude(OpenFOAM RESULT_DIR OpenFOAM_lnInclude_dir)
 message(STATUS "OpenFOAM_lnInclude_dir = ${OpenFOAM_lnInclude_dir}")
@@ -43,7 +39,7 @@ add_subdirectory(conversion)
 add_subdirectory(parallel)
 
 add_subdirectory(fvMeshStitchers)
-#add_subdirectory(fvMeshMovers)
+add_subdirectory(fvMeshMovers)
 #add_subdirectory(fvMeshTopoChangers)
 #add_subdirectory(fvMeshDistributors)
 
@@ -51,9 +47,5 @@ add_subdirectory(fvMeshStitchers)
 
 ###############################################
 
-message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
-message(STATUS "Non-regular libraries: ${FOAM_special_libraries}")
-
-install(TARGETS ${FOAM_regular_libraries}
-    DESTINATION lib
-)
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
+set(FOAM_special_libraries ${FOAM_special_libraries} PARENT_SCOPE)
