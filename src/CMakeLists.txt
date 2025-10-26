@@ -40,7 +40,7 @@ add_subdirectory(parallel)
 
 add_subdirectory(fvMeshStitchers)
 add_subdirectory(fvMeshMovers)
-#add_subdirectory(fvMeshTopoChangers)
+add_subdirectory(fvMeshTopoChangers)
 #add_subdirectory(fvMeshDistributors)
 
 
