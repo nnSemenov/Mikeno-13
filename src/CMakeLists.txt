@@ -42,6 +42,13 @@ add_subdirectory(conversion)
 
 add_subdirectory(parallel)
 
+add_subdirectory(fvMeshStitchers)
+#add_subdirectory(fvMeshMovers)
+#add_subdirectory(fvMeshTopoChangers)
+#add_subdirectory(fvMeshDistributors)
+
+
+
 ###############################################
 
 message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
