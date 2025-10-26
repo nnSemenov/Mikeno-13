@@ -56,8 +56,7 @@ add_subdirectory(combustionModels)
 
 add_subdirectory(renumber)
 add_subdirectory(fvAgglomerationMethods)
-#fvAgglomerationMethods/Allwmake $targetType $*
-#wmake $targetType fvMotionSolver
+add_subdirectory(fvMotionSolver)
 ###############################################
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
