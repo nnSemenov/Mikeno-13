@@ -1,5 +1,5 @@
 if((NOT METIS_TYPE) OR (${METIS_TYPE} STREQUAL none))
-    message(STATUS "Skip finding metis becase METIS_TYPE = ${METIS_TYPE}")
+    message(STATUS "Skip finding metis because METIS_TYPE = ${METIS_TYPE}")
     return()
 endif ()
 
