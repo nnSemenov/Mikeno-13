@@ -55,6 +55,7 @@ add_subdirectory(combustionModels)
 #add_subdirectory(mesh)
 
 add_subdirectory(renumber)
+add_subdirectory(fvAgglomerationMethods)
 #fvAgglomerationMethods/Allwmake $targetType $*
 #wmake $targetType fvMotionSolver
 ###############################################
