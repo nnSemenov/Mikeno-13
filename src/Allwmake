@@ -1,8 +1,6 @@
 #!/bin/sh
 
 
-wmake $targetType randomProcesses
-
 twoPhaseModels/Allwmake $targetType $*
 multiphaseModels/Allwmake $targetType $*
 MomentumTransportModels/Allwmake $targetType $*

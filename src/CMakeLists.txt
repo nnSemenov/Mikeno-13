@@ -43,8 +43,9 @@ add_subdirectory(fvMeshMovers)
 add_subdirectory(fvMeshTopoChangers)
 add_subdirectory(fvMeshDistributors)
 
+add_subdirectory(randomProcesses)
 
-
+#add_subdirectory(twoPhaseModels)
 ###############################################
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
