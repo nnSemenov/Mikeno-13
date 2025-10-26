@@ -45,7 +45,16 @@ add_subdirectory(fvMeshDistributors)
 
 add_subdirectory(randomProcesses)
 
-#add_subdirectory(twoPhaseModels)
+add_subdirectory(twoPhaseModels)
+#multiphaseModels/Allwmake $targetType $*
+#MomentumTransportModels/Allwmake $targetType $*
+#ThermophysicalTransportModels/Allwmake $targetType $*
+#wmake $targetType radiationModels
+#wmake $targetType combustionModels
+#mesh/Allwmake $targetType $*
+#renumber/Allwmake $targetType $*
+#fvAgglomerationMethods/Allwmake $targetType $*
+#wmake $targetType fvMotionSolver
 ###############################################
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)

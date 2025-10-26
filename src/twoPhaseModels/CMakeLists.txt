@@ -1,0 +1,14 @@
+add_subdirectory(interfaceCompression)
+
+add_subdirectory(twoPhaseProperties)
+add_subdirectory(interfaceProperties)
+add_subdirectory(compressibleInterfaceProperties)
+
+add_subdirectory(twoPhaseMixture)
+add_subdirectory(incompressibleTwoPhases)
+add_subdirectory(compressibleTwoPhases)
+
+add_subdirectory(incompressibleCavitation)
+add_subdirectory(compressibleCavitation)
+
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
