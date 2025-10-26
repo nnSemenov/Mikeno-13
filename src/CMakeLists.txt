@@ -31,7 +31,7 @@ add_subdirectory(fvTopoSetSources)
 
 add_subdirectory(motionSolvers)
 
-add_subdirectory(mesh/extrudeModel)
+add_subdirectory(mesh)
 add_subdirectory(polyTopoChange)
 
 add_subdirectory(conversion)
@@ -51,8 +51,9 @@ add_subdirectory(MomentumTransportModels)
 add_subdirectory(ThermophysicalTransportModels)
 add_subdirectory(radiationModels)
 add_subdirectory(combustionModels)
-#wmake $targetType combustionModels
-#mesh/Allwmake $targetType $*
+
+#add_subdirectory(mesh)
+
 #renumber/Allwmake $targetType $*
 #fvAgglomerationMethods/Allwmake $targetType $*
 #wmake $targetType fvMotionSolver
