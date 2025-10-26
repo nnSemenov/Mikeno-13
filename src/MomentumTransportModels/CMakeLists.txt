@@ -1,0 +1,7 @@
+add_subdirectory(momentumTransportModels)
+add_subdirectory(incompressible)
+add_subdirectory(compressible)
+add_subdirectory(phaseIncompressible)
+add_subdirectory(phaseCompressible)
+
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
