@@ -5,6 +5,6 @@ list(SORT config_files COMPARE FILE_BASENAME)
 
 foreach (config_file ${config_files})
     include(${config_file})
-    cmake_path(GET config_file FILENAME fn)
-    message(${fn})
+#    cmake_path(GET config_file FILENAME fn)
+#    message(${fn})
 endforeach ()
