@@ -46,7 +46,7 @@ add_subdirectory(fvMeshDistributors)
 add_subdirectory(randomProcesses)
 
 add_subdirectory(twoPhaseModels)
-#multiphaseModels/Allwmake $targetType $*
+add_subdirectory(multiphaseModels)
 #MomentumTransportModels/Allwmake $targetType $*
 #ThermophysicalTransportModels/Allwmake $targetType $*
 #wmake $targetType radiationModels
