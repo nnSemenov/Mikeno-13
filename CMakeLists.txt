@@ -31,11 +31,10 @@ set(ParaView_TYPE system CACHE STRING "")
 #export FOAM_SETNAN=
 
 
+include(cmake/3rdParty.cmake)
+
 include(cmake/process_options.cmake)
 
-include(cmake/3rdParty/zlib.cmake)
-include(cmake/3rdParty/MPI.cmake)
-include(cmake/3rdParty/metis.cmake)
 
 include(cmake/lnInclude.cmake)
 
