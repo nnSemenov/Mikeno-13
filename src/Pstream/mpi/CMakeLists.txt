@@ -21,7 +21,7 @@ set_target_properties(Pstream_mpi
     PROPERTIES
     OUTPUT_NAME Pstream
 )
-target_link_libraries(Pstream_mpi PUBLIC
+target_link_libraries(Pstream_mpi PRIVATE
     OpenFOAM_Defines
     MPI::MPI_CXX
 )

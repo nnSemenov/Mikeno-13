@@ -14,6 +14,7 @@ message(STATUS "Found zoltan lib ${zoltan_lib}")
 
 find_file(zoltan_header
     NAMES zoltan.h
+    PATH_SUFFIXES trilinos
 )
 if(NOT zoltan_header)
     message(WARNING "Failed to find zoltan header")

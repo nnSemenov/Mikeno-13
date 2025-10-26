@@ -27,6 +27,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     parmetis_imported
+    MPI::MPI_CXX
 )
 
 target_compile_definitions(${target_name} PRIVATE

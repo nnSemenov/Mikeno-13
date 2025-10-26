@@ -9,6 +9,12 @@ endif ()
 
 
 find_package(SCOTCH CONFIG)
+if(NOT SCOTCH_FOUND)
+    message(STATUS "find_package failed to find scotch. Search it manually...")
+    include(${CMAKE_SOURCE_DIR}/cmake/3rdParty/fallback/scotch.cmake)
+    return()
+endif()
+
 set(expected_targets SCOTCH::scotch SCOTCH::scotcherr)
 foreach (target ${expected_targets})
     if (NOT TARGET ${target})

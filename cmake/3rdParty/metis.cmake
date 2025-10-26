@@ -14,8 +14,9 @@ set(metis_option metis_Int${WM_LABEL_SIZE}_Real${fp_size})
 message(STATUS "metis_option = ${metis_option}")
 
 find_library(metis_lib
-    NAMES ${metis_option}
+    NAMES ${metis_option} metis
 )
+
 if(NOT metis_lib)
     message(WARNING "Failed to find metis library: ${metis_option}")
     return()

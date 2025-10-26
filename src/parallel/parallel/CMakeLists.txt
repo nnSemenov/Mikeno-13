@@ -37,8 +37,8 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     finiteVolume
-    metisDecomp
-    scotchDecomp
+    #metisDecomp
+    #scotchDecomp
     meshTools
     decompositionMethods
     Pstream_dummy
@@ -46,6 +46,13 @@ target_link_libraries(${target_name} PRIVATE
     lagrangian
     Lagrangian
 )
+
+set(possible_targets metisDecomp scotchDecomp)
+foreach(target ${possible_targets})
+    if(TARGET ${target})
+	target_link_libraries(${target_name} PRIVATE ${target})
+    endif()
+endforeach()
 
 target_compile_definitions(${target_name} PRIVATE
     LIB_NAME=lib${target_name}.so

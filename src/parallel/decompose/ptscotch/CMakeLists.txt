@@ -42,6 +42,7 @@ target_link_libraries(${target_name} PRIVATE
     SCOTCH::scotcherr
     SCOTCH::ptscotch
     ${real_time_lib}
+    MPI::MPI_CXX
 )
 
 target_compile_definitions(${target_name} PRIVATE

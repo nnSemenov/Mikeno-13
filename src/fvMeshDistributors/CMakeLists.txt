@@ -18,14 +18,26 @@ target_link_libraries(${target_name} PRIVATE
 
     decompositionMethods 
     Pstream_dummy
-    scotchDecomp
-    ptscotchDecomp 
+    #scotchDecomp
+    #ptscotchDecomp 
     triSurface 
     meshTools 
     polyTopoChange 
     finiteVolume 
     fvMeshStitchers
 )
+
+if(TARGET scotchDecomp)
+    target_link_libraries(${target_name} PRIVATE
+        scotchDecomp
+    )
+endif()
+
+if(TARGET ptscotchDecomp)
+    target_link_libraries(${target_name} PRIVATE
+        ptscotchDecomp
+    )
+endif()
 
 target_compile_definitions(${target_name} PRIVATE
     LIB_NAME=lib${target_name}.so
