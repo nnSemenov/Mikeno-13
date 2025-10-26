@@ -1,5 +1,5 @@
 if((NOT PARMETIS_TYPE) OR (${PARMETIS_TYPE} STREQUAL none))
-    message(STATUS "Skip finding metis because PARMETIS_TYPE = ${PARMETIS_TYPE}")
+    message(STATUS "Skip finding parmetis because PARMETIS_TYPE = ${PARMETIS_TYPE}")
     return()
 endif ()
 
