@@ -7,7 +7,6 @@ if ((NOT SCOTCH_TYPE) OR (${SCOTCH_TYPE} STREQUAL none))
     return()
 endif ()
 
-
 find_package(SCOTCH CONFIG)
 if(NOT SCOTCH_FOUND)
     message(STATUS "find_package failed to find scotch. Search it manually...")
