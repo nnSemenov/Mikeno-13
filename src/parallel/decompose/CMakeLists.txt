@@ -1,6 +1,7 @@
 add_subdirectory(decompositionMethods)
 add_subdirectory(metis)
 add_subdirectory(scotch)
+add_subdirectory(ptscotch)
 
 message(WARNING "TODO: Migrate more decomposition methods")
 

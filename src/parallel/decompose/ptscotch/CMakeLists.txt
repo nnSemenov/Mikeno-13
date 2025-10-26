@@ -1,7 +1,12 @@
-set(target_name scotchDecomp)
+set(target_name ptscotchDecomp)
 
 if(NOT ${SCOTCH_OK})
     message(STATUS "Skip ${target_name} because scotch is not found")
+    return()
+endif ()
+
+if(NOT TARGET SCOTCH::ptscotch)
+    message(STATUS "Skip ${target_name} because ptscotch is not found")
     return()
 endif ()
 
@@ -14,7 +19,7 @@ endif ()
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${target_name} SHARED
-    scotch.C
+    ptscotch.C
 )
 
 target_include_directories(${target_name} PUBLIC
@@ -23,6 +28,7 @@ target_include_directories(${target_name} PUBLIC
 
 target_include_directories(${target_name} PRIVATE
     ../decompositionMethods/lnInclude
+    ${LIB_SRC}/Pstream/mpi/lnInclude
 )
 
 message(STATUS "real_time_lib = ${real_time_lib}")
@@ -34,6 +40,7 @@ target_link_libraries(${target_name} PRIVATE
 
     SCOTCH::scotch
     SCOTCH::scotcherr
+    SCOTCH::ptscotch
     ${real_time_lib}
 )
 

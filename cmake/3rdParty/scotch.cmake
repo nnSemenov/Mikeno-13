@@ -1,5 +1,6 @@
 
 set(SCOTCH_OK OFF)
+set(PTSCOTCH_OK OFF)
 
 if ((NOT SCOTCH_TYPE) OR (${SCOTCH_TYPE} STREQUAL none))
     message(STATUS "Skip finding scotch because SCOTCH_TYPE = ${SCOTCH_TYPE}")
@@ -16,12 +17,11 @@ foreach (target ${expected_targets})
     endif ()
 endforeach ()
 
-find_library(real_time_lib NAMES rt)
-if(NOT real_time_lib)
-    message(WARNING "real time lib (like librt.so) is missing.")
-    return()
-endif ()
-
 set(SCOTCH_OK ON)
 
+if(NOT TARGET SCOTCH::ptscotch)
+    message(WARNING "SCOTCH::ptscotch is missing")
+    return()
+endif ()
+set(PTSCOTCH_OK OFF)
 #message(STATUS "Found real time lib: ${real_time_lib}")

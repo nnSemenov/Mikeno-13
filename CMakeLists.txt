@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(Mikeno VERSION 13 LANGUAGES CXX)
+project(Mikeno VERSION 13 LANGUAGES C CXX)
 
 set(WM_PRECISION_OPTION DP CACHE STRING "Precision of float point number. SP | DP")
 
