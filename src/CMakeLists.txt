@@ -48,8 +48,7 @@ add_subdirectory(randomProcesses)
 add_subdirectory(twoPhaseModels)
 add_subdirectory(multiphaseModels)
 add_subdirectory(MomentumTransportModels)
-#MomentumTransportModels/Allwmake $targetType $*
-#ThermophysicalTransportModels/Allwmake $targetType $*
+add_subdirectory(ThermophysicalTransportModels)
 #wmake $targetType radiationModels
 #wmake $targetType combustionModels
 #mesh/Allwmake $targetType $*
