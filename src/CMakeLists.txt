@@ -64,6 +64,7 @@ add_subdirectory(fvModels)
 add_subdirectory(functionObjects)
 
 #add_subdirectory(lagrangian)
+add_subdirectory(rigidBodyMotion)
 ###############################################
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
