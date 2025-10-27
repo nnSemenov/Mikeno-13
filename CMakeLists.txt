@@ -46,9 +46,10 @@ set(FOAM_special_libraries)
 
 add_subdirectory(src)
 
-
-message(STATUS "Regular libraries: ${FOAM_regular_libraries}")
-message(STATUS "Non-regular libraries: ${FOAM_special_libraries}")
+list(LENGTH FOAM_regular_libraries N_regular_lib)
+list(LENGTH FOAM_special_libraries N_special_lib)
+message(STATUS "${N_regular_lib} regular libraries: ${FOAM_regular_libraries}")
+message(STATUS "${N_special_lib} non-regular libraries: ${FOAM_special_libraries}")
 
 install(TARGETS ${FOAM_regular_libraries}
     DESTINATION lib
