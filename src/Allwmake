@@ -1,7 +1,5 @@
 #!/bin/sh
 
-wmake $targetType fvConstraints
-
 fvModels/Allwmake $targetType $*
 functionObjects/Allwmake $targetType $*
 
