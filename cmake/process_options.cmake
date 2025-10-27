@@ -43,6 +43,12 @@ target_compile_options(OpenFOAM_Defines INTERFACE
 #    -Wno-shift-negative-value
 )
 
+# Install this interface target
+install(TARGETS OpenFOAM_Defines
+    EXPORT MikenoTargets
+)
+set(FOAM_special_libraries "${FOAM_special_libraries};OpenFOAM_Defines")
+
 ####### wmake env vars
 set(WM_PROJECT_DIR ${PROJECT_SOURCE_DIR})
 set(WM_CC ${CMAKE_C_COMPILER})
