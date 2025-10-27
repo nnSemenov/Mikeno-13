@@ -52,7 +52,6 @@ add_subdirectory(ThermophysicalTransportModels)
 add_subdirectory(radiationModels)
 add_subdirectory(combustionModels)
 
-#add_subdirectory(mesh)
 
 add_subdirectory(renumber)
 add_subdirectory(fvAgglomerationMethods)
@@ -63,8 +62,10 @@ add_subdirectory(fvConstraints)
 add_subdirectory(fvModels)
 add_subdirectory(functionObjects)
 
-#add_subdirectory(lagrangian)
 add_subdirectory(rigidBodyMotion)
+add_subdirectory(specieTransfer)
+add_subdirectory(atmosphericModels)
+add_subdirectory(waves)
 ###############################################
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)

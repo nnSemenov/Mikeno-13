@@ -1,8 +1,0 @@
-#!/bin/sh
-
-wmake $targetType specieTransfer
-wmake $targetType atmosphericModels
-wmake $targetType waves
-
-
-#------------------------------------------------------------------------------
