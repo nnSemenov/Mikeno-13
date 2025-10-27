@@ -61,6 +61,7 @@ add_subdirectory(fvMotionSolver)
 add_subdirectory(fvConstraints)
 
 add_subdirectory(fvModels)
+add_subdirectory(functionObjects)
 ###############################################
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)

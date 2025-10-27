@@ -190,12 +190,12 @@ public:
             inline scalar alphav(const scalar p, const scalar T) const;
 
             inline scalar dedp_T(const scalar p, const scalar T) const {
-                const scalar rho = rho(p, T);
+                const scalar rho = this->rho(p, T);
                 return (rho0_-rho) / sqr(rho);
             }
 
             inline scalar dhdp_T(const scalar p, const scalar T) const {
-                const scalar rho = rho(p, T);
+                const scalar rho = this->rho(p, T);
                 return 1 / rho;
             }
         // IO

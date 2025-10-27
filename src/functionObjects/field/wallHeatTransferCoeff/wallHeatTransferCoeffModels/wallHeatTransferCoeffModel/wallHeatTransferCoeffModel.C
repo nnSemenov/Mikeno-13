@@ -26,6 +26,7 @@ License
 #include "wallHeatTransferCoeffModel.H"
 #include "compressibleMomentumTransportModel.H"
 #include "surfaceInterpolate.H"
+#include "fvc.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //

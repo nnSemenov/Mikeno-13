@@ -23,8 +23,9 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "surfaceInterpolate.H"
 #include "linear.H"
+#include "surfaceInterpolate.H"
+#include "volFieldsFwd.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 

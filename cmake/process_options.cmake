@@ -34,8 +34,9 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     -Wno-invalid-offsetof
     -Wno-undefined-var-template
     -Wno-unqualified-std-cast-call
+    -ftemplate-depth-256
 
-# less warn
+    # less warn
 #    -Wno-old-style-cast
 #    -Wno-unused-local-typedefs
 #    -Wno-tautological-undefined-compare
