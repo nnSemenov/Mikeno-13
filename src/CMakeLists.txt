@@ -20,7 +20,7 @@ add_subdirectory(thermophysicalModels)
 
 add_subdirectory(tracking)
 add_subdirectory(lagrangian)
-add_subdirectory(Lagrangian/Lagrangian)
+add_subdirectory(Lagrangian)
 
 add_subdirectory(generic)
 
