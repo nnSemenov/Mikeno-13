@@ -13,12 +13,10 @@ target_include_directories(${target_name} PUBLIC
 target_include_directories(${target_name} PRIVATE
     ${LIB_SRC}/functionObjects/forces/lnInclude
 
-    ${LIB_SRC}/physicalProperties/lnInclude \
-    ${LIB_SRC}/thermophysicalModels/solidThermo/lnInclude \
-    ${LIB_SRC}/thermophysicalModels/basic/lnInclude \
-    ${LIB_SRC}/thermophysicalModels/specie/lnInclude \
-    ${LIB_SRC}/MomentumTransportModels/momentumTransportModels/lnInclude \
-    ${LIB_SRC}/MomentumTransportModels/compressible/lnInclude \
+    ${LIB_SRC}/physicalProperties/lnInclude 
+    ${LIB_SRC}/thermophysicalModels/solidThermo/lnInclude 
+    ${LIB_SRC}/thermophysicalModels/basic/lnInclude 
+    ${LIB_SRC}/thermophysicalModels/specie/lnInclude
     ${LIB_SRC}/ThermophysicalTransportModels/lnInclude
 )
 
