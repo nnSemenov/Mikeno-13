@@ -52,5 +52,17 @@ message(STATUS "${N_regular_lib} regular libraries: ${FOAM_regular_libraries}")
 message(STATUS "${N_special_lib} non-regular libraries: ${FOAM_special_libraries}")
 
 install(TARGETS ${FOAM_regular_libraries}
+    EXPORT MikenoTargets
     DESTINATION lib
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                GROUP_READ             GROUP_EXECUTE
+                WORLD_READ             WORLD_EXECUTE
+)
+
+install(TARGETS OpenFOAM_Defines
+    EXPORT MikenoTargets
+)
+
+install(EXPORT MikenoTargets
+    DESTINATION lib/cmake
 )

@@ -12,10 +12,15 @@ target_compile_definitions(Pstream_dummy PRIVATE
 )
 
 target_include_directories(Pstream_dummy PUBLIC
-    lnInclude
-    ${OpenFOAM_lnInclude_dir}
-    "${CMAKE_SOURCE_DIR}/src/OSspecific/POSIX/lnInclude"
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
+    $<BUILD_INTERFACE:${LIB_SRC}/OSspecific/POSIX/lnInclude>
 )
+
+target_include_directories(Pstream_dummy PRIVATE
+#    $<BUILD_INTERFACE:${LIB_SRC}/OSspecific/POSIX/lnInclude>
+    $<BUILD_INTERFACE:${LIB_SRC}/OpenFOAM/lnInclude>
+)
+
 set_target_properties(Pstream_dummy
     PROPERTIES
     OUTPUT_NAME Pstream
@@ -26,6 +31,7 @@ target_link_libraries(Pstream_dummy PUBLIC
 )
 
 install(TARGETS Pstream_dummy
+    EXPORT MikenoTargets
     DESTINATION lib/dummy
 )
 

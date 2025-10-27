@@ -46,11 +46,13 @@ target_link_libraries(OSspecific PUBLIC
 )
 
 target_include_directories(OSspecific PUBLIC
-    ${OpenFOAM_lnInclude_dir}
-    lnInclude
+    $<BUILD_INTERFACE:${LIB_SRC}/OpenFOAM/lnInclude>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
+
 )
 
 install(TARGETS OSspecific
+    EXPORT MikenoTargets
     DESTINATION lib
 )
 

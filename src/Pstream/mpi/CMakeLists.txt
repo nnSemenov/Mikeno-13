@@ -13,9 +13,9 @@ target_compile_definitions(Pstream_mpi PRIVATE
 )
 
 target_include_directories(Pstream_mpi PUBLIC
-    lnInclude
-    ${OpenFOAM_lnInclude_dir}
-    "${CMAKE_SOURCE_DIR}/src/OSspecific/POSIX/lnInclude"
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
+    $<BUILD_INTERFACE:${OpenFOAM_lnInclude_dir}>
+    $<BUILD_INTERFACE:${LIB_SRC}/OSspecific/POSIX/lnInclude>
 )
 set_target_properties(Pstream_mpi
     PROPERTIES
@@ -27,6 +27,7 @@ target_link_libraries(Pstream_mpi PRIVATE
 )
 
 install(TARGETS Pstream_mpi
+    EXPORT MikenoTargets
     DESTINATION lib/${FOAM_MPI}
 )
 
