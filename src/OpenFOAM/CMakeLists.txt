@@ -1,12 +1,22 @@
 
 add_library(OpenFOAM SHARED
-    global/global.Cver
-    # global/constants/constants.C in global.Cver
-    # global/constants/dimensionedConstants.C in global.Cver
     global/argList/argList.C
     global/clock/clock.C
     global/etcFiles/etcFiles.C
 )
+
+message(WARNING "TODO: Use a common function to process Cver")
+set(VERSION_STRING ${PROJECT_VERSION})
+set(BUILD_STRING "CMakeBuild")
+set(processed_file ${CMAKE_CURRENT_BINARY_DIR}/global/global.C)
+configure_file(global/global.Cver ${processed_file})
+target_sources(OpenFOAM PRIVATE
+    ${processed_file}
+)
+
+#global/global.Cver
+# global/constants/constants.C in global.Cver
+# global/constants/dimensionedConstants.C in global.Cver
 
 set(fileOps global/fileOperations)
 target_sources(OpenFOAM PRIVATE
@@ -302,7 +312,6 @@ target_sources(OpenFOAM PRIVATE
     ${functionEntries}/ifeqEntry/ifeqEntry.C
     ${functionEntries}/ifEntry/ifEntry.C
 )
-
 
 set(IOdictionary db/IOobjects/IOdictionary)
 target_sources(OpenFOAM PRIVATE

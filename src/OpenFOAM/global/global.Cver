@@ -34,8 +34,8 @@ Description
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 #include "foamVersion.H"
 
-const char* const Foam::FOAMversion = "VERSION_STRING";
-const char* const Foam::FOAMbuild = "BUILD_STRING";
+const char* const Foam::FOAMversion = "@VERSION_STRING@";
+const char* const Foam::FOAMbuild = "@BUILD_STRING@";
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 // Setup an error handler for the global new operator
