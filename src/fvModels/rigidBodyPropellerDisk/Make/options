@@ -1,9 +1,0 @@
-EXE_INC = \
-    -I../propellerDisk/lnInclude
-     \
-    ${LIB_SRC}/motionSolvers/lnInclude
-    ${LIB_SRC}/fvMeshMovers/motionSolver/lnInclude
-    ${LIB_SRC}/rigidBodyMotion/rigidBodyDynamics/lnInclude
-    ${LIB_SRC}/rigidBodyMotion/rigidBodyMeshMotion/lnInclude
-
-LIB_LIBS = \
