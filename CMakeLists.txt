@@ -43,7 +43,10 @@ include(cmake/lnInclude.cmake)
 set(FOAM_regular_libraries)
 # libraries that don't install to lib, but different destination
 set(FOAM_special_libraries)
+# executables installed to bin
+set(FOAM_regular_executables)
 
 add_subdirectory(src)
+add_subdirectory(applications)
 
 include(cmake/install.cmake)
