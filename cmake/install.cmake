@@ -1,8 +1,10 @@
 
 list(LENGTH FOAM_regular_libraries N_regular_lib)
 list(LENGTH FOAM_special_libraries N_special_lib)
+list(LENGTH FOAM_regular_executables N_regular_exe)
 message(STATUS "${N_regular_lib} regular libraries: ${FOAM_regular_libraries}")
 message(STATUS "${N_special_lib} non-regular libraries: ${FOAM_special_libraries}")
+message(STATUS "${N_regular_exe} regular executables: ${FOAM_regular_executables}")
 
 # Convert all absolute path into $<> expression
 foreach (target ${FOAM_regular_libraries})
@@ -25,8 +27,16 @@ install(TARGETS ${FOAM_regular_libraries}
     EXPORT MikenoTargets
     DESTINATION lib
     PERMISSIONS OWNER_READ OWNER_EXECUTE OWNER_WRITE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE
+                GROUP_READ GROUP_EXECUTE
+                WORLD_READ WORLD_EXECUTE
+)
+
+install(TARGETS ${FOAM_regular_executables}
+    EXPORT MikenoTargets
+    DESTINATION bin
+    PERMISSIONS OWNER_READ OWNER_EXECUTE OWNER_WRITE
+                GROUP_READ GROUP_EXECUTE
+                WORLD_READ WORLD_EXECUTE
 )
 
 include(CMakePackageConfigHelpers)

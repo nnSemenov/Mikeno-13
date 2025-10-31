@@ -1,10 +1,8 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name foamRun)
+set(target_name <>)
 
 add_executable(${target_name}
-    setDeltaT.C
-    foamRun.C
 )
 
 target_include_directories(${target_name} PRIVATE
@@ -14,10 +12,8 @@ target_include_directories(${target_name} PRIVATE
 target_link_libraries(${target_name} PRIVATE
     OpenFOAM_Defines
     OSspecific
-    Pstream_dummy
     OpenFOAM
 
-    finiteVolume
 )
 
 target_compile_definitions(${target_name} PRIVATE
