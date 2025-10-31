@@ -15,7 +15,7 @@ add_library(triSurface SHARED
 
     ${interfaces}/STL/writeSTL.C
     ${interfaces}/STL/readSTL.C
-    ${interfaces}/STL/readSTLASCII.L
+    #${interfaces}/STL/readSTLASCII.L
     ${interfaces}/STL/readSTLBINARY.C
     ${interfaces}/GTS/writeGTS.C
     ${interfaces}/GTS/readGTS.C
@@ -39,6 +39,15 @@ add_library(triSurface SHARED
     tools/labelledTri/sortLabelledTri.C
 
     triSurfaceFields/triSurfaceFields.C
+)
+
+flex_target(triSurfaceFlex
+    ${interfaces}/STL/readSTLASCII.L
+    realSTLASCII.C
+    OPTIONS -+ -f
+)
+target_sources(triSurface PRIVATE
+    ${FLEX_triSurfaceFlex_OUTPUTS}
 )
 
 target_include_directories(triSurface PUBLIC

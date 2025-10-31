@@ -35,7 +35,7 @@ add_library(surfMesh SHARED
     surfaceFormats/starcd/STARCDsurfaceFormatRunTime.C
     surfaceFormats/stl/STLsurfaceFormatCore.C
     surfaceFormats/stl/STLsurfaceFormatRunTime.C
-    surfaceFormats/stl/STLsurfaceFormatASCII.L
+    #surfaceFormats/stl/STLsurfaceFormatASCII.L
     surfaceFormats/tri/TRIsurfaceFormatCore.C
     surfaceFormats/tri/TRIsurfaceFormatRunTime.C
     surfaceFormats/vtk/VTKsurfaceFormatCore.C
@@ -45,6 +45,18 @@ add_library(surfMesh SHARED
     surfaceFormats/x3d/X3DsurfaceFormatCore.C
     surfaceFormats/x3d/X3DsurfaceFormatRunTime.C
 )
+
+flex_target(surfMeshFlex
+    surfaceFormats/stl/STLsurfaceFormatASCII.L
+    STLsurfaceFormatASCII.C
+    OPTIONS -+ -f
+)
+target_sources(surfMesh PRIVATE
+    ${FLEX_surfMeshFlex_OUTPUTS}
+)
+
+message(WARNING "Use flex / flex++ to process .L file")
+
 target_include_directories(surfMesh PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
 )
@@ -58,8 +70,8 @@ target_link_libraries(surfMesh PRIVATE
     OpenFOAM
     OSspecific
     fileFormats
+#    FLEX::fl
 )
-
 
 set(FOAM_regular_libraries "${FOAM_regular_libraries};surfMesh" PARENT_SCOPE)
 
