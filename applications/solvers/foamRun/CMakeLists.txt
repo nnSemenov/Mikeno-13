@@ -18,14 +18,15 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
 
     finiteVolume
+#    FLEX::fl
 )
 
 target_compile_definitions(${target_name} PRIVATE
     LIB_NAME=libNULL.so
 )
 
-#target_link_options(${target_name} PRIVATE
-#    -Xlinker --add-needed
-#)
+target_link_options(${target_name} PRIVATE
+    -Xlinker --add-needed
+)
 
 set(FOAM_regular_executables "${FOAM_regular_executables};${target_name}" PARENT_SCOPE)
