@@ -1,5 +1,8 @@
 add_subdirectory(solvers/foamRun)
-
+add_subdirectory(solvers/foamMultiRun)
+add_subdirectory(solvers/chemFoam)
+add_subdirectory(solvers/potentialFoam)
+add_subdirectory(solvers/boundaryFoam)
 
 ###############################################
 
