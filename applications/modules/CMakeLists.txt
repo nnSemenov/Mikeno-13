@@ -27,6 +27,7 @@ add_subdirectory(multiphaseEuler)
 add_subdirectory(incompressibleDenseParticleFluid)
 
 add_subdirectory(isothermalFilm)
+add_subdirectory(film)
 
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
 set(FOAM_special_libraries ${FOAM_special_libraries} PARENT_SCOPE)
