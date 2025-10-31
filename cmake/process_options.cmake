@@ -90,5 +90,6 @@ set(LIB_SRC "${WM_PROJECT_DIR}/src")
 
 ##### Run env vars
 set(FOAM_APP ${WM_PROJECT_DIR}/applications)
+set(FOAM_MODULES ${FOAM_APP}/modules)
 set(FOAM_SOLVERS ${FOAM_APP}/solvers)
 set(FOAM_SRC ${WM_PROJECT_DIR}/src)

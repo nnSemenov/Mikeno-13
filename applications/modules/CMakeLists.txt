@@ -9,5 +9,9 @@ add_subdirectory(porousMediaFluid)
 add_subdirectory(XiFluid)
 add_subdirectory(shockFluid)
 
+add_subdirectory(VoFSolver)
+add_subdirectory(twoPhaseSolver)
+add_subdirectory(twoPhaseVoFSolver)
+
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
 set(FOAM_special_libraries ${FOAM_special_libraries} PARENT_SCOPE)
