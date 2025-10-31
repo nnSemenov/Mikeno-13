@@ -16,5 +16,9 @@ add_subdirectory(twoPhaseVoFSolver)
 add_subdirectory(incompressibleVoF)
 add_subdirectory(compressibleVoF)
 
+add_subdirectory(multiphaseVoFSolver)
+add_subdirectory(incompressibleMultiphaseVoF)
+add_subdirectory(compressibleMultiphaseVoF)
+
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
 set(FOAM_special_libraries ${FOAM_special_libraries} PARENT_SCOPE)
