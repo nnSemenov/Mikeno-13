@@ -5,6 +5,8 @@ add_subdirectory(solvers/potentialFoam)
 add_subdirectory(solvers/boundaryFoam)
 
 add_subdirectory(modules)
+
+add_subdirectory(legacy)
 ###############################################
 
 set(FOAM_regular_executables ${FOAM_regular_executables} PARENT_SCOPE)
