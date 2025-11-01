@@ -655,7 +655,7 @@ target_link_libraries(finiteVolume PRIVATE
     OSspecific
     triSurface
     meshTools
-    Pstream_dummy
+    Pstream_best
 )
 
 

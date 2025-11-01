@@ -290,7 +290,7 @@ target_link_libraries(meshTools PRIVATE
     OSspecific
     triSurface
     fileFormats
-    Pstream_dummy
+    Pstream_best
 )
 
 

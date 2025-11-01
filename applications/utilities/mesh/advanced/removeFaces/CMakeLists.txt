@@ -18,7 +18,7 @@ target_link_libraries(${target_name} PRIVATE
     meshTools
     polyTopoChange
     finiteVolume
-    Pstream_dummy
+    Pstream_best
     genericFvFields
 )
 

@@ -63,7 +63,7 @@ target_link_libraries(${target_name} PRIVATE
     finiteVolume
     fvModels
     fvConstraints
-    Pstream_dummy
+    Pstream_best
     coupledThermophysicalTransportModels
     fluidMulticomponentThermophysicalTransportModels
     fluidThermoThermophysicalTransportModels

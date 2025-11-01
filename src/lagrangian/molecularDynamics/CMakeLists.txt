@@ -63,7 +63,7 @@ target_link_libraries(${target_name} PRIVATE
     finiteVolume 
     meshTools 
     lagrangian 
-    Pstream_dummy
+    Pstream_best
     tracking
 )
 

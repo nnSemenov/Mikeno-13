@@ -16,7 +16,7 @@ target_link_libraries(physicalProperties PRIVATE
     OpenFOAM
     OSspecific
     finiteVolume
-    Pstream_dummy
+    Pstream_best
 )
 
 

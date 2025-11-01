@@ -17,7 +17,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     decompositionMethods 
-    Pstream_dummy
+    Pstream_best
     #scotchDecomp
     #ptscotchDecomp 
     triSurface 

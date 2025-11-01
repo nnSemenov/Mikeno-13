@@ -14,7 +14,7 @@ target_include_directories(${target_name} PRIVATE
 target_link_libraries(${target_name} PRIVATE
     OpenFOAM_Defines
     OSspecific
-    Pstream_dummy
+    Pstream_best
     OpenFOAM
 
     finiteVolume

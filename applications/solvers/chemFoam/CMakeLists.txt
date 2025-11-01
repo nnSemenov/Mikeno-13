@@ -20,7 +20,7 @@ target_link_libraries(${target_name} PRIVATE
     chemistryModel 
     finiteVolume 
     meshTools 
-    Pstream_dummy
+    Pstream_best
     fluidThermophysicalModels 
     chemistryModel
     multicomponentThermophysicalModels

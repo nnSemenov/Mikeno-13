@@ -38,7 +38,7 @@ target_link_libraries(multicomponentThermophysicalModels PRIVATE
     fluidThermophysicalModels
     specie
     finiteVolume
-    Pstream_dummy
+    Pstream_best
 )
 
 target_compile_definitions(multicomponentThermophysicalModels PRIVATE

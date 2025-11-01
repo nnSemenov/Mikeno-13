@@ -27,7 +27,7 @@ target_link_libraries(${target_name} PRIVATE
     meshTools
     fvModels
     fvConstraints
-    Pstream_dummy
+    Pstream_best
     thermophysicalTransportModel
     fluidThermophysicalTransportModel
     fluidThermoThermophysicalTransportModels

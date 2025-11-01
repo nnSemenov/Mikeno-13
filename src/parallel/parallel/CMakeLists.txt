@@ -41,7 +41,7 @@ target_link_libraries(${target_name} PRIVATE
     #scotchDecomp
     meshTools
     decompositionMethods
-    Pstream_dummy
+    Pstream_best
     polyTopoChange
     lagrangian
     Lagrangian

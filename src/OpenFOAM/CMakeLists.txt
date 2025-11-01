@@ -945,7 +945,7 @@ target_sources(OpenFOAM PRIVATE
 
 target_link_libraries(OpenFOAM PRIVATE
     OSspecific
-    Pstream_dummy
+    Pstream_best
     ZLIB::ZLIB
 )
 

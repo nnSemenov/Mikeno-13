@@ -24,7 +24,7 @@ target_link_libraries(${target_name} PRIVATE
     genericPatches
     fileFormats
     polyTopoChange
-    Pstream_dummy
+    Pstream_best
 )
 
 target_compile_definitions(${target_name} PRIVATE
