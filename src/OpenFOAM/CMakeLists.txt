@@ -937,6 +937,9 @@ target_sources(OpenFOAM PRIVATE
     distributions/tabulatedCumulative/tabulatedCumulative.C
     distributions/tabulatedDensity/tabulatedDensity.C
     distributions/uniform/uniform.C
+
+    geometry/splines/BSpline/BSpline.C
+    geometry/splines/CatmullRomSpline/CatmullRomSpline.C
 )
 
 
