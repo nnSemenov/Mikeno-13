@@ -6,4 +6,8 @@ add_subdirectory(advanced/removeFaces)
 add_subdirectory(advanced/selectCells)
 add_subdirectory(advanced/splitCells)
 
+message(WARNING "Migrate all mesh/conversion utilities")
+
+add_subdirectory(generation/blockMesh)
+
 set(FOAM_regular_executables ${FOAM_regular_executables} PARENT_SCOPE)
