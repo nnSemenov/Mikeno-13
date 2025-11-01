@@ -8,6 +8,12 @@ add_executable(${target_name}
     extrude2DMesh.C
 )
 
+message(WARNING "TODO: Correct output name and solve conflicts")
+#set_target_properties(${target_name} PROPERTIES
+#    OUTPUT_NAME extrude2DMesh
+#
+#)
+
 target_include_directories(${target_name} PRIVATE
     lnInclude
 )
