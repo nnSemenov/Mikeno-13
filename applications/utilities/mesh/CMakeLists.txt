@@ -7,6 +7,11 @@ add_subdirectory(advanced/selectCells)
 add_subdirectory(advanced/splitCells)
 
 message(WARNING "Migrate all mesh/conversion utilities")
+add_subdirectory(conversion/ansysToFoam)
+add_subdirectory(conversion/cfx4ToFoam)
+add_subdirectory(conversion/datToFoam)
+add_subdirectory(conversion/fluent3DMeshToFoam)
+add_subdirectory(conversion/fluentMeshToFoam)
 
 add_subdirectory(generation/blockMesh)
 add_subdirectory(generation/extrude2DMesh)
