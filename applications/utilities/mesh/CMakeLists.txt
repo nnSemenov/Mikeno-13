@@ -19,6 +19,10 @@ add_subdirectory(conversion/gambitToFoam)
 add_subdirectory(conversion/gmshToFoam)
 add_subdirectory(conversion/ideasUnvToFoam)
 add_subdirectory(conversion/kivaToFoam)
+add_subdirectory(conversion/mshToFoam)
+add_subdirectory(conversion/netgenNeutralToFoam)
+message(WARNING "Migrate all mesh/conversion Optional utilities")
+
 
 add_subdirectory(generation/blockMesh)
 add_subdirectory(generation/extrude2DMesh)
