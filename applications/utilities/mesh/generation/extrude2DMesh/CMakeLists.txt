@@ -1,18 +1,19 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_subdirectory(extrude2DMesh)
-
+add_subdirectory(extrude2DMesh
+    extrude2DMesh_lib # specify BINARY_DIR to rename binary dir, otherwise executable and this directory will conflict in build dir
+)
+# The executable target name shouldn't conflict with libextrude2DMesh
 set(target_name extrude2DMesh_exe)
 
 add_executable(${target_name}
     extrude2DMesh.C
 )
 
-message(WARNING "TODO: Correct output name and solve conflicts")
-#set_target_properties(${target_name} PROPERTIES
-#    OUTPUT_NAME extrude2DMesh
-#
-#)
+# The executable must be old name for compatibility
+set_target_properties(${target_name} PROPERTIES
+    OUTPUT_NAME extrude2DMesh
+)
 
 target_include_directories(${target_name} PRIVATE
     lnInclude
