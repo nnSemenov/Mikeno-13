@@ -55,8 +55,6 @@ target_sources(surfMesh PRIVATE
     ${FLEX_surfMeshFlex_OUTPUTS}
 )
 
-message(WARNING "Use flex / flex++ to process .L file")
-
 target_include_directories(surfMesh PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
 )
