@@ -26,6 +26,9 @@ add_subdirectory(conversion/plot3dToFoam)
 add_subdirectory(conversion/sammToFoam)
 add_subdirectory(conversion/star3ToFoam)
 add_subdirectory(conversion/star4ToFoam)
+add_subdirectory(conversion/tetgenToFoam)
+add_subdirectory(conversion/vtkUnstructuredToFoam)
+add_subdirectory(conversion/writeMeshObj)
 
 
 add_subdirectory(generation/blockMesh)
