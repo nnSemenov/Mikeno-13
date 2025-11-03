@@ -24,6 +24,8 @@ add_subdirectory(conversion/netgenNeutralToFoam)
 add_subdirectory(conversion/Optional/ccm26ToFoam)
 add_subdirectory(conversion/plot3dToFoam)
 add_subdirectory(conversion/sammToFoam)
+add_subdirectory(conversion/star3ToFoam)
+add_subdirectory(conversion/star4ToFoam)
 
 
 add_subdirectory(generation/blockMesh)
