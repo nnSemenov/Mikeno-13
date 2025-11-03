@@ -23,7 +23,9 @@ jobs:
     - name: Install deps
       run: | 
         sudo apt update
-        sudo apt install --fix-missing build-essential cmake git ca-certificates flex clang libopenmpi-dev paraview-dev libscotch-dev ptscotch libmetis-dev libparmetis-dev libtrilinos-zoltan-dev paraview
+        sudo apt install --fix-missing build-essential cmake git ca-certificates flex clang libopenmpi-dev paraview-dev libscotch-dev ptscotch libmetis-dev libparmetis-dev libtrilinos-zoltan-dev libboost-all-dev 
+        
+      # paraview
 
     - name: Configure CMake
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_INSTALL_PREFIX=install -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
