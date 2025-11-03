@@ -44,7 +44,7 @@ add_library(triSurface SHARED
 flex_target(triSurfaceFlex
     ${interfaces}/STL/readSTLASCII.L
     realSTLASCII.C
-    COMPILE_FLAGS -+ -f
+    COMPILE_FLAGS "-+ -f"
 )
 target_sources(triSurface PRIVATE
     ${FLEX_triSurfaceFlex_OUTPUTS}

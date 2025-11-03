@@ -5,7 +5,7 @@ set(target_name gambitToFoam)
 flex_target(gambitToFoamFlex
     gambitToFoam.L
     gambitToFoam.L.C
-    COMPILE_FLAGS -+ -f
+    COMPILE_FLAGS "-+ -f"
 )
 
 add_executable(${target_name}

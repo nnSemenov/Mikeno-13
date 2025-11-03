@@ -5,7 +5,7 @@ set(target_name fluent3DMeshToFoam)
 flex_target(fluent3DMeshToFoamFlex
     fluent3DMeshToFoam.L
     fluent3DMeshToFoam.L.C
-    COMPILE_FLAGS -+ -f
+    COMPILE_FLAGS "-+ -f"
 )
 
 add_executable(${target_name}
