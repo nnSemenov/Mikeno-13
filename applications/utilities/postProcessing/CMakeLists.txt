@@ -10,5 +10,7 @@ add_subdirectory(miscellaneous/engineCompRatio)
 add_subdirectory(miscellaneous/pdfPlot)
 add_subdirectory(miscellaneous/temporalInterpolate)
 
+add_subdirectory(noise)
+
 set(FOAM_regular_executables ${FOAM_regular_executables} PARENT_SCOPE)
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
