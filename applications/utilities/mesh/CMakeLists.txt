@@ -21,7 +21,9 @@ add_subdirectory(conversion/ideasUnvToFoam)
 add_subdirectory(conversion/kivaToFoam)
 add_subdirectory(conversion/mshToFoam)
 add_subdirectory(conversion/netgenNeutralToFoam)
-message(WARNING "Migrate all mesh/conversion Optional utilities")
+add_subdirectory(conversion/Optional/ccm26ToFoam)
+add_subdirectory(conversion/plot3dToFoam)
+add_subdirectory(conversion/sammToFoam)
 
 
 add_subdirectory(generation/blockMesh)
