@@ -1,8 +1,9 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name )
+set(target_name surfaceToPatch)
 
 add_executable(${target_name}
+    surfaceToPatch.C
 )
 
 target_include_directories(${target_name} PRIVATE
@@ -14,6 +15,10 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
     OpenFOAM
 
+    triSurface 
+    meshTools 
+    polyTopoChange 
+    Pstream_best
 )
 
 target_compile_definitions(${target_name} PRIVATE
