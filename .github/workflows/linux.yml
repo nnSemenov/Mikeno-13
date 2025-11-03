@@ -23,7 +23,7 @@ jobs:
     - name: Install deps
       run: | 
         sudo apt update
-        sudo apt install --fix-missing build-essential cmake git ca-certificates flex clang libopenmpi-dev paraview-dev libscotch-dev libptscotch-dev libmetis-dev libparmetis-dev libtrilinos-zoltan-dev libboost-all-dev 
+        sudo apt install --fix-missing build-essential cmake git ca-certificates flex libfl-dev clang libopenmpi-dev paraview-dev libscotch-dev libptscotch-dev libmetis-dev libparmetis-dev libtrilinos-zoltan-dev libboost-all-dev 
         
       # paraview
 
