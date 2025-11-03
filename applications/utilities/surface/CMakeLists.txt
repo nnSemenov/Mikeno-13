@@ -2,7 +2,10 @@ add_subdirectory(surfaceAdd)
 add_subdirectory(surfaceAutoPatch)
 add_subdirectory(surfaceBooleanFeatures)
 add_subdirectory(surfaceCheck)
-
+add_subdirectory(surfaceClean)
+add_subdirectory(surfaceCoarsen)
+add_subdirectory(surfaceConvert)
+add_subdirectory(surfaceFeatureConvert)
 
 set(FOAM_regular_executables ${FOAM_regular_executables} PARENT_SCOPE)
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
