@@ -49,7 +49,7 @@ add_library(surfMesh SHARED
 flex_target(surfMeshFlex
     surfaceFormats/stl/STLsurfaceFormatASCII.L
     STLsurfaceFormatASCII.C
-    OPTIONS -+ -f
+    COMPILE_FLAGS -+ -f
 )
 target_sources(surfMesh PRIVATE
     ${FLEX_surfMeshFlex_OUTPUTS}

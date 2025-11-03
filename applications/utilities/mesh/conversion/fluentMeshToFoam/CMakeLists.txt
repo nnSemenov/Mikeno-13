@@ -5,7 +5,7 @@ set(target_name fluentMeshToFoam)
 flex_target(fluentMeshToFoamFlex
     fluentMeshToFoam.L
     fluentMeshToFoam.L.C
-    OPTIONS -+ -f
+    COMPILE_FLAGS -+ -f
 )
 
 add_executable(${target_name}

@@ -5,7 +5,7 @@ set(target_name ansysToFoam)
 flex_target(ansysToFoamFlex
     ansysToFoam.L
     ansysToFoam.L.C
-    OPTIONS -+ -f
+    COMPILE_FLAGS -+ -f
 )
 
 add_executable(${target_name}
