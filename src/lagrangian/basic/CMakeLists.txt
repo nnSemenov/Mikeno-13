@@ -15,6 +15,7 @@ add_library(lagrangian SHARED
 
 target_include_directories(lagrangian PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/lnInclude"
+    ${LIB_SRC}/tracking/lnInclude
 )
 
 target_link_libraries(lagrangian PRIVATE
