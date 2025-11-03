@@ -6,7 +6,6 @@ add_subdirectory(advanced/removeFaces)
 add_subdirectory(advanced/selectCells)
 add_subdirectory(advanced/splitCells)
 
-message(WARNING "Migrate all mesh/conversion utilities")
 add_subdirectory(conversion/ansysToFoam)
 add_subdirectory(conversion/cfx4ToFoam)
 add_subdirectory(conversion/datToFoam)
@@ -30,13 +29,16 @@ add_subdirectory(conversion/tetgenToFoam)
 add_subdirectory(conversion/vtkUnstructuredToFoam)
 add_subdirectory(conversion/writeMeshObj)
 
-
 add_subdirectory(generation/blockMesh)
 add_subdirectory(generation/extrude2DMesh)
 add_subdirectory(generation/extrudeMesh)
 add_subdirectory(generation/extrudeToRegionMesh)
 add_subdirectory(generation/snappyHexMesh)
 add_subdirectory(generation/zeroDimensionalMesh)
+
+add_subdirectory(manipulation/autoPatch)
+add_subdirectory(manipulation/checkMesh)
+add_subdirectory(manipulation/createBaffles)
 
 set(FOAM_regular_executables ${FOAM_regular_executables} PARENT_SCOPE)
 set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
