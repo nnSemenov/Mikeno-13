@@ -1,23 +1,27 @@
 VTK_MODULE_ADD_MODULE(PVFoamReader_VTK CLASSES vtkPVFoamReader)
 
-SET_TARGET_PROPERTIES(
-    PVFoamReader_VTK
-    PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "$ENV{PV_PLUGIN_PATH}"
-)
+#set_target_properties(
+#    PVFoamReader_VTK
+#    PROPERTIES
+#    LIBRARY_OUTPUT_DIRECTORY "$ENV{PV_PLUGIN_PATH}"
+#)
 
-IF(NOT PARAVIEW_QT_MAJOR_VERSION)
+if(NOT PARAVIEW_QT_MAJOR_VERSION)
     set(PARAVIEW_QT_MAJOR_VERSION 5)
-ENDIF()
+endif()
 
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     PVFoamReader_VTK
-    LINK_PUBLIC
+    PUBLIC
+    OpenFOAM_Defines
+    OSspecific
+    OpenFOAM
     vtkPVFoam
     finiteVolume
-    OpenFOAM
     Qt${PARAVIEW_QT_MAJOR_VERSION}::Core
     Qt${PARAVIEW_QT_MAJOR_VERSION}::Gui
-    LINK_PRIVATE
+    PRIVATE
     ParaView::pqApplicationComponents
 )
+
+set(FOAM_special_libraries "${FOAM_special_libraries};PVFoamReader_VTK" PARENT_SCOPE)

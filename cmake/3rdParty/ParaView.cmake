@@ -4,4 +4,4 @@ if(${ParaView_TYPE} STREQUAL "none")
 endif ()
 
 
-find_package(ParaView CONFIG REQUIRED)
+find_package(ParaView 5.7 CONFIG REQUIRED)

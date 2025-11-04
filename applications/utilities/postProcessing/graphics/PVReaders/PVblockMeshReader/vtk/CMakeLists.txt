@@ -12,7 +12,7 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(
     PVblockMeshReader_VTK
-    LINK_PUBLIC
+    PUBLIC
     vtkPVblockMesh
     OpenFOAM
     Qt${PARAVIEW_QT_MAJOR_VERSION}::Core
