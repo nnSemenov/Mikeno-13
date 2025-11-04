@@ -2,17 +2,17 @@ project(PVblockMeshReader)
 
 find_package(ParaView REQUIRED)
 
-IF(${ParaView_VERSION} VERSION_LESS 5.7)
+if(${ParaView_VERSION} VERSION_LESS 5.7)
     # ParaView-5.7.x and lower will prepend "lib" to the target name
     set(TARGET_NAME PVblockMeshReader_SM)
-ELSE()
+else()
     set(TARGET_NAME libPVblockMeshReader_SM)
-ENDIF()
+endif()
 
-IF(${ParaView_VERSION} VERSION_LESS 5.7)
+if(${ParaView_VERSION} VERSION_LESS 5.7)
     # ParaView-5.7.x and lower requires the paraview include file
     include(${PARAVIEW_USE_FILE})
-ENDIF()
+endif()
 
 #target_link_directories(
 #    ${TARGET_NAME} PUBLIC
@@ -23,19 +23,19 @@ ENDIF()
 #
 #target_include_directories(
 #    ${TARGET_NAME} PUBLIC
-#    ${PROJECT_SOURCE_DIR}/../vtkPVblockMesh
+#    ${PROJECT_SOURCE_DIR}/
 #    ${PROJECT_SOURCE_DIR}/vtk
 #)
 
 # Add the plugin
-IF(${ParaView_VERSION} VERSION_LESS 5.7)
+if(${ParaView_VERSION} VERSION_LESS 5.7)
     ADD_PARAVIEW_PLUGIN(
         ${TARGET_NAME}
         "1.0"
         SERVER_MANAGER_XML PVblockMeshReader_SM.xml
         SERVER_MANAGER_SOURCES vtk/vtkPVblockMeshReader.cxx
     )
-ELSE()
+else()
     # Paraview-5.7.x and higher builds the vtk module separately
     PARAVIEW_ADD_PLUGIN(
         ${TARGET_NAME}
@@ -44,60 +44,56 @@ ELSE()
         MODULES PVblockMeshReader_VTK
         MODULE_FILES "vtk/vtk.module"
     )
-ENDIF()
+endif()
 
 # Set the output library destination to the plugin directory
-set_target_properties(
-    ${TARGET_NAME}
-    PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "$ENV{PV_PLUGIN_PATH}"
+#set_target_properties(
+#    ${TARGET_NAME}
+#    PROPERTIES
+#    LIBRARY_OUTPUT_DIRECTORY "$ENV{PV_PLUGIN_PATH}"
+#)
+
+target_link_libraries(${TARGET_NAME} PUBLIC
+    vtkPVblockMesh
+    OpenFOAM_Defines
+    OpenFOAM
+    OSspecific
+)
+
+target_include_directories(${TARGET_NAME} PUBLIC
+    ../vtkPVblockMesh
 )
 
 # Build the plugin
-IF(${ParaView_VERSION} VERSION_LESS 5.5)
-    TARGET_LINK_LIBRARIES(
-        ${TARGET_NAME}
-        LINK_PUBLIC
-        vtkPVblockMesh
-        OpenFOAM_Defines
-        OpenFOAM
-        LINK_PRIVATE
+if(${ParaView_VERSION} VERSION_LESS 5.5)
+    target_link_libraries(${TARGET_NAME} PRIVATE
         pqCore
     )
-ELSEIF(${ParaView_VERSION} VERSION_LESS 5.7)
+elseif(${ParaView_VERSION} VERSION_LESS 5.7)
     # Assume QT version 5 if it hasn't been defined
-    IF(NOT PARAVIEW_QT_MAJOR_VERSION)
+    if(NOT PARAVIEW_QT_MAJOR_VERSION)
         set(PARAVIEW_QT_MAJOR_VERSION 5)
-    ENDIF()
+    endif()
     # Paraview-5.5.x and higher needs QT libraries listed in the link command
     # in order for the headers to be available
-    TARGET_LINK_LIBRARIES(
-        ${TARGET_NAME}
-        LINK_PUBLIC
-        vtkPVblockMesh
-        OpenFOAM_Defines
-        OpenFOAM
+    target_link_libraries(${TARGET_NAME} PUBLIC
         Qt${PARAVIEW_QT_MAJOR_VERSION}::Core
         Qt${PARAVIEW_QT_MAJOR_VERSION}::Gui
-        LINK_PRIVATE
+        PRIVATE
         pqCore
     )
-ELSE()
+else()
     # Assume QT version 5 if it hasn't been defined
-    IF(NOT PARAVIEW_QT_MAJOR_VERSION)
+    if(NOT PARAVIEW_QT_MAJOR_VERSION)
         set(PARAVIEW_QT_MAJOR_VERSION 5)
-    ENDIF()
+    endif()
     # Paraview-5.5.x and higher needs QT libraries listed in the link command
     # in order for the headers to be available
-    TARGET_LINK_LIBRARIES(
-        ${TARGET_NAME}
-        LINK_PUBLIC
-        vtkPVblockMesh
-        OpenFOAM_Defines
-        OpenFOAM
+    target_link_libraries(${TARGET_NAME}
+        PUBLIC
         Qt${PARAVIEW_QT_MAJOR_VERSION}::Core
         Qt${PARAVIEW_QT_MAJOR_VERSION}::Gui
-        LINK_PRIVATE
+        PRIVATE
         ParaView::pqCore
     )
-ENDIF()
+endif()

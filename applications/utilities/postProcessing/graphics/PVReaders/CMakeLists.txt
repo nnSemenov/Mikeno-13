@@ -11,7 +11,7 @@ set(BUILD_SHARED_LIBS  ON)
 
 PARAVIEW_PLUGIN_SCAN(
     PLUGIN_FILES
-#        "PVblockMeshReader/paraview.plugin"
+        "PVblockMeshReader/paraview.plugin"
         "PVFoamReader/paraview.plugin"
     PROVIDES_PLUGINS plugins
     ENABLE_BY_DEFAULT ON
