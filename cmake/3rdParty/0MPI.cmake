@@ -28,8 +28,3 @@ else ()
 endif ()
 
 message(STATUS "FOAM_MPI = ${FOAM_MPI}")
-
-# Add fake target for ptscotch. When finding package, ptscotch must link to MPI::MPI_C
-if(NOT TARGET MPI::MPI_C)
-    add_library(MPI::MPI_C ALIAS MPI::MPI_CXX)
-endif ()

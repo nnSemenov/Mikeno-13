@@ -8,3 +8,9 @@ foreach (config_file ${config_files})
 #    cmake_path(GET config_file FILENAME fn)
 #    message(${fn})
 endforeach ()
+
+
+# Add fake target for ptscotch. When finding package, ptscotch must link to MPI::MPI_C
+if(NOT TARGET MPI::MPI_C)
+    add_library(MPI::MPI_C ALIAS MPI::MPI_CXX)
+endif ()
