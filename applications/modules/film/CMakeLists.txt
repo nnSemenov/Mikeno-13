@@ -18,6 +18,8 @@ target_include_directories(${target_name} PRIVATE
     ${LIB_SRC}/thermophysicalModels/basic/lnInclude
     ${LIB_SRC}/ThermophysicalTransportModels/thermophysicalTransportModel/lnInclude
     ${LIB_SRC}/ThermophysicalTransportModels/fluid/lnInclude
+
+    ${FOAM_MODULES}/isothermalFilm/filmCompressibleMomentumTransportModels/lnInclude
 )
 
 target_link_libraries(${target_name} PRIVATE

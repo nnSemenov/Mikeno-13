@@ -37,6 +37,8 @@ target_include_directories(${target_name} PRIVATE
 
     ${LIB_SRC}/finiteVolume/lnInclude
     ${LIB_SRC}/meshTools/lnInclude
+    
+    ${FOAM_MODULES}/isothermalFilm/filmCompressibleMomentumTransportModels/lnInclude
 )
 
 target_link_libraries(${target_name} PRIVATE
