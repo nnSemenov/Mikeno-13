@@ -11,7 +11,7 @@ set(WM_MPLIB SYSTEMOPENMPI CACHE STRING "MPI implementation. SYSTEMOPENMPI | OPE
 
 set(WM_ARCH linux64 CACHE STRING "Computer arch")
 set(WM_ARCH_OPTION 64 CACHE STRING "Computer arch option")
-
+set(WM_OSTYPE posix CACHE STRING "OS type")
 
 #- Decomposition libraries:
 #    <library>_TYPE = none | system | ThirdParty (OpenFOAM)
@@ -25,10 +25,12 @@ set(ParaView_TYPE system CACHE STRING "")
 
 #- Floating-point signal handling:
 #    set or unset
+set(FOAM_SIGFPE "" CACHE STRING "")
 #export FOAM_SIGFPE=
 
 #- Memory initialisation:
 #    set or unset
+set(FOAM_SETNAN "" CACHE STRING "")
 #export FOAM_SETNAN=
 
 

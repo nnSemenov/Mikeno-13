@@ -56,6 +56,9 @@ set(WM_CXX ${CMAKE_CXX_COMPILER})
 set(WM_PROJECT ${PROJECT_NAME})
 set(WM_COMPILER_LIB_ARCH ${WM_ARCH_OPTION})
 set(WM_LINK_LANGUAGE ${CMAKE_CXX_LINK_EXECUTABLE})
+set(WM_COMPILER_TYPE system)
+set(WM_PROJECT_VERSION ${PROJECT_VERSION})
+set(WM_DIR ${WM_PROJECT_DIR}/wmake)
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(WM_COMPILER Gcc)
@@ -81,8 +84,11 @@ else ()
     message(WARNING "Unknown CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}, WM_COMPILE_OPTION is set to Unknown")
 endif ()
 
-set(WM_OPTIONS "${WM_ARCH}${WM_COMPILER}${WM_PRECISION_OPT}${WM_COMPILE_OPTION}")
+
+
+set(WM_OPTIONS "${WM_ARCH}${WM_COMPILER}${WM_PRECISION_OPTION}${WM_COMPILE_OPTION}")
 message(STATUS "WM_OPTIONS = ${WM_OPTIONS}")
+set(CMAKE_INSTALL_PREFIX ${WM_PROJECT_DIR}/platforms/${WM_OPTIONS})
 
 ###### source env vars
 set(LIB_SRC "${WM_PROJECT_DIR}/src")
@@ -95,3 +101,59 @@ set(FOAM_APP ${WM_PROJECT_DIR}/applications)
 set(FOAM_MODULES ${FOAM_APP}/modules)
 set(FOAM_SOLVERS ${FOAM_APP}/solvers)
 set(FOAM_UTILITIES ${FOAM_APP}/utilities)
+set(FOAM_LIBBIN  ${CMAKE_INSTALL_PREFIX}/lib)
+set(FOAM_APPBIN  ${CMAKE_INSTALL_PREFIX}/bin)
+
+#include(${CMAKE_CURRENT_LIST_DIR}/write_env_file.cmake)
+
+#write_setup_env_file(
+#    FILE ${env_file}
+#    EXPORT_VARS
+#        WM_PROJECT_DIR
+#        WM_PROJECT
+#        WM_PROJECT_VERSION
+#        WM_PROJECT_INST_DIR
+#        WM_PROJECT_USER_DIR
+#        WM_THIRD_PARTY_DIR
+#        WM_ARCH
+#        WM_ARCH_OPTION
+#        WM_DIR
+#        WM_LABEL_SIZE
+#        WM_LABEL_OPTION
+#        WM_LINK_LANGUAGE
+#        WM_MPLIB
+#        WM_OPTIONS
+#        WM_PRECISION_OPTION
+#        WM_CC
+#        WM_CFLAGS
+#        WM_CXX
+#        WM_CXXFLAGS
+#        WM_COMPILER
+#        WM_COMPILE_OPTION
+#        WM_COMPILER_LIB_ARCH
+#        WM_COMPILER_TYPE
+#        WM_LDFLAGS
+#        WM_LINK_LANGUAGE
+#        WM_OSTYPE
+#
+#        LIB_SRC
+#        FOAM_SRC
+#        FOAM_APP
+#        FOAM_MODULES
+#        FOAM_SOLVERS
+#        FOAM_UTILITIES
+#        FOAM_LIBBIN
+#        FOAM_APPBIN
+#        FOAM_USER_APPBIN
+#        FOAM_MPI
+#
+#        FOAM_SIGFPE
+#        FOAM_SETNAN
+#)
+
+set(env_file ${CMAKE_BINARY_DIR}/FOAMenv.sh)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/FOAMenv.sh.in ${env_file} @ONLY)
+
+install(FILES ${env_file}
+    DESTINATION .
+)
