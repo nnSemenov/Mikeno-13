@@ -37,3 +37,10 @@ jobs:
 
     - name: Install
       run: cmake --install build
+
+    - name: Test secondary development
+      run: | 
+        cd test/find_package
+        cmake -S . -B build -DCMAKE_PREFIX_PATH=../../platforms/linux64ClangDPInt32Debug
+        cmake --build build --parallel
+        
