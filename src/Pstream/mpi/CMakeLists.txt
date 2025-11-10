@@ -16,6 +16,8 @@ target_include_directories(Pstream_mpi PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
     $<BUILD_INTERFACE:${OpenFOAM_lnInclude_dir}>
     $<BUILD_INTERFACE:${LIB_SRC}/OSspecific/POSIX/lnInclude>
+
+    $<INSTALL_INTERFACE:../../src/Pstream/mpi/lnInclude>
 )
 set_target_properties(Pstream_mpi
     PROPERTIES

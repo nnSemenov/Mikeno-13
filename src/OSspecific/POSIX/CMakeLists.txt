@@ -49,6 +49,7 @@ target_include_directories(OSspecific PUBLIC
     $<BUILD_INTERFACE:${LIB_SRC}/OpenFOAM/lnInclude>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
 
+    $<INSTALL_INTERFACE:../../src/OSspecific/POSIX/lnInclude>
 )
 
 install(TARGETS OSspecific

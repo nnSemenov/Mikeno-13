@@ -14,6 +14,8 @@ target_compile_definitions(Pstream_dummy PRIVATE
 target_include_directories(Pstream_dummy PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
     $<BUILD_INTERFACE:${LIB_SRC}/OSspecific/POSIX/lnInclude>
+
+    $<INSTALL_INTERFACE:../../src/Pstream/dummy/lnInclude>
 )
 
 target_include_directories(Pstream_dummy PRIVATE
