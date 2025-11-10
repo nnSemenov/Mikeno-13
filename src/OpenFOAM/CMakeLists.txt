@@ -954,7 +954,7 @@ target_compile_definitions(OpenFOAM PRIVATE
 )
 
 target_include_directories(OpenFOAM PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lnInclude>
+    ${CMAKE_CURRENT_SOURCE_DIR}/lnInclude
 )
 
 set(FOAM_regular_libraries "${FOAM_regular_libraries};OpenFOAM" PARENT_SCOPE)

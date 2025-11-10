@@ -90,6 +90,12 @@ set(WM_OPTIONS "${WM_ARCH}${WM_COMPILER}${WM_PRECISION_OPTION}${WM_COMPILE_OPTIO
 message(STATUS "WM_OPTIONS = ${WM_OPTIONS}")
 set(CMAKE_INSTALL_PREFIX ${WM_PROJECT_DIR}/platforms/${WM_OPTIONS})
 
+get_target_property(TEMP_CXXFlags OpenFOAM_Defines INTERFACE_COMPILE_OPTIONS)
+get_target_property(TEMP_CXXFeatures OpenFOAM_Defines INTERFACE_COMPILE_FEATURES)
+# set(WM_CXXFLAGS "${TEMP_CXXFlags} -std=c++17")
+string(REPLACE ";" "\ " WM_CXXFLAGS "${TEMP_CXXFlags} -std=c++17")
+set(WM_CFLAGS ${WM_CXXFLAGS})
+
 ###### source env vars
 set(LIB_SRC "${WM_PROJECT_DIR}/src")
 
