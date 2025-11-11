@@ -34,7 +34,8 @@ export ZOLTAN_TYPE=@ZOLTAN_TYPE@
 export ParaView_TYPE=@ParaView_TYPE@
 
 
-cmake_install_prefix=$(pwd -L)
+# shellcheck disable=SC2046
+cmake_install_prefix=$(dirname $(realpath "${BASH_SOURCE[0]}"))
 platforms_dir=$(dirname "$cmake_install_prefix")
 
 # shellcheck disable=SC2155
