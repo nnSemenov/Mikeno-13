@@ -1,0 +1,3 @@
+
+target_compile_options(OpenFOAM_Defines INTERFACE
+)
