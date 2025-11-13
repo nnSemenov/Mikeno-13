@@ -23,7 +23,7 @@ jobs:
     - name: Install compiler
       run: |
         sudo apt update
-        sudo apt install --fix-missing gcc-14 clang
+        sudo apt install --fix-missing gcc-14 clang-20
 
     - name: Install deps
       run: | 
@@ -33,7 +33,7 @@ jobs:
 #      run: sudo apt install --fix-missing paraview paraview-dev libvtk9-dev
 
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_INSTALL_PREFIX=./install -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_INSTALL_PREFIX=./install -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20
 
     - name: Build
       # Build your program with the given configuration
