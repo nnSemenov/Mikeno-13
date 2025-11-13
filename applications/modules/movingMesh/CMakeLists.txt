@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name movingMesh)
+set(target_name movingMeshSolver)
 
 add_library(${target_name} SHARED
     movingMesh.C

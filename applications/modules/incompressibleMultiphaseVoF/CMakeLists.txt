@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name incompressibleMultiphaseVoF)
+set(target_name incompressibleMultiphaseVoFSolver)
 
 add_library(${target_name} SHARED
     incompressibleMultiphaseVoFMixture/incompressibleVoFphase/incompressibleVoFphase.C
@@ -29,6 +29,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     multiphaseVoFSolver
+
     physicalProperties
     multiphaseProperties
     interfaceCompression

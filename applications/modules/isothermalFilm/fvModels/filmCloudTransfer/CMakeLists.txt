@@ -46,7 +46,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    isothermalFilm
+    isothermalFilmSolver
+
     lagrangian
     lagrangianParcel
 )

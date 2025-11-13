@@ -4,7 +4,7 @@ add_subdirectory(mixtureViscosityModels)
 add_subdirectory(relativeVelocityModels)
 add_subdirectory(packingDispersionModels)
 
-set(target_name incompressibleDriftFlux)
+set(target_name incompressibleDriftFluxSolver)
 
 add_library(${target_name} SHARED
     incompressibleDriftFluxMixture/incompressibleDriftFluxMixture.C
@@ -28,11 +28,11 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
+    twoPhaseSolver
 
     incompressibleDriftFluxViscosityModel
     incompressibleDriftFluxRelativeVelocityModels
     incompressibleDriftFluxPackingDispersionModels
-    twoPhaseSolver
     physicalProperties
     interfaceCompression
     incompressibleTwoPhases

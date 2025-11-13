@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name solid)
+set(target_name solidSolver)
 
 add_library(${target_name} SHARED
     solid.C

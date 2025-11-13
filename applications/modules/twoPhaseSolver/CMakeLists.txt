@@ -22,7 +22,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    VoFSolver 
+    VoFSolver
+
     physicalProperties 
     interfaceCompression 
     interfaceProperties 

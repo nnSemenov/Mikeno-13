@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name XiFluid)
+set(target_name XiFluidSolver)
 
 add_library(${target_name} SHARED
     ubRhoMulticomponentThermo/ubRhoMulticomponentThermo.C
@@ -88,7 +88,8 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     basicFluidSolver 
-    isothermalFluidSolver 
+    isothermalFluidSolver
+
     momentumTransportModels 
     compressibleMomentumTransportModels 
     phaseCompressibleMomentumTransportModels 

@@ -2,7 +2,7 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(filmThermophysicalTransportModels)
 
-set(target_name film)
+set(target_name filmSolver)
 
 add_library(${target_name} SHARED
     film.C
@@ -27,7 +27,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    isothermalFilm
+    isothermalFilmSolver
+
     filmThermophysicalTransportModels
     coupledThermophysicalTransportModels
     momentumTransportModels

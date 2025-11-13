@@ -21,7 +21,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    twoPhaseSolver 
+    twoPhaseSolver
+
     physicalProperties 
     interfaceCompression 
     interfaceProperties 

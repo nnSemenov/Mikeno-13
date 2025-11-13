@@ -27,7 +27,7 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    compressibleVoF
+    compressibleVoFSolver
 )
 
 target_compile_definitions(${target_name} PRIVATE

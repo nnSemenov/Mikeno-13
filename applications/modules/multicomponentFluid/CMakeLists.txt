@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name multicomponentFluid)
+set(target_name multicomponentFluidSolver)
 
 add_library(${target_name} SHARED
     multicomponentFluid.C
@@ -25,6 +25,7 @@ target_link_libraries(${target_name} PRIVATE
 
     basicFluidSolver
     isothermalFluidSolver
+
     fluidThermophysicalModels 
     specie 
     chemistryModel 

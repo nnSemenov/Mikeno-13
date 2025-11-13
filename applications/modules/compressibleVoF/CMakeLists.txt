@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name compressibleVoF)
+set(target_name compressibleVoFSolver)
 
 add_library(${target_name} SHARED
     compressibleTwoPhaseVoFMixture/compressibleTwoPhaseVoFMixture.C
@@ -41,6 +41,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     twoPhaseVoFSolver
+
     physicalProperties
     fluidThermophysicalModels
     interfaceCompression

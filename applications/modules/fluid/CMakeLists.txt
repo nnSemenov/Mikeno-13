@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name fluid)
+set(target_name fluidSolver)
 
 add_library(${target_name} SHARED
     fluid.C
@@ -31,6 +31,7 @@ target_link_libraries(${target_name} PRIVATE
 
     basicFluidSolver
     isothermalFluidSolver
+
     fluidThermophysicalModels 
     compressibleMomentumTransportModels 
     coupledThermophysicalTransportModels

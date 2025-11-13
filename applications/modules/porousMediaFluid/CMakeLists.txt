@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name porousMediaFluid)
+set(target_name porousMediaFluidSolver)
 
 add_library(${target_name} SHARED
     porousMediaFluid.C
@@ -37,9 +37,10 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    fluid 
     basicFluidSolver
+    fluidSolver
     isothermalFluidSolver
+
     solidThermo 
     solidThermophysicalTransportModels
 )

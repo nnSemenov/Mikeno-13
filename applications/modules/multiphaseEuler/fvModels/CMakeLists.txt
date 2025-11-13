@@ -87,10 +87,11 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
+    multiphaseEulerSolver
+
     fvModels
     phaseSystem
     populationBalance
-    multiphaseEuler
     compressibleCavitationModels
     phaseFluidThermophysicalTransportModels
     phaseFluidMulticomponentThermophysicalTransportModels

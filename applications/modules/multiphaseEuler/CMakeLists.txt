@@ -6,7 +6,7 @@ add_subdirectory(momentumTransportModels)
 add_subdirectory(thermophysicalTransportModels)
 add_subdirectory(reactions)
 
-set(target_name multiphaseEuler)
+set(target_name multiphaseEulerSolver)
 
 add_library(${target_name} SHARED
     setRDeltaT.C
@@ -43,6 +43,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     basicFluidSolver
+
     phaseSystem
     populationBalance
     multiphaseEulerMomentumTransportModels

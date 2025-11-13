@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name shockFluid)
+set(target_name shockFluidSolver)
 
 add_library(${target_name} SHARED
     setRDeltaT.C
@@ -38,6 +38,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     basicFluidSolver
+
     fluidThermophysicalModels
     momentumTransportModels
     compressibleMomentumTransportModels

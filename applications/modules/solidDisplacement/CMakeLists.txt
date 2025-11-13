@@ -2,7 +2,7 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(solidDisplacementThermo)
 
-set(target_name solidDisplacement)
+set(target_name solidDisplacementSolver)
 
 add_library(${target_name} SHARED
     derivedFvPatchFields/tractionDisplacement/tractionDisplacementFvPatchVectorField.C
@@ -27,7 +27,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    solid
+    solidSolver
+
     solidThermo
     solidDisplacementThermo
     solidThermophysicalTransportModels

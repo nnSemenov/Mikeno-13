@@ -24,6 +24,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     basicFluidSolver
+
     physicalProperties 
     interfaceCompression 
     finiteVolume 

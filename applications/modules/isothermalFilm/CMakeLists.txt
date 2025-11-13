@@ -2,7 +2,7 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(filmCompressibleMomentumTransportModels)
 
-set(target_name isothermalFilm)
+set(target_name isothermalFilmSolver)
 
 add_library(${target_name} SHARED
     patches/filmFvPatch/filmFvPatch.C

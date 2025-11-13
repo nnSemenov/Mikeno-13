@@ -42,8 +42,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    isothermalFilm
-    compressibleVoF
+    isothermalFilmSolver
+    compressibleVoFSolver
 )
 
 target_compile_definitions(${target_name} PRIVATE

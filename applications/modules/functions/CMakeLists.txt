@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name functions)
+set(target_name functionsSolver)
 
 add_library(${target_name} SHARED
     functions.C
@@ -19,7 +19,7 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    movingMesh
+    movingMeshSolver
     finiteVolume
 )
 

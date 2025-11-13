@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name incompressibleFluid)
+set(target_name incompressibleFluidSolver)
 
 add_library(${target_name} SHARED
     setRDeltaT.C

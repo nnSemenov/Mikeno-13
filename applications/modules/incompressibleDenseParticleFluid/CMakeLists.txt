@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name incompressibleDenseParticleFluid)
+set(target_name incompressibleDenseParticleFluidSolver)
 
 add_library(${target_name} SHARED
     moveMesh.C
@@ -23,6 +23,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     basicFluidSolver
+
     momentumTransportModels
     incompressibleMomentumTransportModels
     phaseIncompressibleMomentumTransportModels

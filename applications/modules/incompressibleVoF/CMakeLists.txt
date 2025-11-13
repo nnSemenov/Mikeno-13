@@ -1,6 +1,6 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name incompressibleVoF)
+set(target_name incompressibleVoFSolver)
 
 add_library(${target_name} SHARED
     incompressibleTwoPhaseVoFMixture/incompressibleTwoPhaseVoFMixture.C
@@ -32,7 +32,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    twoPhaseVoFSolver 
+    twoPhaseVoFSolver
+
     physicalProperties 
     interfaceCompression 
     incompressibleTwoPhases 
