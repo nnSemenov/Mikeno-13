@@ -89,7 +89,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/rules/${WM_ARCH}${WM_COMPILER}/${WM_COMPILE_OP
 install(TARGETS OpenFOAM_Defines
     EXPORT MikenoTargets
 )
-set(FOAM_special_libraries "${FOAM_special_libraries};OpenFOAM_Defines" PARENT_SCOPE)
+set(FOAM_special_libraries "${FOAM_special_libraries};OpenFOAM_Defines")
 
 set(env_file ${CMAKE_BINARY_DIR}/FOAMenv.sh)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/FOAMenv.sh.in ${env_file} @ONLY)
