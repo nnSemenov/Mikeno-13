@@ -23,7 +23,7 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    fluidSolver 
+    basicFluidSolver
     physicalProperties 
     interfaceCompression 
     finiteVolume 

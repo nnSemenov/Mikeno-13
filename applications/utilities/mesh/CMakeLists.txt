@@ -58,7 +58,7 @@ add_subdirectory(manipulation/splitBaffles)
 add_subdirectory(manipulation/splitMeshRegions)
 add_subdirectory(manipulation/stitchMesh)
 add_subdirectory(manipulation/subsetMesh)
-add_subdirectory(manipulation/topoSet)
+#add_subdirectory(manipulation/topoSet)
 add_subdirectory(manipulation/transformPoints)
 add_subdirectory(manipulation/zipUpMesh)
 

@@ -361,16 +361,14 @@ target_sources(finiteVolume PRIVATE
 set(interpolation interpolation/interpolation)
 target_sources(finiteVolume PRIVATE
     ${interpolation}/interpolation/interpolations.C
-
-    ${interpolation}/interpolationCell/makeInterpolationCell.C
-    ${interpolation}/interpolationCellPatchConstrained/makeInterpolationCellPatchConstrained.C
-    ${interpolation}/interpolationVolPointInterpolation/makeInterpolationVolPointInterpolation.C
-    ${interpolation}/interpolationCellPoint/cellPointWeight/cellPointWeight.C
-    ${interpolation}/interpolationCellPoint/makeInterpolationCellPoint.C
-    ${interpolation}/interpolationCellPointFace/makeInterpolationCellPointFace.C
-    ${interpolation}/interpolationCellPointWallModified/makeInterpolationCellPointWallModified.C
-    ${interpolation}/interpolationPointMVC/pointMVCWeight.C
-    ${interpolation}/interpolationPointMVC/makeInterpolationPointMVC.C
+    ${interpolation}/cell/cell_interpolations.C
+    ${interpolation}/cellPatchConstrained/cellPatchConstraineds.C
+    ${interpolation}/volPointInterpolation/volPointInterpolation_interpolations.C
+    ${interpolation}/cellPoint/cellPoint_interpolations.C
+    ${interpolation}/cellPointFace/cellPointFaces.C
+    ${interpolation}/cellPointWallModified/cellPointWallModifieds.C
+    ${interpolation}/pointMVC/pointMVCWeight.C
+    ${interpolation}/pointMVC/pointMVCs.C
 )
 
 set(volPointInterpolation interpolation/volPointInterpolation)

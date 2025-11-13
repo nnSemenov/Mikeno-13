@@ -19,7 +19,6 @@ add_library(${target_name} SHARED
     nearWallFields/findCellParticle.C
 
     processorField/processorField.C
-    readFields/readFields.C
 
     streamlines/streamlines.C
     streamlines/streamlinesParticle.C
@@ -84,8 +83,6 @@ add_library(${target_name} SHARED
     divide/divide.C
 
     interfaceHeight/interfaceHeight.C
-
-    age/age.C
 
     comfort/comfort.C
 

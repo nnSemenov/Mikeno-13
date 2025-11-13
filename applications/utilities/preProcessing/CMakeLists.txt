@@ -1,6 +1,6 @@
 add_subdirectory(applyBoundaryLayer)
 add_subdirectory(boxTurb)
-add_subdirectory(changeDictionary)
+#add_subdirectory(changeDictionary)
 add_subdirectory(createExternalCoupledPatchGeometry)
 add_subdirectory(dsmcInitialise)
 add_subdirectory(engineSwirl)

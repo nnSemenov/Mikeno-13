@@ -68,7 +68,11 @@ class ubRhoThermo
         volScalarField alphau_;
         volScalarField alphab_;
 
+        //- Isothermal enthalpy/internal energy - pressure derivative [m^3/kg]
+        volScalarField dhedp_T_;
 
+        //- Pressure offset when correcting physical properties [Pa]. 0 [Pa] by default.
+        dimensionedScalar pOffset_;
 public:
 
     //- Runtime type information
@@ -89,6 +93,16 @@ public:
 
 
     // Member Functions
+
+        //- Pressure offset when correcting physical properties [Pa]
+        const dimensionedScalar &pOffset() const final {
+            return pOffset_;
+        }
+
+        //- Return non-const access to pressure offset [Pa]
+        dimensionedScalar& pOffset() final {
+            return pOffset_;
+        }
 
         //- Regress variable
         const volScalarField& b() const
@@ -210,6 +224,16 @@ public:
 
             //- Compressibility [s^2/m^2]
             virtual const volScalarField& psi() const;
+
+            //- Isothermal enthalpy/internal energy - pressure derivative [m/kg]
+            volScalarField & dhedp_T() final {
+                return dhedp_T_;
+            }
+
+            //- Isothermal enthalpy/internal energy - pressure derivative [m/kg]
+            const volScalarField & dhedp_T() const final {
+                return dhedp_T_;
+            }
 
             //- Temperature [K]
             virtual const volScalarField& T() const;
@@ -406,7 +430,6 @@ public:
                 const scalarField& T0,      // starting temperature
                 const label patchi
             ) const;
-
 
         // Transport state
 

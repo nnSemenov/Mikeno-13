@@ -65,6 +65,18 @@ Foam::ubRhoThermo::ubRhoThermo(const fvMesh& mesh)
     alphab_
     (
         phasePropertyName("alpha", burntPhaseName_), rho_*c_/bThermo_->rho()
+    ),
+    dhedp_T_(
+        IOobject
+            (
+                phasePropertyName("dhedp_T", unburntPhaseName_),
+                mesh.time().name(),
+                mesh,
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+        mesh,
+        dimensionSet(-1, 3, 0, 0, 0)
     )
 {
     uThermo_->validate

@@ -2,11 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
-========
     \\  /    A nd           | Copyright (C) 2019-2025 OpenFOAM Foundation
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,24 +22,6 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-    Foam::meshSearchBoundBox
-
-Description
-    Mesh object to hold a bound box for use by mesh search engines
-
-SourceFiles
-    meshSearchBoundBox.C
-
-\*---------------------------------------------------------------------------*/
-
-#ifndef meshSearchBoundBox_H
-#define meshSearchBoundBox_H
-
-#include "DemandDrivenMeshObject.H"
-#include "polyMesh.H"
-#include "treeBoundBox.H"
-========
     Foam::populationBalance::shapeModels::spherical
 
 Description
@@ -58,46 +36,19 @@ SourceFiles
 #define spherical_H
 
 #include "shapeModel.H"
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-
-// Forward declaration of classes
-class treeBoundBox;
-
-/*---------------------------------------------------------------------------*\
-                         Class meshSearchBoundBox Declaration
-\*---------------------------------------------------------------------------*/
-
-class meshSearchBoundBox
-:
-    public DemandDrivenMeshObject
-    <
-        polyMesh,
-        DeletableMeshObject,
-        meshSearchBoundBox
-    >
-========
 namespace populationBalance
 {
 namespace shapeModels
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
 {
-    // Private Data
 
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-        //- Bound box
-        const treeBoundBox bb_;
-
-========
 /*---------------------------------------------------------------------------*\
                           Class spherical Declaration
 \*---------------------------------------------------------------------------*/
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
 
 class spherical
 :
@@ -105,28 +56,12 @@ class spherical
 {
 public:
 
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-    //- Run-time type information
-    TypeName("meshSearchBoundBox");
-========
     //- Runtime type information
     TypeName("spherical");
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
 
 
     // Constructors
 
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-        //- Construct from mesh
-        meshSearchBoundBox(const polyMesh& mesh);
-
-        //- Disallow default bitwise copy construction
-        meshSearchBoundBox(const meshSearchBoundBox&) = delete;
-
-
-    //- Destructor
-    virtual ~meshSearchBoundBox();
-========
         //- Construct from a dictionary
         spherical
         (
@@ -137,32 +72,15 @@ public:
 
     //- Destructor
     virtual ~spherical();
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
 
 
     // Member Functions
 
-<<<<<<<< HEAD:src/meshTools/meshSearch/meshSearchBoundBox.H
-        // Access
-
-            //- Access the bound box
-            inline const treeBoundBox& bb() const
-            {
-                return bb_;
-            }
-
-
-    // Member Operators
-
-        //- Disallow default bitwise assignment
-        void operator=(const meshSearchBoundBox&) = delete;
-========
         //- Return the representative surface area of a group
         virtual tmp<volScalarField> a(const label i) const;
 
         //- Return the representative diameter of a group
         virtual tmp<volScalarField> d(const label i) const;
->>>>>>>> upstream/master:applications/modules/multiphaseEuler/populationBalance/shapeModels/spherical/spherical.H
 };
 
 

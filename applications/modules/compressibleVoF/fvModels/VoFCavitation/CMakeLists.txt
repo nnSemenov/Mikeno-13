@@ -14,7 +14,7 @@ target_include_directories(${target_name} PRIVATE
     ${FOAM_MODULES}/twoPhaseVoFSolver/lnInclude
     ${FOAM_MODULES}/twoPhaseSolver/lnInclude
     ${FOAM_MODULES}/VoFSolver/lnInclude
-    ${FOAM_MODULES}/fluidSolver/lnInclude
+    ${FOAM_MODULES}/basicFluidSolver/lnInclude
     ${FOAM_MODULES}/compressibleVoF/lnInclude
     ${LIB_SRC}/physicalProperties/lnInclude
     ${LIB_SRC}/thermophysicalModels/basic/lnInclude

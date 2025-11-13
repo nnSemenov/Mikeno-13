@@ -20,7 +20,7 @@ target_include_directories(${target_name} PRIVATE
     ${LIB_SRC}/MomentumTransportModels/incompressible/lnInclude
     ${LIB_SRC}/MomentumTransportModels/phaseIncompressible/lnInclude
     ${FOAM_MODULES}/VoFSolver/lnInclude
-    ${FOAM_MODULES}/fluidSolver/lnInclude
+    ${FOAM_MODULES}/basicFluidSolver/lnInclude
 )
 
 target_link_libraries(${target_name} PRIVATE

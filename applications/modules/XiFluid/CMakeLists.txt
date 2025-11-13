@@ -3,6 +3,23 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 set(target_name XiFluid)
 
 add_library(${target_name} SHARED
+    ubRhoMulticomponentThermo/ubRhoMulticomponentThermo.C
+    ubRhoMulticomponentThermo/ubRhoMulticomponentThermos.C
+
+    ubRhoThermo/ubRhoThermo.C
+    ubRhoThermo/derivedFvPatchFields/ubCoupledTemperature/ubCoupledTemperatureFvPatchScalarField.C
+
+    ubMomentumTransportModel/ubMomentumTransportModel.C
+
+    XiFluid.C
+    thermophysicalPredictor.C
+
+    laminarFlameSpeed/laminarFlameSpeed/laminarFlameSpeed.C
+    laminarFlameSpeed/laminarFlameSpeed/laminarFlameSpeedNew.C
+    laminarFlameSpeed/constant/constant_laminarFlameSpeed.C
+    laminarFlameSpeed/Gulder/Gulder_laminarFlameSpeed.C
+    laminarFlameSpeed/RaviPetersen/RaviPetersen.C
+
     SuModels/SuModel/SuModel.C
     SuModels/SuModel/SuModelNew.C
     SuModels/uniformConstant/uniformConstant_SuModel.C
@@ -33,19 +50,18 @@ add_library(${target_name} SHARED
     XiModels/XiGModels/KTS/KTS.C
     XiModels/XiGModels/instability/instability_XiGModel.C
 
-    fvModels/ignition/XiCorrModels/XiCorrModel/XiCorrModel.C
-    fvModels/ignition/XiCorrModels/XiCorrModel/XiCorrModelNew.C
-    fvModels/ignition/XiCorrModels/planar/planarXiCorr.C
-    fvModels/ignition/XiCorrModels/cylindrical/cylindricalXiCorr.C
-    fvModels/ignition/XiCorrModels/spherical/sphericalXiCorr.C
+    fvModels/ignition/kernelShapes/kernelShape/kernelShape.C
+    fvModels/ignition/kernelShapes/kernelShape/kernelShapeNew.C
+    fvModels/ignition/kernelShapes/planar/planarKernelShape.C
+    fvModels/ignition/kernelShapes/cylindrical/cylindricalKernelShape.C
+    fvModels/ignition/kernelShapes/spherical/sphericalKernelShape.C
 
     fvModels/ignition/bXiIgnition/bXiIgnition.C
+    fvModels/ignition/bXiTimedIgnition/bXiTimedIgnition.C
     fvModels/ignition/bXiIgnited/bXiIgnited.C
     fvModels/ignition/constantbXiIgnition/constantbXiIgnition.C
-    fvModels/ignition/multiCycleConstantbXiIgnition/multiCycleConstantbXiIgnition.C
-
-    XiFluid.C
-    thermophysicalPredictor.C
+    fvModels/ignition/GaussianbXiIgnition/GaussianbXiIgnition.C
+    fvModels/ignition/bXiKernelCorr/bXiKernelCorr.C
 )
 
 target_include_directories(${target_name} PUBLIC
@@ -59,10 +75,10 @@ target_include_directories(${target_name} PRIVATE
     ${LIB_SRC}/ThermophysicalTransportModels/thermophysicalTransportModel/lnInclude
     ${LIB_SRC}/ThermophysicalTransportModels/fluid/lnInclude
     ${LIB_SRC}/ThermophysicalTransportModels/fluidThermo/lnInclude
+    ${LIB_SRC}/ThermophysicalTransportModels/coupledThermophysicalTransportModels/lnInclude
     ${LIB_SRC}/thermophysicalModels/specie/lnInclude
     ${LIB_SRC}/thermophysicalModels/basic/lnInclude
     ${LIB_SRC}/thermophysicalModels/multicomponentThermo/lnInclude
-    ${LIB_SRC}/thermophysicalModels/laminarFlameSpeed/lnInclude
 
 )
 
@@ -71,15 +87,15 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    fluidSolver 
-    isothermalFluid 
+    basicFluidSolver 
+    isothermalFluidSolver 
     momentumTransportModels 
     compressibleMomentumTransportModels 
-    fluidThermoThermophysicalTransportModels 
+    phaseCompressibleMomentumTransportModels 
+    phaseFluidThermophysicalTransportModels 
     coupledThermophysicalTransportModels 
     multicomponentThermophysicalModels 
     specie 
-    laminarFlameSpeedModels 
     finiteVolume 
     fvModels 
     fvConstraints 

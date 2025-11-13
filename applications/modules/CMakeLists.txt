@@ -1,6 +1,7 @@
 add_subdirectory(movingMesh)
 add_subdirectory(functions)
-add_subdirectory(fluidSolver)
+add_subdirectory(basicFluidSolver)
+#add_subdirectory(fluidSolver)
 add_subdirectory(incompressibleFluid)
 add_subdirectory(isothermalFluid)
 add_subdirectory(fluid)

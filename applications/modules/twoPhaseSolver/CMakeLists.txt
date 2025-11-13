@@ -14,7 +14,7 @@ target_include_directories(${target_name} PUBLIC
 )
 
 target_include_directories(${target_name} PRIVATE
-    ${FOAM_MODULES}/fluidSolver/lnInclude
+    ${FOAM_MODULES}/basicFluidSolver/lnInclude
 )
 
 target_link_libraries(${target_name} PRIVATE

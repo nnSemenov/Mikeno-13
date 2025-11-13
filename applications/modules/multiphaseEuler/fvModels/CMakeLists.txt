@@ -14,8 +14,9 @@ add_library(${target_name} SHARED
 
     # Nucleation phase change
     nucleation/nucleation.C
-    homogeneousCondensation/homogeneousCondensation.C
-    homogeneousLiquidPhaseSeparation/homogeneousLiquidPhaseSeparation.C
+    homogeneousNucleation/homogeneousNucleation.C
+    homogeneousNucleation/homogeneousCondensation.C
+    homogeneousNucleation/homogeneousLiquidPhaseSeparation.C
     wallBoiling/wallBoiling.C
     wallBoiling/wallBoilingPhaseChangeRateFvPatchScalarField.C
     wallBoiling/alphatBoilingWallFunctionFvPatchScalarField.C
@@ -25,9 +26,9 @@ add_library(${target_name} SHARED
     multiphaseEulerCavitation/multiphaseEulerCavitation.C
 
     # Source conditions
-    derivedFvFieldSources/nucleationSizeGroup/nucleationSizeGroupFvScalarFieldSource.C
+    derivedFvFieldSources/nucleationGroupFraction/nucleationGroupFractionFvScalarFieldSource.C
+    derivedFvFieldSources/nucleationGroupSurfaceAreaVolumeRatio/nucleationGroupSurfaceAreaVolumeRatioFvScalarFieldSource.C
     derivedFvFieldSources/nucleationInterfacialCurvature/nucleationInterfacialCurvatureFvScalarFieldSource.C
-    derivedFvFieldSources/nucleationSurfaceAreaVolumeRatio/nucleationSurfaceAreaVolumeRatioFvScalarFieldSource.C
 
     # Wall boiling sub models
     wallBoiling/partitioningModels/partitioningModel/partitioningModel.C
@@ -61,7 +62,7 @@ target_include_directories(${target_name} PUBLIC
 )
 
 target_include_directories(${target_name} PRIVATE
-    ${FOAM_MODULES}/fluidSolver/lnInclude
+    ${FOAM_MODULES}/basicFluidSolver/lnInclude
     ${LIB_SRC}/meshTools/lnInclude
     ${LIB_SRC}/finiteVolume/lnInclude
     ${LIB_SRC}/sampling/lnInclude

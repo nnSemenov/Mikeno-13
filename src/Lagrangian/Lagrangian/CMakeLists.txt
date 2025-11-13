@@ -77,6 +77,7 @@ set(derivedLagrangianPatchFields ${LagrangianPatchFields}/derived)
 # Field Sources
 set(LagrangianFieldSources fields/LagrangianFieldSources)
 target_sources(Lagrangian PRIVATE
+    ${LagrangianFieldSources}/LagrangianFieldSource/LagrangianFieldSourceBase.C
     ${LagrangianFieldSources}/LagrangianFieldSource/LagrangianFieldSources.C
 )
 

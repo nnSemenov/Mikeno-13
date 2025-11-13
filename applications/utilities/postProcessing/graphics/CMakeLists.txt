@@ -3,7 +3,6 @@ add_subdirectory(ensightFoamReader)
 if(ParaView_FOUND)
     add_subdirectory(PVReaders)
 else ()
-    message(WARNING "TODO: Migrate PVReaders utilities")
     message(STATUS "Skip all utilities under PVReaders because paraview is not found.")
 endif ()
 

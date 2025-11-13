@@ -1,9 +1,9 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name fluidSolver)
+set(target_name basicFluidSolver)
 
 add_library(${target_name} SHARED
-    fluidSolver.C
+    basicFluidSolver.C
     functionObjects/fluidMaxDeltaT/fluidMaxDeltaT.C
 )
 

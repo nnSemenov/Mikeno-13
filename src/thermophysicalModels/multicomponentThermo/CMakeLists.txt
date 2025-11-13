@@ -8,15 +8,8 @@ add_library(multicomponentThermophysicalModels SHARED
     psiMulticomponentThermo/psiMulticomponentThermo.C
     psiMulticomponentThermo/psiMulticomponentThermos.C
 
-    psiuMulticomponentThermo/psiuMulticomponentThermo.C
-    psiuMulticomponentThermo/psiuMulticomponentThermos.C
-
     rhoFluidMulticomponentThermo/rhoFluidMulticomponentThermo.C
     rhoFluidMulticomponentThermo/rhoFluidMulticomponentThermos.C
-
-    derivedFvPatchFields/fixedUnburntEnthalpy/fixedUnburntEnthalpyFvPatchScalarField.C
-    derivedFvPatchFields/gradientUnburntEnthalpy/gradientUnburntEnthalpyFvPatchScalarField.C
-    derivedFvPatchFields/mixedUnburntEnthalpy/mixedUnburntEnthalpyFvPatchScalarField.C
 
     functionObjects/moleFractions/moleFractions.C
     functionObjects/massFractions/massFractions.C

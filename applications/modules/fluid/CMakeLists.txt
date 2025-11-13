@@ -29,8 +29,8 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    fluidSolver 
-    isothermalFluid 
+    basicFluidSolver
+    isothermalFluidSolver
     fluidThermophysicalModels 
     compressibleMomentumTransportModels 
     coupledThermophysicalTransportModels

@@ -23,7 +23,7 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     VoFSolver
-    fluidSolver
+    basicFluidSolver
     physicalProperties
     multiphaseProperties
     interfaceCompression

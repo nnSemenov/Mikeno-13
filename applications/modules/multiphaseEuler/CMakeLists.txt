@@ -42,7 +42,7 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
-    fluidSolver
+    basicFluidSolver
     phaseSystem
     populationBalance
     multiphaseEulerMomentumTransportModels

@@ -38,8 +38,8 @@ target_link_libraries(${target_name} PRIVATE
     OSspecific
 
     fluid 
-    fluidSolver 
-    isothermalFluid 
+    basicFluidSolver
+    isothermalFluidSolver
     solidThermo 
     solidThermophysicalTransportModels
 )

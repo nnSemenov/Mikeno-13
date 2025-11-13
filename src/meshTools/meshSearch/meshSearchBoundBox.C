@@ -2,11 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-<<<<<<<< HEAD:src/thermophysicalModels/specie/equationOfState/RedlichKwongGas/RedlichKwongGas.C
-    \\  /    A nd           | Copyright (C) 2014-2023 OpenFOAM Foundation
-========
     \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
->>>>>>>> upstream/master:src/meshTools/meshSearch/meshSearchBoundBox.C
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -27,48 +23,6 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-<<<<<<<< HEAD:src/thermophysicalModels/specie/equationOfState/RedlichKwongGas/RedlichKwongGas.C
-#include "RedlichKwongGas.H"
-#include "IOstreams.H"
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-template<class Specie>
-Foam::RedlichKwongGas<Specie>::RedlichKwongGas
-        (
-                const word& name,
-                const dictionary& dict
-        )
-        :
-        Specie(name, dict)
-{
-    this->requireRealGasEOS(false);
-}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
-
-
-template<class Specie>
-void Foam::RedlichKwongGas<Specie>::write(Ostream& os) const
-{
-    Specie::write(os);
-}
-
-
-// * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-template<class Specie>
-Foam::Ostream& Foam::operator<<
-        (
-                Ostream& os,
-                const RedlichKwongGas<Specie>& pg
-        )
-{
-    pg.write(os);
-    return os;
-}
-========
 #include "meshSearchBoundBox.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -97,7 +51,6 @@ Foam::meshSearchBoundBox::meshSearchBoundBox(const polyMesh& mesh)
 
 Foam::meshSearchBoundBox::~meshSearchBoundBox()
 {}
->>>>>>>> upstream/master:src/meshTools/meshSearch/meshSearchBoundBox.C
 
 
 // ************************************************************************* //
