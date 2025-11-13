@@ -433,7 +433,7 @@ void Foam::phaseSystem::solve
                 alphaPhis.set
                 (
                     movingPhasei,
-                    new surfaceScalarField
+                    surfaceScalarField::New
                     (
                         IOobject::groupName("alphaPhi", phase.name()),
                         fvc::flux
@@ -441,7 +441,8 @@ void Foam::phaseSystem::solve
                             phase.phi()(),
                             alpha,
                             "div(phi," + alpha.name() + ')'
-                        )
+                        ),
+                        phase.alphaPhi()().boundaryField().types()
                     )
                 );
 
@@ -512,10 +513,11 @@ void Foam::phaseSystem::solve
                     alphaPhiBDs.set
                     (
                         movingPhasei,
-                        new surfaceScalarField
+                        surfaceScalarField::New
                         (
                             IOobject::groupName("alphaPhiBD", phase.name()),
-                            upwind<scalar>(mesh_, phase.phi()()).flux(alpha)
+                            upwind<scalar>(mesh_, phase.phi()()).flux(alpha),
+                            phase.alphaPhi()().boundaryField().types()
                         )
                     );
 
@@ -553,7 +555,9 @@ void Foam::phaseSystem::solve
 
                     // Calculate the phase-flux correction
                     // with respect to the bounded implicit prediction
-                    alphaPhiCorrs[movingPhasei] -= alphaPhiPreds[movingPhasei];
+                    alphaPhiCorrs[movingPhasei] ==
+                        alphaPhiCorrs[movingPhasei]
+                      - alphaPhiPreds[movingPhasei];
 
                     // Limit the phase-flux correction
                     MULES::limitCorr

@@ -225,6 +225,9 @@ void Foam::FreeStream<CloudType>::inflow()
                /(2.0*sqrtPi);
         }
 
+        const pointField::subField patchFaceCentres = patch.faceCentres();
+        const scalarField::subField patchMagFaceAreas = patch.magFaceAreas();
+
         forAll(patch, pFI)
         {
             // Loop over all faces as the outer loop to avoid calculating
@@ -236,9 +239,9 @@ void Foam::FreeStream<CloudType>::inflow()
 
             label celli = mesh.faceOwner()[globalFaceIndex];
 
-            const vector& fC = patch.faceCentres()[pFI];
+            const vector& fC = patchFaceCentres[pFI];
 
-            scalar fA = patch.magFaceAreas()[pFI];
+            scalar fA = patchMagFaceAreas[pFI];
 
             List<tetIndices> faceTets = polyMeshTetDecomposition::faceTetIndices
             (

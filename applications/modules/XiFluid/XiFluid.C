@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "XiFluid.H"
-#include "localEulerDdtScheme.H"
+#include "bXiIgnition.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -46,14 +46,49 @@ Foam::solvers::XiFluid::XiFluid(fvMesh& mesh)
     isothermalFluid
     (
         mesh,
-        autoPtr<fluidThermo>(psiuMulticomponentThermo::New(mesh).ptr())
+        autoPtr<fluidThermo>(new ubRhoThermo(mesh))
     ),
 
-    thermophysicalTransport
+    thermo_(refCast<ubRhoThermo>(isothermalFluid::thermo_)),
+
+    uMomentumTransport_
     (
-        momentumTransport(),
-        thermo_(),
-        true
+        thermo_.alphau(),
+        thermo_.uThermo().rho(),
+        U,
+        phi,
+        phi,
+        thermo_.uThermo(),
+        isothermalFluid::momentumTransport()
+    ),
+
+    bMomentumTransport_
+    (
+        thermo_.alphab(),
+        thermo_.bThermo().rho(),
+        U,
+        phi,
+        phi,
+        thermo_.bThermo(),
+        isothermalFluid::momentumTransport()
+    ),
+
+    uThermophysicalTransport_
+    (
+        thermophysicalTransportModel::New
+        (
+            uMomentumTransport_,
+            thermo_.uThermo()
+        )
+    ),
+
+    bThermophysicalTransport_
+    (
+        thermophysicalTransportModel::New
+        (
+            bMomentumTransport_,
+            thermo_.bThermo()
+        )
     ),
 
     combustionProperties
@@ -68,13 +103,27 @@ Foam::solvers::XiFluid::XiFluid(fvMesh& mesh)
         )
     ),
 
+    ignited_(false),
+
+    bMin_
+    (
+        combustionProperties.subDict("flameWrinkling")
+       .lookupOrDefault("bMin", 1e-3)
+    ),
+
+    mgbCoeff_
+    (
+        combustionProperties.subDict("flameWrinkling")
+       .lookupOrDefault("mgbCoeff", 1e-3)
+    ),
+
     SuModel_
     (
         SuModel::New
         (
             combustionProperties,
-            thermo_(),
-            thermophysicalTransport
+            thermo_.uThermo(),
+            isothermalFluid::momentumTransport()
         )
     ),
 
@@ -83,32 +132,43 @@ Foam::solvers::XiFluid::XiFluid(fvMesh& mesh)
         XiModel::New
         (
             combustionProperties,
-            thermo_(),
-            thermophysicalTransport,
+            thermo_,
+            isothermalFluid::momentumTransport(),
             SuModel_->Su()
         )
-    )
+    ),
+
+    thermo(thermo_),
+
+    momentumTransport(isothermalFluid::momentumTransport),
+
+    uThermophysicalTransport(uThermophysicalTransport_),
+    bThermophysicalTransport(bThermophysicalTransport_),
+
+    b(thermo.b()),
+    uThermo(thermo.uThermo()),
+
+    c(thermo.c()),
+    bThermo(thermo.bThermo()),
+
+    Su(SuModel_->Su()),
+    Xi(XiModel_->Xi())
 {
-    thermo().validate(type(), "ha", "ea");
+    mesh.schemes().setFluxRequired(b.name());
 
-    if (thermo_().containsSpecie("ft"))
+    const UPtrListDictionary<fv::bXiIgnition> ignitionModels
+    (
+        fvModels().lookupType<fv::bXiIgnition>()
+    );
+
+    forAll(ignitionModels, i)
     {
-        fields.add(thermo_().Y("ft"));
+        if (ignitionModels[i].ignited())
+        {
+            ignited_ = true;
+            break;
+        }
     }
-
-    if (thermo_().containsSpecie("fu"))
-    {
-        fields.add(thermo_().Y("fu"));
-    }
-
-    if (thermo_().containsSpecie("egr"))
-    {
-        fields.add(thermo_().Y("egr"));
-    }
-
-    fields.add(b());
-    fields.add(thermo().he());
-    fields.add(thermo().heu());
 }
 
 
@@ -122,19 +182,27 @@ Foam::solvers::XiFluid::~XiFluid()
 
 void Foam::solvers::XiFluid::thermophysicalTransportPredictor()
 {
-    thermophysicalTransport.predict();
+    uThermophysicalTransport_->predict();
+    bThermophysicalTransport_->predict();
 }
 
 
 void Foam::solvers::XiFluid::thermophysicalTransportCorrector()
 {
-    thermophysicalTransport.correct();
+    uThermophysicalTransport_->correct();
+    bThermophysicalTransport_->correct();
 }
 
 
 void Foam::solvers::XiFluid::reset()
 {
-    thermo_().reset();
+    ignited_ = false;
+    thermo_.reset();
+
+    const surfaceScalarField phib("phib", phi);
+    thermo_.b().correctBoundaryConditions();
+    thermo_.c() = 1.0 - thermo_.b();
+
     SuModel_->reset();
     XiModel_->reset();
 }

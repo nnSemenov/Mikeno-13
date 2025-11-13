@@ -761,7 +761,8 @@ int main(int argc, char *argv[])
         {
             FatalErrorInFunction
                 << "Invalid source type " << sourceType << endl
-                << "Valid source types are 'patches' 'set'" << exit(FatalError);
+                << "Valid source types: patches set zone"
+                << exit(FatalError);
         }
     }
     Info<< endl;
@@ -785,8 +786,8 @@ int main(int argc, char *argv[])
     }
 
 
-    // Set the precision of the points data to 10
-    IOstream::defaultPrecision(max(10u, IOstream::defaultPrecision()));
+    // Ensure the points are written to a sufficient precision
+    IOstream::defaultPrecision(IOstream::highPrecision());
 
     if (!overwrite)
     {

@@ -9,6 +9,7 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
+    location    "0";
     object      f5.air2;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -38,12 +39,4 @@ boundaryField
     }
 }
 
-sources
-{
-    massSource
-    {
-        type            uniformFixedValue;
-        uniformValue    0;
-    }
-}
 // ************************************************************************* //

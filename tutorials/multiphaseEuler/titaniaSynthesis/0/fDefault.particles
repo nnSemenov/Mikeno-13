@@ -9,6 +9,7 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
+    location    "0";
     object      fDefault.particles;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -42,7 +43,7 @@ sources
 {
     reactionDrivenPhaseChange
     {
-        type                distributionSizeGroup;
+        type                distributionGroupFraction;
         distribution
         {
             type                fixedValue;

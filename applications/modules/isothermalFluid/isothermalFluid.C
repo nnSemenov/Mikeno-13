@@ -49,13 +49,13 @@ namespace solvers
 
 void Foam::solvers::isothermalFluid::correctCoNum()
 {
-    fluidSolver::correctCoNum(rho_, phi_);
+    basicFluidSolver::correctCoNum(rho, phi);
 }
 
 
 void Foam::solvers::isothermalFluid::continuityErrors()
 {
-    fluidSolver::continuityErrors(rho_, thermo().rho(), phi_);
+    basicFluidSolver::continuityErrors(rho, thermo.rho(), phi);
 }
 
 
@@ -73,8 +73,8 @@ Foam::solvers::isothermalFluid::pressureWork
             work
           + fvc::div
             (
-                fvc::interpolate(rho_)*fvc::meshPhi(rho_, U_),
-                p()/rho_,
+                fvc::interpolate(rho)*fvc::meshPhi(rho, U),
+                p/rho,
                 "div(phi,(p|rho))"
             )();
     }
@@ -93,9 +93,12 @@ Foam::solvers::isothermalFluid::isothermalFluid
     autoPtr<fluidThermo> thermoPtr
 )
 :
-    fluidSolver(mesh),
+    basicFluidSolver(mesh),
 
     thermoPtr_(thermoPtr),
+    thermo_(thermoPtr_()),
+
+    p_(thermo_.p()),
 
     rho_
     (
@@ -107,7 +110,7 @@ Foam::solvers::isothermalFluid::isothermalFluid
             IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
-        thermoPtr_().renameRho()
+        thermo_.renameRho()
     ),
 
     dpdt
@@ -119,17 +122,19 @@ Foam::solvers::isothermalFluid::isothermalFluid
             mesh
         ),
         mesh,
-        dimensionedScalar(p_().dimensions()/dimTime, 0)
+        dimensionedScalar(p_.dimensions()/dimTime, 0)
     ),
 
     buoyancy(buoyancy::New(mesh)),
 
+    p_rgh_(buoyancy.valid() ? buoyancy->p_rgh : p_),
+
     pressureReference
     (
-        p_(),
-        p_rgh_(),
+        p_,
+        p_rgh_,
         pimple.dict(),
-        thermoPtr_().incompressible()
+        thermo_.incompressible()
     ),
 
     U_
@@ -167,36 +172,36 @@ Foam::solvers::isothermalFluid::isothermalFluid
             rho_,
             U_,
             phi_,
-            thermoPtr_()
+            thermo_
         )
     ),
 
     initialMass(fvc::domainIntegrate(rho_)),
 
-    MRF(mesh)
+    MRF(mesh),
 
-//    thermo(thermoPtr_()),
-//    p(p_),
-//    p_rgh(p_rgh_),
-//    rho(rho_),
-//    U(U_),
-//    phi(phi_)
+    thermo(thermo_),
+    p(p_),
+    p_rgh(p_rgh_),
+    rho(rho_),
+    U(U_),
+    phi(phi_)
 {
-    mesh.schemes().setFluxRequired(p_().name());
+    mesh.schemes().setFluxRequired(p.name());
     momentumTransport->validate();
 
     if (buoyancy.valid())
     {
         hydrostaticInitialisation
         (
-            p_rgh_(),
-            p_(),
+            p_rgh_,
+            p_,
             rho_,
-            U_,
+            U,
             buoyancy->gh,
             buoyancy->ghf,
             buoyancy->pRef,
-            thermoPtr_(),
+            thermo_,
             pimple.dict()
         );
 
@@ -210,7 +215,7 @@ Foam::solvers::isothermalFluid::isothermalFluid
             ),
             fvc::reconstruct
             (
-                (-buoyancy->ghf*fvc::snGrad(rho_) - fvc::snGrad(p_rgh_()))
+                (-buoyancy->ghf*fvc::snGrad(rho) - fvc::snGrad(p_rgh))
                *mesh.magSf()
             )
         );
@@ -278,7 +283,7 @@ void Foam::solvers::isothermalFluid::preSolve()
                 IOobject::READ_IF_PRESENT,
                 IOobject::AUTO_WRITE
             ),
-            fvc::interpolate(rho_*U_)
+            fvc::interpolate(rho*U)
         );
     }
 
@@ -299,7 +304,7 @@ void Foam::solvers::isothermalFluid::preSolve()
         divrhoU = new volScalarField
         (
             "divrhoU",
-            fvc::div(fvc::absolute(phi_, rho_, U_))
+            fvc::div(fvc::absolute(phi, rho, U))
         );
     }
 
@@ -308,11 +313,11 @@ void Foam::solvers::isothermalFluid::preSolve()
     // Store momentum to set rhoUf for introduced faces
     if (mesh.topoChanging())
     {
-        rhoU = new volVectorField("rhoU", rho_*U_);
+        rhoU = new volVectorField("rhoU", rho*U);
 
         for (label i = 1; i <= rhoUf().nOldTimes(false); ++ i)
         {
-            rhoU().oldTimeRef(i) == rho_.oldTime(i)*U_.oldTime(i);
+            rhoU().oldTimeRef(i) == rho.oldTime(i)*U.oldTime(i);
         }
     }
 
@@ -347,7 +352,7 @@ void Foam::solvers::isothermalFluid::thermophysicalTransportPredictor()
 
 void Foam::solvers::isothermalFluid::thermophysicalPredictor()
 {
-    thermoPtr_().correct();
+    thermo_.correct();
 }
 
 
@@ -385,10 +390,10 @@ void Foam::solvers::isothermalFluid::postSolve()
 
     if (!mesh.schemes().steady())
     {
-        rho_ = thermo().rho();
+        rho_ = thermo.rho();
 
         // Correct rhoUf with the updated density if the mesh is moving
-        fvc::correctRhoUf(rhoUf, rho_, U_, phi_, MRF);
+        fvc::correctRhoUf(rhoUf, rho, U, phi, MRF);
     }
 }
 

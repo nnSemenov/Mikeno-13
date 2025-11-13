@@ -3,7 +3,7 @@
 # =========                 |
 # \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
 #  \\    /   O peration     | Website:  https://openfoam.org
-#   \\  /    A nd           | Copyright (C) 2020-2024 OpenFOAM Foundation
+#   \\  /    A nd           | Copyright (C) 2020-2025 OpenFOAM Foundation
 #    \\/     M anipulation  |
 #------------------------------------------------------------------------------
 # License
@@ -242,13 +242,15 @@ $(declareLocals)
 
     opts="\\
         -applications \\
+        -coded \\
         -dir \\
         -edit \\
         -files \\
         -help \\
         -isearch \\
-        -numbers \\
+        -lnInclude \\
         -modules \\
+        -numbers \\
         -options \\
         -print \\
         -search \\
@@ -275,6 +277,8 @@ $(declareLocals)
     extra=""
 
 $(caseStart)
+        -coded)
+            opts="" ; extra="-d -f" ;;
         -dir)
             opts="" ; extra="-d" ;;
        *) ;;

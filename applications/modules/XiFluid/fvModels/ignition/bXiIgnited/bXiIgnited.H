@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2024-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -93,6 +93,9 @@ public:
 
         // Checks
 
+            //- Return true during the specified ignition duration
+            virtual bool igniting(const dimensionedScalar duration) const;
+
             //- Return true during the ignition duration
             virtual bool igniting() const;
 
@@ -108,13 +111,6 @@ public:
                 const volScalarField& rho,
                 const volScalarField& b,
                 fvMatrix<scalar>& eqn
-            ) const;
-
-            virtual void XiCorr
-            (
-                volScalarField& Xi,
-                const volScalarField& b,
-                const volScalarField& mgb
             ) const;
 
 

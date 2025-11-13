@@ -2,7 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
+<<<<<<<< HEAD:src/thermophysicalModels/specie/equationOfState/RedlichKwongGas/RedlichKwongGas.C
     \\  /    A nd           | Copyright (C) 2014-2023 OpenFOAM Foundation
+========
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
+>>>>>>>> upstream/master:src/meshTools/meshSearch/meshSearchBoundBox.C
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,6 +27,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+<<<<<<<< HEAD:src/thermophysicalModels/specie/equationOfState/RedlichKwongGas/RedlichKwongGas.C
 #include "RedlichKwongGas.H"
 #include "IOstreams.H"
 
@@ -63,6 +68,36 @@ Foam::Ostream& Foam::operator<<
     pg.write(os);
     return os;
 }
+========
+#include "meshSearchBoundBox.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+    defineTypeNameAndDebug(meshSearchBoundBox, 0);
+}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::meshSearchBoundBox::meshSearchBoundBox(const polyMesh& mesh)
+:
+    DemandDrivenMeshObject
+    <
+        polyMesh,
+        DeletableMeshObject,
+        meshSearchBoundBox
+    >(mesh),
+    bb_(treeBoundBox(mesh.points()).extend(1e-4))
+{}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::meshSearchBoundBox::~meshSearchBoundBox()
+{}
+>>>>>>>> upstream/master:src/meshTools/meshSearch/meshSearchBoundBox.C
 
 
 // ************************************************************************* //

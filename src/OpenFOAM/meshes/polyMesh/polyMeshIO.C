@@ -152,6 +152,9 @@ Foam::polyMesh::readUpdateState Foam::polyMesh::readUpdate()
 
         clearOut();
 
+        // Clear all DeletableMeshObjects
+        meshObjects::clearAll<polyMesh, DeletableMeshObject>(*this);
+
         points_ = pointIOField
         (
             IOobject
@@ -556,6 +559,19 @@ bool Foam::polyMesh::writeObject
             rmAddressing("cellProcAddressing");
         }
     }
+
+    // Write the points out at a higher precision
+    if (points_.writeOpt() == IOobject::AUTO_WRITE)
+    {
+        unsigned int precision0 =
+            IOstream::defaultPrecision(IOstream::fullPrecision());
+
+        points_.write();
+
+        IOstream::defaultPrecision(precision0);
+    }
+
+    const_cast<polyMesh&>(*this).points_.writeOpt() = IOobject::NO_WRITE;
 
     const bool written = objectRegistry::writeObject(fmt, ver, cmp, write);
 

@@ -25,168 +25,31 @@ License
 
 #include "XiFluid.H"
 #include "bXiIgnition.H"
+
 #include "fvcDdt.H"
 #include "fvmDiv.H"
 #include "fvcSup.H"
+#include "fvcFlux.H"
+
+#include "EulerDdtScheme.H"
+#include "gaussConvectionScheme.H"
+#include "upwind.H"
+
+#include "CMULES.H"
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-void Foam::solvers::XiFluid::ftSolve
-(
-    const fv::convectionScheme<scalar>& mvConvection,
-    const volScalarField& Db
-)
+void Foam::solvers::XiFluid::burn()
 {
-    volScalarField& ft = thermo_().Y("ft");
-
-    fvScalarMatrix ftEqn
-    (
-        fvm::ddt(rho(), ft)
-      + mvConvection.fvmDiv(phi(), ft)
-      - fvm::laplacian(Db, ft)
-     ==
-        fvModels().source(rho(), ft)
-    );
-
-    ftEqn.relax();
-    fvConstraints().constrain(ftEqn);
-    ftEqn.solve();
-    fvConstraints().constrain(ft);
-}
-
-
-void Foam::solvers::XiFluid::fuSolve
-(
-    const fv::convectionScheme<scalar>& mvConvection,
-    const volScalarField& Db,
-    const volScalarField& bSource
-)
-{
-    volScalarField& fu = thermo_().Y("fu");
-    const volScalarField& ft = thermo_().Y("ft");
-    const volScalarField& b(b_());
+    volScalarField& b(thermo_.b());
 
     // Progress variable
-    const volScalarField c("c", scalar(1) - b);
+    volScalarField& c(thermo_.c());
 
     // Unburnt gas density
-    const volScalarField rhou("rhou", thermo().rhou());
+    const volScalarField& rhou(thermo_.uThermo().rho());
 
-    const volScalarField fres(thermo_().fres());
-    const volScalarField fuFres(max(fu - fres, scalar(0)));
-
-    const volScalarField fuDot
-    (
-        bSource/(b + 0.001)
-      - 2*Db*c
-       *mag(fvc::grad(ft))/max(ft, scalar(1e-6))
-       *mag(fvc::grad(fuFres))/max(fuFres, scalar(1e-6))
-    );
-
-    fvScalarMatrix fuEqn
-    (
-        fvm::ddt(rho(), fu)
-      + mvConvection.fvmDiv(phi(), fu)
-      - fvm::laplacian(Db, fu)
-     ==
-        fvm::Sp(fuDot, fu)
-      - fuDot*fres
-      + fvModels().source(rho(), fu)
-    );
-
-    fuEqn.relax();
-    fvConstraints().constrain(fuEqn);
-    fuEqn.solve();
-    fvConstraints().constrain(fu);
-}
-
-
-void Foam::solvers::XiFluid::egrSolve
-(
-    const fv::convectionScheme<scalar>& mvConvection,
-    const volScalarField& Db
-)
-{
-    volScalarField& egr = thermo_().Y("egr");
-
-    fvScalarMatrix egrEqn
-    (
-        fvm::ddt(rho(), egr)
-      + mvConvection.fvmDiv(phi(), egr)
-      - fvm::laplacian(Db, egr)
-     ==
-        fvModels().source(rho(), egr)
-    );
-
-    egrEqn.relax();
-    fvConstraints().constrain(egrEqn);
-    egrEqn.solve();
-    fvConstraints().constrain(egr);
-}
-
-
-
-Foam::tmp<Foam::volScalarField> Foam::solvers::XiFluid::XiCorr
-(
-    const volScalarField& Xi,
-    const surfaceScalarField& nf,
-    const dimensionedScalar& dMgb
-) const
-{
-    const UPtrListDictionary<fv::bXiIgnition> ignitionModels
-    (
-        fvModels().lookupType<fv::bXiIgnition>()
-    );
-
-    bool igniting = false;
-
-    forAll(ignitionModels, i)
-    {
-        if (ignitionModels[i].igniting())
-        {
-            igniting = true;
-            break;
-        }
-    }
-
-    if (igniting)
-    {
-        tmp<volScalarField> tXi(volScalarField::New("XiCorrected", Xi));
-
-        // Calculate kernel area from b field consistent with the
-        // discretisation of the b equation.
-        const volScalarField mgb
-        (
-            fvc::div(nf, b(), "div(phiSt,b)") - b()*fvc::div(nf) + dMgb
-        );
-
-        forAll(ignitionModels, i)
-        {
-            ignitionModels[i].XiCorr(tXi.ref(), b(), mgb);
-        }
-
-        return tXi;
-    }
-    else
-    {
-        return Xi;
-    }
-}
-
-
-void Foam::solvers::XiFluid::bSolve
-(
-    const fv::convectionScheme<scalar>& mvConvection,
-    const volScalarField& Db
-)
-{
-    volScalarField& b(b_());
-
-    // Progress variable
-    const volScalarField c("c", scalar(1) - b);
-
-    // Unburnt gas density
-    const volScalarField rhou("rhou", thermo().rhou());
+    const volScalarField Db(XiModel_->Db());
 
     // Calculate flame normal etc.
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,50 +61,151 @@ void Foam::solvers::XiFluid::bSolve
     const dimensionedScalar dMgb
     (
         "dMgb",
-        1.0e-3*
+        mgbCoeff_*
         (b*c*mgb)().weightedAverage(mesh.V())
        /((b*c)().weightedAverage(mesh.V()) + small)
       + dimensionedScalar(mgb.dimensions(), small)
     );
 
-    mgb += dMgb;
+    // Stabilise mgb for division here and sub-models
+    mgb = max(mgb, dMgb);
 
     const surfaceVectorField SfHat(mesh.Sf()/mesh.magSf());
     surfaceVectorField nfVec(fvc::interpolate(n));
     nfVec += SfHat*(fvc::snGrad(b) - (SfHat & nfVec));
-    nfVec /= (mag(nfVec) + dMgb);
-    surfaceScalarField nf("nf", mesh.Sf() & nfVec);
+    nfVec /= max(mag(nfVec), dMgb);
+    const surfaceScalarField nf("nf", mesh.Sf() & nfVec);
     n /= mgb;
 
-    // Turbulent flame speed flux
-    const surfaceScalarField phiSt
+    // Turbulent flame speed volumetric flux
+    const surfaceScalarField phivSt("phivSt", fvc::interpolate(Su*Xi)*nf);
+
+    // Turbulent flame speed mass flux
+    surfaceScalarField phiSt("phiSt", fvc::interpolate(rhou*Su*Xi)*nf);
+
+    const dimensionedScalar mgbStab(2*dMgb/bMin_/mgbCoeff_);
+
+    surfaceScalarField phib("phib", phi + phiSt);
+
+    tmp<surfaceScalarField> tbPhiUD;
+    tmp<surfaceScalarField> tbPhiStUD;
+    tmp<surfaceScalarField> tbLaplacianPhi;
+    tmp<surfaceScalarField> tbLaplacianPhiCorr;
+    tmp<volScalarField::Internal> tSu;
+    tmp<volScalarField::Internal> tSp;
+
+    // Bounded implicit b predictor
+    {
+        // Construct the bounded upwind interpolator for b
+        const upwind<scalar> bUD(mesh, phib);
+
+        // Construct the corrected Laplacian
+        fvScalarMatrix bLaplacian(fvm::laplacian(Db, b));
+
+        // Set the Laplacian correction source to 0
+        bLaplacian.source() = Zero;
+
+        // Construct the b convection matrix
+        fvScalarMatrix bPhi
+        (
+            fv::gaussConvectionScheme<scalar>(mesh, phib, bUD).fvmDiv(phi, b)
+        );
+
+        // Construct the b flame propagation matrix
+        fvScalarMatrix bPhiSt
+        (
+            fv::gaussConvectionScheme<scalar>(mesh, phib, bUD).fvmDiv(phiSt, b)
+        );
+
+        const volScalarField::Internal divPhiSt(fvc::div(phiSt));
+
+        //- Construct the b source matrix
+        fvScalarMatrix bSource
+        (
+            fvModels().source(rho, b)
+          - fvm::Sp(rhou*Su*Xi*mgbStab*max(bMin_ - b, scalar(0)), b)
+        );
+
+        // Assemble the bounded b matrix
+        fvScalarMatrix bEqn
+        (
+            fv::EulerDdtScheme<scalar>(mesh).fvmDdt(rho, b)
+          + bPhi + bPhiSt
+          - bLaplacian
+         ==
+            bSource
+          + fvm::Sp(divPhiSt, b)
+        );
+
+        // Solve for b and constrain
+        bEqn.relax();
+        fvConstraints().constrain(bEqn);
+        bEqn.solve();
+        fvConstraints().constrain(b);
+
+        // Set the fluxes for the MULES corrector
+
+        tbPhiUD = bPhi.flux();
+        tbPhiStUD = bPhiSt.flux();
+
+        tbLaplacianPhi = -bLaplacian.flux();
+        if (bLaplacian.faceFluxCorrectionPtr())
+        {
+            tbLaplacianPhiCorr = -*bLaplacian.faceFluxCorrectionPtr();
+        }
+
+        tSu = bSource.Su() + divPhiSt*b;
+        tSp = bSource.Sp();
+    }
+
+    const volScalarField::Internal& Sp = tSp();
+
+    const word divbName("div(phi,b)");
+
+    // Higher-order face interpolate of b
+    const surfaceScalarField bf
     (
-        "phiSt",
-        fvc::interpolate(rhou*Su()*XiCorr(Xi(), nf, dMgb))*nf
+        fv::convectionScheme<scalar>::New
+        (
+            mesh,
+            phib,
+            mesh.schemes().div(divbName)
+        )().interpolate(phib, b)
     );
 
-    fvScalarMatrix bSourceEqn
+    // Higher-order convection and flame-propagation face-fluxes
+    const surfaceScalarField bPhi(phi*bf);
+    const surfaceScalarField bPhiSt(phiSt*bf);
+
+    // Higher-order convection and flame-propagation face-flux corrections
+    surfaceScalarField bPhiCorr(bPhi - tbPhiUD());
+    surfaceScalarField bPhiStCorr(bPhiSt - tbPhiStUD());
+
+    if (tbLaplacianPhiCorr.valid())
+    {
+        bPhiCorr += tbLaplacianPhiCorr();
+    }
+
+    const MULES::control MULEScontrols(mesh.solution().solverDict(b.name()));
+
+    // Cache a list of the flux corrections to be limited
+    UPtrList<surfaceScalarField> bPhiCorrs{&bPhiCorr, &bPhiStCorr};
+
+    // MULES limited bounded explicit b corrector
+    MULES::correct
     (
-        fvModels().source(rho(), b)
-      - fvm::div(phiSt, b)
-      + fvm::Sp(fvc::div(phiSt), b)
+        MULEScontrols,
+        rho,
+        b,
+        tbPhiUD() + tbPhiStUD(),
+        bPhiCorrs,
+        Sp,
+        oneField(),
+        zeroField()
     );
 
-    // Create b equation
-    fvScalarMatrix bEqn
-    (
-        fvm::ddt(rho(), b)
-      + mvConvection.fvmDiv(phi(), b)
-      - fvm::laplacian(Db, b)
-     ==
-        bSourceEqn
-    );
-
-    // Solve for b and constrain
-    bEqn.relax();
-    fvConstraints().constrain(bEqn);
-    bEqn.solve();
-    fvConstraints().constrain(b);
+    // Recalculate c from b
+    c = scalar(1) - b;
 
     // Correct the flame wrinkling
     XiModel_->correct();
@@ -249,86 +213,261 @@ void Foam::solvers::XiFluid::bSolve
     // Correct the laminar flame speed
     SuModel_->correct();
 
-    if (thermo_().containsSpecie("fu"))
+    // Set the b-equation convection+diffusion flux
+    // for the solution of the unburnt gas energy and species
+    phib = tbPhiUD() + tbLaplacianPhi() + bPhiCorr;
+
+    // Set the c-equation convection+diffusion flux
+    // for the solution of the burnt gas energy and species
+    const surfaceScalarField phic("phic", phi - phib);
+
+    // Set the b-equation source term
+    // for the solution of the unburnt and burnt gas energy and species
+    const volScalarField::Internal bSource
+    (
+        tSu() + tSp()*b()
+      - fvc::div(tbPhiStUD() + bPhiStCorr)()
+    );
+
+    // Set the unburnt and burnt gas stabilisation coefficients
+    const volScalarField::Internal bStab(max(bMin_ - b, scalar(0)));
+    const volScalarField::Internal cStab(max(bMin_ - c, scalar(0)));
+
+    // Solve for the unburnt gas energy and species
+    uSolve(bStab, phib, bSource);
+
+    // Solve for the burnt gas energy and species
+    bSolve(cStab, phic, bSource);
+}
+
+
+void Foam::solvers::XiFluid::uSolve
+(
+    const volScalarField::Internal& bStab,
+    const surfaceScalarField& phib,
+    const volScalarField::Internal& bSource
+)
+{
+    PtrList<volScalarField>& Y = thermo_.uThermo().Y();
+
+    forAll(Y, i)
     {
-        fuSolve(mvConvection, Db, (bSourceEqn & b));
+        volScalarField& Yi = Y[i];
+
+        if (uThermo.solveSpecie(i))
+        {
+            uSolve(Yi, bStab, phib, fvm::Sp(bSource, Yi));
+        }
+        else
+        {
+            Yi.correctBoundaryConditions();
+        }
     }
+
+    thermo_.uThermo().normaliseY();
+
+    HuSolve(bStab, phib, bSource);
 }
 
 
-void Foam::solvers::XiFluid::EauSolve
+void Foam::solvers::XiFluid::bSolve
 (
-    const fv::convectionScheme<scalar>& mvConvection,
-    const volScalarField& Db
+    const volScalarField::Internal& cStab,
+    const surfaceScalarField& phic,
+    const volScalarField::Internal& bSource
 )
 {
-    volScalarField& heau = thermo_().heu();
+    PtrList<volScalarField>& Y = thermo_.bThermo().Y();
 
-    const volScalarField::Internal rhoByRhou(rho()/thermo().rhou()());
+    forAll(Y, i)
+    {
+        volScalarField& Yi = Y[i];
 
-    fvScalarMatrix EauEqn
-    (
-        fvm::ddt(rho(), heau) + mvConvection.fvmDiv(phi(), heau)
-      + rhoByRhou
-       *(
-            (fvc::ddt(rho(), K) + fvc::div(phi(), K))()
-          + pressureWork
-            (
-                heau.name() == "eau"
-              ? mvConvection.fvcDiv(phi(), p()/rho())()
-              : -dpdt
-            )
-        )
-      - fvm::laplacian(Db, heau)
+        if (bThermo.solveSpecie(i))
+        {
+            //***HGW uThermo.Y(0) is the prompt bThermo.Y(0)
+            bSolve(Yi, cStab, phic, fvm::Su(-bSource*uThermo.Y(0)(), Yi));
+        }
+        else
+        {
+            Yi.correctBoundaryConditions();
+        }
+    }
 
-        // These terms cannot be used in partially-premixed combustion due to
-        // the resultant inconsistency between ft and heau transport.
-        // A possible solution would be to solve for ftu as well as ft.
-        //- fvm::div(muEff*fvc::grad(b)/(b + 0.001), heau)
-        //+ fvm::Sp(fvc::div(muEff*fvc::grad(b)/(b + 0.001)), heau)
+    thermo_.bThermo().normaliseY();
 
-     ==
-        fvModels().source(rho(), heau)
-    );
-
-    EauEqn.relax();
-    fvConstraints().constrain(EauEqn);
-    EauEqn.solve();
-    fvConstraints().constrain(heau);
+    HbSolve(cStab, phic, bSource);
 }
 
 
-void Foam::solvers::XiFluid::EaSolve
+Foam::tmp<Foam::fvScalarMatrix> Foam::solvers::XiFluid::fvmStab
 (
-    const fv::convectionScheme<scalar>& mvConvection,
-    const volScalarField& Db
+    const volScalarField& bc,
+    const volScalarField::Internal& bcStab,
+    const volScalarField& D,
+    volScalarField& f
 )
 {
-    volScalarField& hea = thermo_().he();
-
-    fvScalarMatrix EaEqn
+    // Advective-diffusive stabilisation for b,c -> 0
+    return bcStab*
     (
-        fvm::ddt(rho(), hea) + mvConvection.fvmDiv(phi(), hea)
-      + fvc::ddt(rho(), K) + fvc::div(phi(), K)
-      + pressureWork
+        fv::EulerDdtScheme<scalar>(mesh).fvmDdt(rho, f)
+      + fv::gaussConvectionScheme<scalar>
         (
-            hea.name() == "ea"
-          ? mvConvection.fvcDiv(phi(), p()/rho())()
-          : -dpdt
-        )
-      - fvm::laplacian(Db, hea)
-     ==
+            mesh,
+            phi,
+            upwind<scalar>(mesh, phi)
+        ).fvmDiv(phi, f)
+      - fv::gaussLaplacianScheme<scalar, scalar>::fvmLaplacianUncorrected
         (
-            buoyancy.valid()
-          ? fvModels().source(rho(), hea) + rho()*(U() & buoyancy->g)
-          : fvModels().source(rho(), hea)
+            fvc::interpolate(D)*mesh.magSf(),
+            mesh.nonOrthDeltaCoeffs(),
+            f
         )
     );
+}
 
-    EaEqn.relax();
-    fvConstraints().constrain(EaEqn);
-    EaEqn.solve();
-    fvConstraints().constrain(hea);
+
+void Foam::solvers::XiFluid::ubSolve
+(
+    volScalarField& f,
+    const volScalarField& bc,
+    const volScalarField::Internal& bcStab,
+    const surfaceScalarField& phibc,
+    const volScalarField& D,
+    const thermophysicalTransportModel& thermophysicalTransport,
+    const fvScalarMatrix& combustionRate
+)
+{
+    fvScalarMatrix fEqn
+    (
+        fvm::ddt(bc, rho, f) + fvm::div(phibc, f)
+
+        // Advective-diffusive stabilisation for bc -> 0
+      + fvmStab(bc, bcStab, D, f)
+
+        // Diffusive transport within the unburnt/burnt gas
+      + thermophysicalTransport.divj(f)
+     ==
+        // Combustion source
+        combustionRate
+
+        // Other sources
+      + fvModels().source(bc, rho, f)
+    );
+
+    fEqn.relax();
+    fvConstraints().constrain(fEqn);
+    fEqn.solve();
+    fvConstraints().constrain(f);
+}
+
+
+void Foam::solvers::XiFluid::uSolve
+(
+    volScalarField& fu,
+    const volScalarField::Internal& bStab,
+    const surfaceScalarField& phib,
+    const fvScalarMatrix& source
+)
+{
+    const volScalarField Du("Du", rho*(momentumTransport.nut() + uThermo.nu()));
+    ubSolve(fu, b, bStab, phib, Du, uThermophysicalTransport_(),source);
+}
+
+
+void Foam::solvers::XiFluid::bSolve
+(
+    volScalarField& fb,
+    const volScalarField::Internal& cStab,
+    const surfaceScalarField& phic,
+    const fvScalarMatrix& source
+)
+{
+    const volScalarField Db("Db", rho*(momentumTransport.nut() + bThermo.nu()));
+    ubSolve(fb, c, cStab, phic, Db, bThermophysicalTransport_(), source);
+}
+
+
+void Foam::solvers::XiFluid::HuSolve
+(
+    const volScalarField::Internal& bStab,
+    const surfaceScalarField& phib,
+    const volScalarField::Internal& bSource
+)
+{
+    volScalarField& hu = thermo_.uThermo().he();
+
+    const volScalarField::Internal rhoByRhou(rho()/uThermo.rho()());
+
+    const volScalarField Du("Du", rho*(momentumTransport.nut() + uThermo.nu()));
+
+    fvScalarMatrix HuEqn
+    (
+        fvm::ddt(b, rho, hu) + fvm::div(phib, hu)
+
+        // Advective-diffusive stabilisation for b -> 0
+      + fvmStab(b, bStab, Du, hu)
+
+        // Pressure-work
+      + fvc::ddt(b, rho, K) + fvc::div(phib, K)
+      + (b + bStab)*rhoByRhou*pressureWork(-dpdt)
+
+        // Diffusive transport within the unburnt gas
+      + uThermophysicalTransport_->divq(hu)
+     ==
+        // Combustion source
+        fvm::Sp(bSource, hu)
+
+        // Other sources
+      + fvModels().source(b, rho, hu)
+    );
+
+    HuEqn.relax();
+    fvConstraints().constrain(HuEqn);
+    HuEqn.solve();
+    fvConstraints().constrain(hu);
+}
+
+
+void Foam::solvers::XiFluid::HbSolve
+(
+    const volScalarField::Internal& cStab,
+    const surfaceScalarField& phic,
+    const volScalarField::Internal& bSource
+)
+{
+    volScalarField& hb = thermo_.bThermo().he();
+
+    const volScalarField::Internal rhoByRhob(rho()/bThermo.rho()());
+
+    const volScalarField Db("Db", rho*(momentumTransport.nut() + bThermo.nu()));
+
+    fvScalarMatrix HbEqn
+    (
+        fvm::ddt(c, rho, hb) + fvm::div(phic, hb)
+
+        // Advective-diffusive stabilisation for b -> 0
+      + fvmStab(c, cStab, Db, hb)
+
+        // Pressure-work
+      + fvc::ddt(c, rho, K) + fvc::div(phic, K)
+      + (c + cStab)*rhoByRhob*pressureWork(-dpdt)
+
+        // Diffusive transport within the unburnt gas
+      + uThermophysicalTransport_->divq(hb)
+     ==
+        // Combustion source
+      - bSource*(uThermo.ha()() - bThermo.hf()())()
+
+        // Other sources
+      + fvModels().source(c, rho, hb)
+    );
+
+    HbEqn.relax();
+    fvConstraints().constrain(HbEqn);
+    HbEqn.solve();
+    fvConstraints().constrain(hb);
 }
 
 
@@ -350,56 +489,56 @@ void Foam::solvers::XiFluid::thermophysicalPredictor()
         }
     }
 
-    tmp<fv::convectionScheme<scalar>> mvConvection
-    (
-        fv::convectionScheme<scalar>::New
-        (
-            mesh,
-            fields,
-            phi(),
-            mesh.schemes().div("div(phi,ft_b_ha_hau)")
-        )
-    );
-
-    const volScalarField Db
-    (
-        "Db",
-        ignited ? XiModel_->Db() : thermophysicalTransport.DEff(b())
-    );
-
-    if (thermo_().containsSpecie("ft"))
+    if (ignited && !ignited_)
     {
-        ftSolve(mvConvection(), Db);
+        ignited_ = ignited;
+
+        if (uThermo.containsSpecie("fu"))
+        {
+            //***HGW uThermo.Y("fu") is the prompt bThermo.Y("ft")
+            thermo_.bThermo().Y("ft") = uThermo.Y("fu");
+        }
+
+        thermo_.bThermo().he() = uThermo.ha() - bThermo.hf();
+        thermo_.bThermo().correct();
     }
 
-    if (ignited)
+    if (ignited_)
     {
-        bSolve(mvConvection(), Db);
-        EauSolve(mvConvection(), Db);
+        burn();
     }
     else
     {
-        if (thermo_().containsSpecie("fu"))
-        {
-            volScalarField& fu = thermo_().Y("fu");
-            const volScalarField& ft = thermo_().Y("ft");
-            fu = ft;
-        }
+        const volScalarField::Internal bStab
+        (
+            IOobject
+            (
+                "bStab",
+                runTime.time().name(),
+                mesh
+            ),
+            mesh,
+            scalar(0)
+        );
+
+        const surfaceScalarField phib("phib", phi);
+
+        const volScalarField::Internal bSource
+        (
+            IOobject
+            (
+                "bSource",
+                runTime.time().name(),
+                mesh
+            ),
+            mesh,
+            dimensionedScalar(dimDensity/dimTime, 0)
+        );
+
+        uSolve(bStab, phib, bSource);
     }
 
-    if (thermo_().containsSpecie("egr"))
-    {
-        egrSolve(mvConvection(), Db);
-    }
-
-    EaSolve(mvConvection(), Db);
-
-    if (!ignited)
-    {
-        thermo_().heu() == thermo().he();
-    }
-
-    thermo_().correct();
+    thermo_.correct();
 }
 
 

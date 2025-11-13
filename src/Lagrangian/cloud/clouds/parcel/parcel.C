@@ -28,6 +28,7 @@ License
 #include "cloud_functionObject.H"
 #include "LagrangiancDdt.H"
 #include "LagrangianmDdt.H"
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -36,7 +37,7 @@ namespace Foam
 namespace clouds
 {
     defineTypeNameAndDebug(parcel, 0);
-    addToRunTimeSelectionTable(cloud, parcel, polyMesh);
+    addToRunTimeSelectionTable(cloud, parcel, LagrangianMesh);
 }
 namespace fv
 {
@@ -54,14 +55,14 @@ namespace functionObjects
 void Foam::clouds::parcel::initialise(const bool predict)
 {
     cloud::initialise(predict);
-    coupled::initialise(predict);
+    carried::initialise(predict);
 }
 
 
 void Foam::clouds::parcel::partition()
 {
     cloud::partition();
-    coupled::partition();
+    carried::partition();
 }
 
 
@@ -202,14 +203,11 @@ void Foam::clouds::parcel::calculate
 
 Foam::clouds::parcel::parcel
 (
-    const polyMesh& mesh,
-    const word& name,
-    const contextType context,
-    const IOobject::readOption readOption,
-    const IOobject::writeOption writeOption
+    LagrangianMesh& mesh,
+    const contextType context
 )
 :
-    cloud(mesh, name, context, readOption, writeOption),
+    cloud(mesh, context),
     grouped(static_cast<const cloud&>(*this)),
     spherical(*this, *this),
     massive(*this, *this),

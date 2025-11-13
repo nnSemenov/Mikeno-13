@@ -47,7 +47,7 @@ namespace solvers
 
 bool Foam::solvers::multiphaseEuler::read()
 {
-    fluidSolver::read();
+    basicFluidSolver::read();
 
     predictMomentum =
         pimple.dict().lookupOrDefault<bool>("momentumPredictor", false);
@@ -100,7 +100,7 @@ void Foam::solvers::multiphaseEuler::correctCoNum()
 
 Foam::solvers::multiphaseEuler::multiphaseEuler(fvMesh& mesh)
 :
-    fluidSolver(mesh),
+    basicFluidSolver(mesh),
 
     predictMomentum
     (
@@ -138,25 +138,6 @@ Foam::solvers::multiphaseEuler::multiphaseEuler(fvMesh& mesh)
             mesh,
             dimensionedScalar(dimless/dimTime, 1),
             extrapolatedCalculatedFvPatchScalarField::typeName
-        )
-      : nullptr
-    ),
-
-    trDeltaTf
-    (
-        LTS && faceMomentum
-      ? new surfaceScalarField
-        (
-            IOobject
-            (
-                fv::localEulerDdt::rDeltaTfName,
-                runTime.name(),
-                mesh,
-                IOobject::READ_IF_PRESENT,
-                IOobject::AUTO_WRITE
-            ),
-            mesh,
-            dimensionedScalar(dimless/dimTime, 1)
         )
       : nullptr
     ),

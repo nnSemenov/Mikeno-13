@@ -27,7 +27,7 @@ License
 #include "streamlinesCloud.H"
 #include "sampledSet.H"
 #include "globalIndex.H"
-#include "interpolationCellPoint.H"
+#include "cellPoint_interpolation.H"
 #include "PatchTools.H"
 #include "writeFile.H"
 #include "polyTopoChangeMap.H"
@@ -35,29 +35,6 @@ License
 #include "polyDistributionMap.H"
 #include "OSspecific.H"
 #include "addToRunTimeSelectionTable.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Foam
-{
-
-template<class Type>
-void gatherAndFlatten(DynamicField<Type>& field)
-{
-    List<List<Type>> gatheredField(Pstream::nProcs());
-    gatheredField[Pstream::myProcNo()] = field;
-    Pstream::gatherList(gatheredField);
-
-    field =
-        ListListOps::combine<List<Type>>
-        (
-            gatheredField,
-            accessOp<List<Type>>()
-        );
-}
-
-}
-
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -155,7 +132,7 @@ bool Foam::functionObjects::streamlines::read(const dictionary& dict)
         dict.lookupOrDefault
         (
             "interpolationScheme",
-            interpolationCellPoint<scalar>::typeName
+            interpolations::cellPoint<scalar>::typeName
         );
 
     cloudName_ = dict.lookupOrDefault<word>("cloudName", "streamlines");
@@ -338,19 +315,19 @@ bool Foam::functionObjects::streamlines::write()
     // Gather data on the master
     if (Pstream::parRun())
     {
-        gatherAndFlatten(allPositions);
-        gatherAndFlatten(allTracks);
-        gatherAndFlatten(allTrackParts);
-        gatherAndFlatten(allAges);
+        Pstream::concatenateList(allPositions);
+        Pstream::concatenateList(allTracks);
+        Pstream::concatenateList(allTrackParts);
+        Pstream::concatenateList(allAges);
         forAll(fieldNames, fieldi)
         {
-            #define GatherAndFlattenAllTypes(Type, nullArg) \
-                if (Type##Interp.set(fieldi))               \
-                {                                           \
-                    gatherAndFlatten(all##Type##s[fieldi]); \
+            #define ConcatenateListAllTypes(Type, nullArg)          \
+                if (Type##Interp.set(fieldi))                       \
+                {                                                   \
+                    Pstream::concatenateList(all##Type##s[fieldi]); \
                 }
-            FOR_ALL_FIELD_TYPES(GatherAndFlattenAllTypes);
-            #undef GatherAndFlattenAllTypes
+            FOR_ALL_FIELD_TYPES(ConcatenateListAllTypes);
+            #undef ConcatenateListAllTypes
         }
     }
 

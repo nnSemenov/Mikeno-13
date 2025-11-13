@@ -22,8 +22,6 @@ laminarFlameSpeed
     {
         model           constant;
 
-        equivalenceRatio 1;
-
         Su              0.3 [m/s];
     }
 }
@@ -31,6 +29,7 @@ laminarFlameSpeed
 flameWrinkling
 {
     model           equilibrium;
+    // model           transport;
 
     equilibrium
     {
@@ -44,6 +43,11 @@ flameWrinkling
         model      linear;
         // model      cubic;
         // XiShapeCoeff  0.5;
+    }
+
+    generationRate
+    {
+        model           KTS;
     }
 }
 

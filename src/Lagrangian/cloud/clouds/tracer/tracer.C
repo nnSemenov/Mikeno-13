@@ -1,0 +1,156 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2025 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "tracer.H"
+#include "cloud_functionObject.H"
+#include "escapeVelocityLagrangianPatchVectorField.H"
+#include "NaNLagrangianFieldSources.H"
+#include "addToRunTimeSelectionTable.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace clouds
+{
+    defineTypeNameAndDebug(tracer, 0);
+    addToRunTimeSelectionTable(cloud, tracer, LagrangianMesh);
+}
+namespace functionObjects
+{
+    makeCloudFunctionObject(tracer);
+}
+}
+
+
+// * * * * * * * * * * * *  Protected Member Functions * * * * * * * * * * * //
+
+void Foam::clouds::tracer::initialise(const bool predict)
+{
+    cloud::initialise(predict);
+    carried::initialise(predict);
+}
+
+
+void Foam::clouds::tracer::partition()
+{
+    cloud::partition();
+    carried::partition();
+}
+
+
+Foam::tmp<Foam::LagrangianSubVectorField>
+Foam::clouds::tracer::dUdt
+(
+    const LagrangianSubMesh& subMesh
+) const
+{
+    return U(subMesh) & Uc.grad(subMesh);
+}
+
+
+bool Foam::clouds::tracer::reCalculateModified()
+{
+    return true;
+}
+
+
+void Foam::clouds::tracer::calculate
+(
+    const LagrangianSubScalarField& deltaT,
+    const bool final
+)
+{
+    if (!final) return;
+
+    const LagrangianSubMesh& subMesh = deltaT.mesh();
+
+    LagrangianSubVectorSubField& U = this->U.ref(subMesh);
+
+    U = Uc(subMesh);
+}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::clouds::tracer::tracer
+(
+    LagrangianMesh& mesh,
+    const contextType context
+)
+:
+    cloud
+    (
+        mesh,
+        context,
+        LagrangianVectorDynamicField::New
+        (
+            "U",
+            mesh,
+            dimensionedVector("NaN", dimVelocity, vector::uniform(NaN)),
+            escapeVelocityLagrangianPatchVectorField::typeName
+        )
+    ),
+    carried(static_cast<const cloud&>(*this))
+{
+    // Create NaN values on newly injected particles. These values will then
+    // get corrected by a call to calculate as a result of reCalculateModified
+    // returning true. Alternatively, we could put a carrier field source here
+    // and set reCalculateModified to false. Either approach works.
+    U.sourcesRef().reset
+    (
+        U,
+        LagrangianVectorDynamicField::Sources
+        (
+            U,
+            LagrangianModels().modelTypeFieldSourceTypes
+            <
+                LagrangianInjection,
+                NaNLagrangianVectorFieldSource
+            >()
+        )
+    );
+}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::clouds::tracer::~tracer()
+{}
+
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+void Foam::clouds::tracer::solve()
+{
+    // Pre-solve operations ...
+
+    cloud::solve();
+
+    // Post-solve operations ...
+}
+
+
+// ************************************************************************* //

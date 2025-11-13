@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -50,7 +50,8 @@ namespace XiModels
 bool Foam::XiModels::transport::readCoeffs(const dictionary& dict)
 {
     XiModel::readCoeffs(dict);
-
+    differentialPropagation_ =
+        dict.lookupOrDefault<Switch>("differentialPropagation", false);
     return true;
 }
 
@@ -60,8 +61,8 @@ bool Foam::XiModels::transport::readCoeffs(const dictionary& dict)
 Foam::XiModels::transport::transport
 (
     const dictionary& dict,
-    const psiuMulticomponentThermo& thermo,
-    const fluidThermoThermophysicalTransportModel& turbulence,
+    const ubRhoThermo& thermo,
+    const compressibleMomentumTransportModel& turbulence,
     const volScalarField& Su
 )
 :
@@ -107,44 +108,54 @@ void Foam::XiModels::transport::correct()
 
     const volScalarField G(R*(XiEq - 1)/XiEq);
 
-    const volScalarField& mgb = mesh.lookupObject<volScalarField>("mgb");
+    // const volScalarField& mgb = mesh.lookupObject<volScalarField>("mgb");
     const surfaceScalarField& phiSt =
         mesh.lookupObject<surfaceScalarField>("phiSt");
     const volScalarField& Db = mesh.lookupObject<volScalarField>("Db");
     const volVectorField& n = mesh.lookupObject<volVectorField>("n");
     const surfaceScalarField& nf = mesh.lookupObject<surfaceScalarField>("nf");
 
-    const surfaceScalarField phiXi
+    surfaceScalarField phiXi
     (
         "phiXi",
-        phiSt
-      + (
-          - fvc::interpolate(fvc::laplacian(Db, b_)/mgb)*nf
-          + fvc::interpolate(rho_)*fvc::interpolate(Su_*(1/Xi_ - Xi_))*nf
-        )
+        phiSt // - fvc::interpolate(fvc::laplacian(Db, b_)/mgb)*nf
     );
 
-    const surfaceScalarField& phi = turbulence_.alphaRhoPhi();
+    if (differentialPropagation_)
+    {
+        phiXi += fvc::interpolate(rho_)*fvc::interpolate(Su_*(1/Xi_ - Xi_))*nf;
+    }
 
-    const volVectorField& U(turbulence_.U());
+    const surfaceScalarField& phi = momentumTransport_.alphaRhoPhi();
 
-    const volVectorField Ut(U + Su_*Xi_*n);
-    const volScalarField sigmat((n & n)*fvc::div(Ut) - (n & fvc::grad(Ut) & n));
+    const volVectorField& U(momentumTransport_.U());
 
-    const volScalarField sigmas
-    (
-        ((n & n)*fvc::div(U) - (n & fvc::grad(U) & n))/Xi_
-      + (
-            (n & n)*fvc::div(Su_*n)
-          - (n & fvc::grad(Su_*n) & n)
-        )*(Xi_ + scalar(1))/(2*Xi_)
-    );
+    tmp<volScalarField> sigmat;
+    {
+        const volVectorField Ut("Ut", U + Su_*Xi_*n);
+        const volTensorField gradUt(fvc::grad(Ut));
+        sigmat = (n & n)*tr(gradUt) - (n & gradUt & n);
+    }
+
+    tmp<volScalarField> sigmas;
+    {
+        const volTensorField gradU(fvc::grad(U));
+        const volTensorField gradSun(fvc::grad(Su_*n));
+        const volScalarField nn(n & n);
+
+        sigmas =
+        (
+            (nn*tr(gradU) - (n & gradU & n))/Xi_
+          + (nn*tr(gradSun) - (n & gradSun & n))*(Xi_ + scalar(1))/(2*Xi_)
+        );
+    }
 
     fvScalarMatrix XiEqn
     (
         fvm::ddt(rho_, Xi_)
       + fvm::div(phi + phiXi, Xi_, "div(phiXi,Xi)")
       - fvm::Sp(fvc::div(phiXi), Xi_)
+      - fvc::laplacian(Db, Xi_)
      ==
         rho_*R
       - fvm::Sp(rho_*(R - G), Xi_)
@@ -153,7 +164,7 @@ void Foam::XiModels::transport::correct()
             rho_*max
             (
                 sigmat - sigmas,
-                dimensionedScalar(sigmat.dimensions(), 0)
+                dimensionedScalar(dimless/dimTime, 0)
             ),
             Xi_
         )

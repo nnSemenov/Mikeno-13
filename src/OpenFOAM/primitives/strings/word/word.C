@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2019 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,14 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "word.H"
-#include "debug.H"
-
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-const char* const Foam::word::typeName = "word";
-int Foam::word::debug(Foam::debug::debugSwitch(word::typeName, 0));
-const Foam::word Foam::word::null;
-
 
 // * * * * * * * * * * * * * * * IOstream Functions  * * * * * * * * * * * * //
 

@@ -168,16 +168,16 @@ void refineZone
 (
     polyMesh& mesh,
     const labelList& refCells,
-    autoPtr<hexRef8>& meshCutterPtr,
+    hexRef8* meshCutterPtr,
     const dictionary& refineDict,
     const dictionary& zoneDict
 )
 {
     const label nCells0 = mesh.globalData().nTotalCells();
 
-    if (meshCutterPtr.valid())
+    if (meshCutterPtr)
     {
-        hexRef8& meshCutter = meshCutterPtr();
+        hexRef8& meshCutter = *meshCutterPtr;
 
         // Maintain 2:1 ratio
         const labelList newCellsToRefine
@@ -200,9 +200,6 @@ void refineZone
 
         // Update mesh objects
         mesh.topoChange(map);
-
-        // Update hexRef8 cells/vertices
-        meshCutter.topoChange(map);
     }
     else
     {
@@ -253,7 +250,7 @@ int main(int argc, char *argv[])
     const bool refineAllCells = args.optionFound("all");
     #include "setNoOverwrite.H"
 
-    autoPtr<hexRef8> meshCutterPtr;
+    hexRef8* meshCutterPtr = nullptr;
 
     if (refineAllCells)
     {
@@ -333,8 +330,8 @@ int main(int argc, char *argv[])
         // Read existing point/cell level.
         if (hexRef8Refine)
         {
-            meshCutterPtr = new hexRef8(mesh);
-            hexRef8& meshCutter = meshCutterPtr();
+            meshCutterPtr = &hexRef8::New(mesh);
+            hexRef8& meshCutter = *meshCutterPtr;
 
             Info<< "Refining using hexRef8" << nl
                 << "    cellLevel :"
@@ -456,7 +453,7 @@ int main(int argc, char *argv[])
     {
         mesh.setInstance(oldInstance);
 
-        if (meshCutterPtr.valid())
+        if (meshCutterPtr)
         {
             meshCutterPtr->setInstance(oldInstance);
         }
@@ -469,13 +466,6 @@ int main(int argc, char *argv[])
     Info<< "Writing mesh to ";
     mesh.write();
     Info<< mesh.facesInstance()/mesh.meshDir() << endl;
-
-    if (meshCutterPtr.valid())
-    {
-        Info<< "Writing hexRef8 refinement level files to "
-            << mesh.facesInstance()/mesh.meshDir() << endl;
-        meshCutterPtr->write();
-    }
 
     Info<< "\nEnd\n" << endl;
 

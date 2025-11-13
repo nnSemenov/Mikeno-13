@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2022-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2022-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -306,7 +306,7 @@ void Foam::meshObjects::reorderPatches
 
 
 template<class Mesh, template<class> class MeshObjectType>
-void Foam::meshObjects::clear(objectRegistry& obr)
+void Foam::meshObjects::clearAll(objectRegistry& obr)
 {
     HashTable<MeshObjectType<Mesh>*> meshObjects
     (
@@ -323,6 +323,31 @@ void Foam::meshObjects::clear(objectRegistry& obr)
     forAllIter(typename HashTable<MeshObjectType<Mesh>*>, meshObjects, iter)
     {
         Delete<Mesh>(iter()->io_);
+    }
+}
+
+
+template<class Mesh, template<class> class MeshObjectType>
+void Foam::meshObjects::clear(objectRegistry& obr)
+{
+    HashTable<MeshObjectType<Mesh>*> meshObjects
+    (
+        obr.lookupClass<MeshObjectType<Mesh>>()
+    );
+
+    if (meshObjects::debug)
+    {
+        Pout<< "meshObjects::clear(objectRegistry&) :"
+            << " clearing " << Mesh::typeName
+            << " meshObjects for region " << obr.name() << endl;
+    }
+
+    forAllIter(typename HashTable<MeshObjectType<Mesh>*>, meshObjects, iter)
+    {
+        if (!isA<PermanentMeshObject<Mesh>>(*iter()))
+        {
+            Delete<Mesh>(iter()->io_);
+        }
     }
 }
 

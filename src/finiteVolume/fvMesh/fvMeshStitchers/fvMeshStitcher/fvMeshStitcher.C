@@ -1411,10 +1411,13 @@ void Foam::fvMeshStitcher::stabiliseOrigPatchFaces
         const label origPatchi = allOrigPatchIndices[i];
         const polyPatch& origPp = mesh_.boundaryMesh()[origPatchi];
 
+        const vectorField::subField origPpFaceAreas = origPp.faceAreas();
+        const pointField::subField origPpFaceCentres = origPp.faceCentres();
+
         forAll(origPp, origPatchFacei)
         {
-            const vector& a = origPp.faceAreas()[origPatchFacei];
-            const point& c = origPp.faceCentres()[origPatchFacei];
+            const vector& a = origPpFaceAreas[origPatchFacei];
+            const point& c = origPpFaceCentres[origPatchFacei];
 
             vector& Sf = SfBf[origPatchi][origPatchFacei];
             point& Cf = CfBf[origPatchi][origPatchFacei];
@@ -1834,17 +1837,19 @@ bool Foam::fvMeshStitcher::connectThis
             for (label i = 0; i <= mesh_.phi().nOldTimes(false); ++ i)
             {
                 const volScalarField::Internal vce(volumeConservationError(i));
+                const scalar gMinVce = gMin(vce);
                 const scalar gMaxVce = gMax(vce);
                 Info<< indent << "Cell min/average/max ";
                 for (label j = 0; j < i; ++ j) Info<< "old-";
                 Info<< (i ? "time " : "") << "volume conservation error = "
-                    << gMin(vce) << '/' << gAverage(vce) << '/' << gMaxVce
+                    << gMinVce << '/' << gAverage(vce) << '/' << gMaxVce
                     << endl;
-                if (gMaxVce > rootSmall)
+                if (- gMinVce > rootSmall || gMaxVce > rootSmall)
                 {
                     FatalErrorInFunction
-                        << "Maximum volume conservation error of " << gMaxVce
-                        << " is not tolerable" << exit(FatalError);
+                        << "Maximum volume conservation error of "
+                        << max(-gMinVce, gMaxVce) << " is not tolerable"
+                        << exit(FatalError);
                 }
             }
         }
@@ -2194,12 +2199,16 @@ Foam::tmp<Foam::DimensionedField<Foam::scalar, Foam::volMesh>>
 Foam::fvMeshStitcher::openness() const
 {
     return
-        mag(fvc::surfaceIntegrate(mesh_.Sf()))*mesh_.V()
-       /max
+        DimensionedField<scalar, volMesh>::New
         (
-            mag(fvc::surfaceSum(cmptMag(mesh_.Sf())))(),
-            (small*sqr(cbrt(mesh_.V())))()
-        )();
+            "openness",
+            mag(fvc::surfaceIntegrate(mesh_.Sf()))*mesh_.V()
+           /max
+            (
+                mag(fvc::surfaceSum(cmptMag(mesh_.Sf())))(),
+                (small*sqr(cbrt(mesh_.V())))()
+            )()
+        );
 }
 
 
@@ -2221,19 +2230,29 @@ Foam::fvMeshStitcher::volumeConservationError(const label n) const
     const volScalarField::Internal& V = n == 0 ? mesh_.V() : mesh_.V0();
     const volScalarField::Internal& V0 = n == 0 ? mesh_.V0() : mesh_.V00();
 
-    return fvc::surfaceIntegrate(phi*deltaT)() - (V - V0)/mesh_.V();
+    return
+        DimensionedField<scalar, volMesh>::New
+        (
+            "volumeConservationError" + word(n == 0 ? "" : "_0"),
+            fvc::surfaceIntegrate(phi*deltaT)() - (V - V0)/mesh_.V()
+        );
 }
 
 
 Foam::tmp<Foam::DimensionedField<Foam::scalar, Foam::volMesh>>
 Foam::fvMeshStitcher::projectedVolumeFraction() const
 {
-    return mag
-    (
-        fvc::surfaceIntegrate(mesh_.Sf() & mesh_.Cf())
-       /mesh_.nSolutionD()
-      - 1
-    );
+    return
+        DimensionedField<scalar, volMesh>::New
+        (
+            "projectedVolumeFraction",
+            mag
+            (
+                fvc::surfaceIntegrate(mesh_.Sf() & mesh_.Cf())
+               /mesh_.nSolutionD()
+              - 1
+            )
+        );
 }
 
 

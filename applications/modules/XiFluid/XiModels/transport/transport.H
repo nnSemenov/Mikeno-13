@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -79,6 +79,13 @@ class transport
         autoPtr<XiProfile> XiProfile_;
         autoPtr<XiGModel> XiGModel_;
 
+        //- Switch to include differential wrinkling propagation
+        //  Should not be included if the generation and removal rates
+        //  are obtained from a fit to experimental turbulent flame speed
+        //  correlation which would implicitly include this effect.
+        //  Defaults to off
+        Switch differentialPropagation_;
+
 
 protected:
 
@@ -98,8 +105,8 @@ public:
         transport
         (
             const dictionary& dict,
-            const psiuMulticomponentThermo& thermo,
-            const fluidThermoThermophysicalTransportModel& turbulence,
+            const ubRhoThermo& thermo,
+            const compressibleMomentumTransportModel& turbulence,
             const volScalarField& Su
         );
 
