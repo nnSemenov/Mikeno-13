@@ -38,7 +38,7 @@ include(cmake/3rdParty.cmake)
 
 include(cmake/process_options.cmake)
 
-
+include(cmake/process_Cver.cmake)
 include(cmake/lnInclude.cmake)
 
 # libraries that are installed to lib.
