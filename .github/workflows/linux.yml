@@ -23,7 +23,7 @@ jobs:
     - name: Install compiler
       run: |
         sudo apt update
-        sudo apt install --fix-missing gcc-14 clang clang++
+        sudo apt install --fix-missing gcc-14 clang
 
     - name: Install deps
       run: | 
