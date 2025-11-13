@@ -128,3 +128,6 @@ target_compile_definitions(${target_name} PRIVATE
 )
 
 set(FOAM_regular_executables "${FOAM_regular_executables};${target_name}" PARENT_SCOPE)
+
+add_subdirectory(ignition)
+set(FOAM_regular_libraries "${FOAM_regular_libraries}" PARENT_SCOPE)
