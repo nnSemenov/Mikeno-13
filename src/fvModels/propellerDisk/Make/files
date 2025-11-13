@@ -1,3 +1,0 @@
-propellerDisk.C
-
-LIB = $(FOAM_LIBBIN)/libpropellerDisk

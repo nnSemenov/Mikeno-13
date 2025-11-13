@@ -1,6 +1,0 @@
-forcesBase/forcesBase.C
-forces/forces.C
-movingForces/movingForces.C
-forceCoeffs/forceCoeffs.C
-
-LIB = $(FOAM_LIBBIN)/libforces

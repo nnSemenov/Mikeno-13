@@ -29,6 +29,7 @@ License
 #include "fvcDiv.H"
 #include "fvcGrad.H"
 #include "fvcVolumeIntegrate.H"
+#include "fvc.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //

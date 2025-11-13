@@ -1,0 +1,77 @@
+#!/bin/bash
+
+export WM_COMPILER=@WM_COMPILER@
+export WM_PRECISION_OPTION=@WM_PRECISION_OPTION@
+export WM_MPLIB=@WM_MPLIB@
+export WM_OPTIONS=@WM_OPTIONS@
+export WM_ARCH=@WM_ARCH@
+export WM_THIRD_PARTY=@WM_THIRD_PARTY@
+export WM_LABEL_SIZE=@WM_LABEL_SIZE@
+export WM_PROJECT=@WM_PROJECT@
+export WM_LABEL_OPTION=@WM_LABEL_OPTION@
+export WM_CC=@WM_CC@
+export WM_CFLAGS="@WM_CFLAGS@"
+export WM_LINK_LANGUAGE="@WM_LINK_LANGUAGE@"
+export WM_OSTYPE=@WM_OSTYPE@
+export WM_PROJECT_VERSION=@WM_PROJECT_VERSION@
+export WM_ARCH_OPTION=@WM_ARCH_OPTION@
+export WM_CXXFLAGS="@WM_CXXFLAGS@"
+export WM_LDFLAGS="@WM_LDFLAGS@"
+export WM_CXX=@WM_CXX@
+export WM_COMPILE_OPTION=@WM_COMPILE_OPTION@
+export WM_COMPILER_LIB_ARCH=@WM_COMPILER_LIB_ARCH@
+
+export FOAM_SETTINGS=@FOAM_SETTINGS@
+export FOAM_MPI=@FOAM_MPI@
+export FOAM_JOB_DIR=@FOAM_JOB_DIR@
+export FOAM_SIGFPE=@FOAM_SIGFPE@
+export FOAM_SETNAN=@FOAM_SETNAN@
+
+export SCOTCH_TYPE=@SCOTCH_TYPE@
+export METIS_TYPE=@METIS_TYPE@
+export PARMETIS_TYPE=@PARMETIS_TYPE@
+export ZOLTAN_TYPE=@ZOLTAN_TYPE@
+export ParaView_TYPE=@ParaView_TYPE@
+
+
+# shellcheck disable=SC2046
+cmake_install_prefix=$(dirname $(realpath "${BASH_SOURCE[0]}"))
+platforms_dir=$(dirname "$cmake_install_prefix")
+
+# shellcheck disable=SC2155
+export WM_PROJECT_DIR=$(dirname "$platforms_dir")
+
+export WM_DIR=$WM_PROJECT_DIR/wmake
+export WM_THIRD_PARTY_DIR=@WM_THIRD_PARTY_DIR@
+# shellcheck disable=SC2155
+export WM_PROJECT_INST_DIR=$(dirname "$WM_PROJECT_DIR")
+
+# shellcheck disable=SC2155
+export WM_PROJECT_USER_DIR=$HOME/$WM_PROJECT/$(whoami)-$WM_PROJECT_VERSION
+export FOAM_RUN=$WM_PROJECT_USER_DIR/run
+export FOAM_USER_APPBIN=$WM_PROJECT_USER_DIR/platforms/$WM_OPTIONS/bin
+export FOAM_USER_LIBBIN=$WM_PROJECT_USER_DIR/platforms/$WM_OPTIONS/lib
+#export FOAM_SITE_LIBBIN=@FOAM_SITE_LIBBIN@
+#export FOAM_SITE_APPBIN=@FOAM_SITE_APPBIN@
+export FOAM_APPBIN=$cmake_install_prefix/bin
+export FOAM_LIBBIN=$cmake_install_prefix/lib
+#export FOAM_EXT_LIBBIN=@FOAM_EXT_LIBBIN@
+
+
+export FOAM_INST_DIR=$WM_PROJECT_INST_DIR
+export FOAM_ETC=$WM_PROJECT_DIR/etc
+export FOAM_TUTORIALS=$WM_PROJECT_DIR/tutorials
+export FOAM_SRC=$WM_PROJECT_DIR/src
+export FOAM_APP=$WM_PROJECT_DIR/applications
+export FOAM_UTILITIES=$FOAM_APP/utilities
+export FOAM_SOLVERS=$FOAM_APP/solvers
+export FOAM_MODULES=$FOAM_APP/modules
+
+
+
+export PATH=$cmake_install_prefix/bin:$PATH
+export LD_LIBRARY_PATH=$FOAM_LIBBIN:$FOAM_LIBBIN/$FOAM_MPI:$FOAM_LIBBIN/dummy:$LD_LIBRARY_PATH
+export LIBRARY_PATH=$FOAM_LIBBIN:$FOAM_LIBBIN/$FOAM_MPI:$FOAM_LIBBIN/dummy:$LIBRARY_PATH
+
+unset cmake_install_prefix
+unset platforms_dir

@@ -1,0 +1,11 @@
+add_subdirectory(foamDataToFluent)
+add_subdirectory(foamToEnsight)
+add_subdirectory(foamToEnsightParts)
+add_subdirectory(foamToGMV)
+add_subdirectory(foamToTecplot360)
+add_subdirectory(foamToTetDualMesh)
+add_subdirectory(foamToVTK)
+add_subdirectory(smapToFoam)
+
+set(FOAM_regular_executables ${FOAM_regular_executables} PARENT_SCOPE)
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)

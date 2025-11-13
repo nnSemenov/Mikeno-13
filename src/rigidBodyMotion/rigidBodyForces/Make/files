@@ -1,3 +1,0 @@
-rigidBodyForces.C
-
-LIB = $(FOAM_LIBBIN)/librigidBodyForces

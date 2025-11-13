@@ -1,0 +1,16 @@
+add_subdirectory(thermophysicalTransportModel)
+
+add_subdirectory(fluid)
+add_subdirectory(solid)
+
+add_subdirectory(fluidThermo)
+add_subdirectory(fluidMulticomponentThermo)
+
+add_subdirectory(phaseFluidThermo)
+add_subdirectory(phaseFluidMulticomponentThermo)
+
+add_subdirectory(phaseSolid)
+
+add_subdirectory(coupledThermophysicalTransportModels)
+
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)

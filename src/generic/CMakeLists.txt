@@ -1,0 +1,9 @@
+
+add_subdirectory(genericPatches)
+add_subdirectory(genericFields)
+add_subdirectory(genericFvPatches)
+add_subdirectory(genericFvFields)
+add_subdirectory(genericLagrangianPatches)
+add_subdirectory(genericLagrangianFields)
+
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)

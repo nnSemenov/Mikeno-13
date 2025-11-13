@@ -1,0 +1,50 @@
+name: Build on Ubuntu
+
+on:
+  push:
+    branches: [ "feature/build-system-rewrite-cmake" ]
+  pull_request:
+    branches: [ "feature/build-system-rewrite-cmake" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install compiler
+      run: |
+        sudo apt update
+        sudo apt install --fix-missing build-essential cmake git ca-certificates gcc-14 clang-20
+
+    - name: Install deps
+      run: | 
+        sudo apt install --fix-missing flex libfl-dev libopenmpi-dev paraview-dev libscotch-dev libptscotch-dev libmetis-dev libparmetis-dev libtrilinos-zoltan-dev libboost-all-dev
+        
+#    - name: Install paraview and related deps
+#      run: sudo apt install --fix-missing paraview paraview-dev libvtk9-dev
+
+    - name: Configure CMake
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_INSTALL_PREFIX=./install -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build build --parallel
+
+    - name: Install
+      run: cmake --install build
+
+    - name: Test secondary development
+      run: | 
+        cd test/find_package
+        cmake -S . -B build -DCMAKE_PREFIX_PATH=../../platforms/linux64ClangDPInt32Debug
+        cmake --build build --parallel
+        

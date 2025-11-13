@@ -1,0 +1,36 @@
+add_subdirectory(movingMesh)
+add_subdirectory(functions)
+add_subdirectory(fluidSolver)
+add_subdirectory(incompressibleFluid)
+add_subdirectory(isothermalFluid)
+add_subdirectory(fluid)
+add_subdirectory(multicomponentFluid)
+add_subdirectory(porousMediaFluid)
+add_subdirectory(XiFluid)
+add_subdirectory(shockFluid)
+
+add_subdirectory(VoFSolver)
+add_subdirectory(twoPhaseSolver)
+add_subdirectory(twoPhaseVoFSolver)
+
+add_subdirectory(incompressibleVoF)
+add_subdirectory(compressibleVoF)
+
+add_subdirectory(multiphaseVoFSolver)
+add_subdirectory(incompressibleMultiphaseVoF)
+add_subdirectory(compressibleMultiphaseVoF)
+
+add_subdirectory(incompressibleDriftFlux)
+
+add_subdirectory(multiphaseEuler)
+
+add_subdirectory(incompressibleDenseParticleFluid)
+
+add_subdirectory(isothermalFilm)
+add_subdirectory(film)
+
+add_subdirectory(solid)
+add_subdirectory(solidDisplacement)
+
+set(FOAM_regular_libraries ${FOAM_regular_libraries} PARENT_SCOPE)
+set(FOAM_special_libraries ${FOAM_special_libraries} PARENT_SCOPE)

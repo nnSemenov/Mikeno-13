@@ -74,10 +74,9 @@ SourceFiles
 
 #include "decompositionMethod.H"
 
-extern "C"
-{
+//extern "C" {
     #include "parmetis.h"
-}
+//}
 
 namespace Foam
 {
