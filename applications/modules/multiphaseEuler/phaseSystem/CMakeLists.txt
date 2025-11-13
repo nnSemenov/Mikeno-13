@@ -188,6 +188,7 @@ target_link_libraries(${target_name} PRIVATE
     OpenFOAM
     OSspecific
 
+    finiteVolume
     sampling
     multicomponentThermophysicalModels
     saturationModels

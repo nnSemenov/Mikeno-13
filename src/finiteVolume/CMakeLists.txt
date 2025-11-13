@@ -293,6 +293,7 @@ target_sources(finiteVolume PRIVATE
     ${derivedFvPatchFields}/transonicEntrainmentPressure/transonicEntrainmentPressureFvPatchScalarField.C
     ${derivedFvPatchFields}/prghCyclicPressure/prghCyclicPressureFvPatchScalarField.C
     ${derivedFvPatchFields}/zeroFixedValue/zeroFixedValueFvPatchFields.C
+    ${derivedFvPatchFields}/meanInletOutlet/meanInletOutletFvPatchScalarField.C
 )
 
 set(fvsPatchFields fields/fvsPatchFields)
@@ -326,6 +327,7 @@ target_sources(finiteVolume PRIVATE
 
 set(derivedFvsPatchFields ${fvsPatchFields}/derived)
 target_sources(finiteVolume PRIVATE
+    ${derivedFvsPatchFields}/zeroFixedValue/zeroFixedValueFvsPatchFields.C
     ${derivedFvsPatchFields}/polyFaces/polyFacesFvsPatchLabelField.C
     ${derivedFvsPatchFields}/nonConformalPolyFaces/nonConformalPolyFacesFvsPatchLabelField.C
     ${derivedFvsPatchFields}/nonConformalMappedPolyFaces/nonConformalMappedPolyFacesFvsPatchLabelField.C
