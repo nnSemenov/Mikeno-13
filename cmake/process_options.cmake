@@ -11,6 +11,8 @@ target_compile_definitions(OpenFOAM_Defines INTERFACE
     WM_LABEL_SIZE=${WM_LABEL_SIZE}
 )
 
+set(WM_LABEL_OPTION Int${WM_LABEL_SIZE})
+
 set(valid_precision_option SP DP LP)
 if(NOT ${WM_PRECISION_OPTION} IN_LIST valid_precision_option)
     message(FATAL_ERROR "WM_PRECISION_OPTION = ${WM_PRECISION_OPTION}")
@@ -28,7 +30,8 @@ set(WM_CC ${CMAKE_C_COMPILER})
 set(WM_CXX ${CMAKE_CXX_COMPILER})
 set(WM_PROJECT ${PROJECT_NAME})
 set(WM_COMPILER_LIB_ARCH ${WM_ARCH_OPTION})
-set(WM_LINK_LANGUAGE ${CMAKE_CXX_LINK_EXECUTABLE})
+set(WM_LINK_LANGUAGE c++) #TODO: system independent setting
+set(WM_LDFLAGS -m64) #TODO: system independent setting
 set(WM_COMPILER_TYPE system)
 set(WM_PROJECT_VERSION ${PROJECT_VERSION})
 set(WM_DIR ${WM_PROJECT_DIR}/wmake)
@@ -57,15 +60,12 @@ else ()
     message(WARNING "Unknown CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}, WM_COMPILE_OPTION is set to Unknown")
 endif ()
 
-set(WM_OPTIONS "${WM_ARCH}${WM_COMPILER}${WM_PRECISION_OPTION}Int${WM_LABEL_SIZE}${WM_COMPILE_OPTION}")
+set(WM_OPTIONS "${WM_ARCH}${WM_COMPILER}${WM_PRECISION_OPTION}${WM_LABEL_OPTION}${WM_COMPILE_OPTION}")
 message(STATUS "WM_OPTIONS = ${WM_OPTIONS}")
 set(CMAKE_INSTALL_PREFIX ${WM_PROJECT_DIR}/platforms/${WM_OPTIONS})
 
-get_target_property(TEMP_CXXFlags OpenFOAM_Defines INTERFACE_COMPILE_OPTIONS)
-get_target_property(TEMP_CXXFeatures OpenFOAM_Defines INTERFACE_COMPILE_FEATURES)
+#get_target_property(TEMP_CXXFeatures OpenFOAM_Defines INTERFACE_COMPILE_FEATURES)
 # set(WM_CXXFLAGS "${TEMP_CXXFlags} -std=c++17")
-string(REPLACE ";" "\ " WM_CXXFLAGS "${TEMP_CXXFlags} -std=c++17")
-set(WM_CFLAGS ${WM_CXXFLAGS})
 
 ###### source env vars
 set(LIB_SRC "${WM_PROJECT_DIR}/src")
@@ -90,6 +90,16 @@ install(TARGETS OpenFOAM_Defines
     EXPORT MikenoTargets
 )
 set(FOAM_special_libraries "${FOAM_special_libraries};OpenFOAM_Defines")
+
+
+get_target_property(TEMP_CXXFlags OpenFOAM_Defines INTERFACE_COMPILE_OPTIONS)
+if(NOT TEMP_CXXFlags)
+    set(TEMP_CXXFlags "")
+endif ()
+
+string(REPLACE ";" "\ " WM_CXXFLAGS "${TEMP_CXXFlags} -m64 -fPIC -std=c++17") #TODO: Arch independent setting
+string(REPLACE "-std=c++" "-std=c" WM_CFLAGS "${WM_CXXFLAGS}")
+#set(WM_CFLAGS ${WM_CXXFLAGS})
 
 set(env_file ${CMAKE_BINARY_DIR}/FOAMenv.sh)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/FOAMenv.sh.in ${env_file} @ONLY)
