@@ -45,9 +45,13 @@ const Foam::word Foam::dynamicCode::codeTemplateEnvName
 
 const Foam::fileName Foam::dynamicCode::codeTemplateDirName
     = "codeTemplates/dynamicCode";
-
-const char* const Foam::dynamicCode::libTargetRoot =
-    "LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/lib";
+#ifndef WM_OPTIONS
+#error "WM_OPTIONS must be defined as macro, in compile command"
+#else
+const char* const wm_options_string = STR(WM_OPTIONS);
+#endif
+//const char* const Foam::dynamicCode::libTargetRoot =
+//    "LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/lib";
 
 const char* const Foam::dynamicCode::topDirName = "dynamicCode";
 
@@ -235,7 +239,7 @@ bool Foam::dynamicCode::createMakeFiles() const
         return false;
     }
 
-    const fileName dstFile(this->codePath()/"Make/files");
+    const fileName dstFile(this->codePath()/"CMakeLists.txt");
 
     // Create dir
     mkDir(dstFile.path());
@@ -251,14 +255,23 @@ bool Foam::dynamicCode::createMakeFiles() const
 
     writeCommentSHA1(os);
 
+    os<<"set(target_name "<<codeName_.c_str()<<")"<<nl;
+    //$(PWD)/../platforms/$(WM_OPTIONS)/lib/lib";
+    os<<"set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../platforms/"<<wm_options_string<<"/lib)"<<nl;
+
+    os<<"add_library(${target_name} SHARED "<<nl;
     // Write compile files
     forAll(compileFiles_, fileI)
     {
         os.writeQuoted(compileFiles_[fileI].name(), false) << nl;
     }
 
-    os  << nl
-        << libTargetRoot << codeName_.c_str() << nl;
+    os<<")"<<nl;
+
+    os<<"include(options.cmake)"<<nl;
+
+//    os  << nl
+//        << libTargetRoot << codeName_.c_str() << nl;
 
     return true;
 }
@@ -272,11 +285,10 @@ bool Foam::dynamicCode::createMakeOptions() const
         return false;
     }
 
-    const fileName dstFile(this->codePath()/"Make/options");
+    const fileName dstFile(this->codePath()/"options.cmake");
 
     // Create dir
     mkDir(dstFile.path());
-
     OFstream os(dstFile);
     // Info<< "Writing to " << dstFile << endl;
     if (!os.good())
@@ -287,6 +299,8 @@ bool Foam::dynamicCode::createMakeOptions() const
     }
 
     writeCommentSHA1(os);
+#warning TODO: parse makeOptions_ into cmake. This variable is modified in many places, \
+    the only way is to be conservative: Parse it into dictionary, then into cmake
     os.writeQuoted(makeOptions_, false) << nl;
 
     return true;

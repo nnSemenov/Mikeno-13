@@ -944,6 +944,7 @@ target_link_libraries(OpenFOAM PRIVATE
 
 target_compile_definitions(OpenFOAM PRIVATE
     LIB_NAME=libOpenFOAM.so
+    WM_OPTIONS=${WM_OPTIONS}
 )
 
 target_include_directories(OpenFOAM PUBLIC
