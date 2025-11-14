@@ -50,7 +50,7 @@ jobs:
 
     - name: Test dynamic linking
       run: |
-        cd test/platforms/linux64ClangDPInt32Debug
+        cd platforms/linux64ClangDPInt32Debug
         source FOAMenv.sh
         cmake "-Dsearch_dirs=./bin;./lib" -P ../../cmake/check_linking.cmake
         
