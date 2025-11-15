@@ -53,4 +53,12 @@ jobs:
         cd platforms/linux64ClangDPInt32Debug
         source FOAMenv.sh
         cmake "-Dsearch_dirs=./bin;./lib" -P ../../cmake/check_linking.cmake
-        
+
+    - name: Test expand dictionary
+      run: |
+        source platforms/linux64ClangDPInt32Debug/FOAMenv.sh
+        cd test/dictionary
+        foamDictionary -expand testDict
+        foamDictionary -expand testCalc
+        foamDictionary -expand testCalcNewton
+        foamDictionary -expand simpleBlockMeshDict
