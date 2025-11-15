@@ -940,6 +940,8 @@ target_link_libraries(OpenFOAM PRIVATE
     OSspecific
     Pstream_best
     ZLIB::ZLIB
+
+    wmakeParse
 )
 
 target_compile_definitions(OpenFOAM PRIVATE
