@@ -1,4 +1,4 @@
-
+cmake_minimum_required(VERSION 3.28)
 
 set(linking_tool "ldd" CACHE STRING "Tool for link examination")
 set(search_dirs "" CACHE PATH "Directories to be searched")
