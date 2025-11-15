@@ -17,9 +17,14 @@ int main() {
   }
 
   std::map<std::string,std::string> dict;
+  dict["FOAM_LIBBIN"]="<FOAM_LIBBIN>";
+  dict["LIB_SRC"]="<LIBSRC>";
+
   std::vector<std::string> files;
   try {
-    files = Foam::wmakeParse::parse_wmake_file(test_string,dict);
+    Foam::wmakeParse::wmake_parse_option option{};
+    option.when_nonexist_variable=Foam::wmakeParse::reference_nonexist_variable_behavior::throw_exception;
+    files = Foam::wmakeParse::parse_wmake_file(test_string,dict,option);
   }catch (const std::exception&e) {
     std::println(std::cerr,"Failed: {}",e.what());
 //    std::cerr<<"Failed: "<<e.what()<<std::endl;
