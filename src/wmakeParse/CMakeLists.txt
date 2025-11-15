@@ -2,8 +2,6 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(target_name wmakeParse)
 
-find_package(Boost REQUIRED)
-
 add_library(${target_name} SHARED
     parse_wmake.H
     parse_wmake.C
@@ -19,8 +17,6 @@ target_include_directories(${target_name} PRIVATE
 
 target_link_libraries(${target_name} PRIVATE
     OpenFOAM_Defines
-#    OpenFOAM
-#    OSspecific
 )
 
 target_compile_definitions(${target_name} PRIVATE

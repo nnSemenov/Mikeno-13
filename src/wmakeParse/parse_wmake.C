@@ -8,8 +8,10 @@
 #include <cassert>
 #include <optional>
 #include <exception>
+#include <cstdlib>
 #include <format>
-//#include <boost/algorithm/string.hpp>
+
+#include <unistd.h>
 
 #include "parse_wmake.H"
 
@@ -115,11 +117,11 @@ namespace Foam::wmakeParse {
       auto it = vars.find(var_name);
       const char* value = nullptr;
       if(it==vars.end()) { // non-existence variable
-        switch (option.when_nonexist_variable) {
-          case reference_nonexist_variable_behavior::empty_string:
+        switch (option.when_undefined_reference) {
+          case undefined_reference_behavior::empty_string:
             value="";
             break;
-          case reference_nonexist_variable_behavior::throw_exception:
+          case undefined_reference_behavior::throw_exception:
             throw std::runtime_error{std::format("Undefined reference to variable \"{}\"",var_name)};
         }
       } else{
@@ -135,7 +137,7 @@ namespace Foam::wmakeParse {
     return ret;
   }
 
-  std::vector<std::string> parse_wmake_file(std::string text, std::map<std::string,std::string>& parent_dict,
+  std::vector<std::string> parse_wmake_file(std::string_view text, std::map<std::string,std::string>& parent_dict,
                                             const wmake_parse_option&option) {
     std::vector<std::string> files;
     auto lines = filter_file_lines(text);
@@ -160,5 +162,33 @@ namespace Foam::wmakeParse {
       parent_dict.emplace(var_name,var_value);
     }
     return files;
+  }
+
+  [[maybe_unused]] std::map<std::string,std::string> get_environment_variables() noexcept {
+    std::map<std::string,std::string> vars;
+
+    for(size_t idx=0;;idx++) {
+      const char* expression_c_str=environ[idx];
+      if(expression_c_str== nullptr) {
+        break;
+      }
+      std::string_view expression{expression_c_str};
+      if(expression.empty()) {
+        break;
+      }
+      const size_t eq_loc=expression.find_first_of('=');
+      std::string var_name, value;
+      if(eq_loc==std::string_view::npos) {
+        value="";
+        var_name=expression;
+      }else {
+        var_name=expression.substr(0,eq_loc);
+        value=expression.substr(eq_loc+1,std::string_view ::npos);
+      }
+
+      vars.emplace(var_name,value);
+    }
+
+    return vars;
   }
 }

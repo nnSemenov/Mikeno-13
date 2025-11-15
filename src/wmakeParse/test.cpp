@@ -17,13 +17,14 @@ int main() {
   }
 
   std::map<std::string,std::string> dict;
+//  dict=Foam::wmakeParse::get_environment_variables();
   dict["FOAM_LIBBIN"]="<FOAM_LIBBIN>";
   dict["LIB_SRC"]="<LIBSRC>";
 
   std::vector<std::string> files;
   try {
     Foam::wmakeParse::wmake_parse_option option{};
-    option.when_nonexist_variable=Foam::wmakeParse::reference_nonexist_variable_behavior::throw_exception;
+    option.when_undefined_reference=Foam::wmakeParse::undefined_reference_behavior::throw_exception;
     files = Foam::wmakeParse::parse_wmake_file(test_string,dict,option);
   }catch (const std::exception&e) {
     std::println(std::cerr,"Failed: {}",e.what());
@@ -85,7 +86,7 @@ const char* const test_string="triSurfaceTools                       = triSurfac
                               "\n"
                               "EXE_INC = \\\n"
                               "    -I$(LIB_SRC)/fileFormats/lnInclude \\\n"
-                              "    -I$(LIB_SRC)/surfMesh/lnInclude\n"
+                              "    -I${LIB_SRC}/surfMesh/lnInclude\n"
                               "\n"
                               "LIB_LIBS = \\\n"
                               "    -lfileFormats \\\n"
