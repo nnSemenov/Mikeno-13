@@ -277,9 +277,6 @@ bool Foam::dynamicCode::createMakeFiles() const
 
     os<<"include(options.cmake)"<<nl;
 
-//    os  << nl
-//        << libTargetRoot << codeName_.c_str() << nl;
-
     return true;
 }
 
@@ -312,6 +309,15 @@ bool Foam::dynamicCode::createMakeOptions() const
     wmakeParse::wmake_parse_option option{};
     option.when_undefined_reference=wmakeParse::undefined_reference_behavior::throw_exception;
     wmakeParse::parse_wmake_file(makeOptions_,vars,option);
+
+    os<<"# Original value of makeOptions: \n# ";
+    for(char ch:makeOptions_) {
+      os<<ch;
+      if(ch=='\n') {
+        os<<"# ";
+      }
+    }
+    os<<nl<<nl;
 
     os<<"find_package(Mikeno CONFIG REQUIRED)"<<nl;
 

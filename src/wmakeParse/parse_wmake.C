@@ -103,8 +103,13 @@ namespace Foam::wmakeParse {
       }
 
       if(bracket==0) {
-        ret+='$';
-        ret+=seg;
+        const ptrdiff_t head_offset=seg.data()-raw.data();
+        if(head_offset<=0) { // Head of string ,somthing link EXE_INC = $(...)
+          ret+=seg;
+        }else { // Middle of string, like EXE_INC = $ENV_VAR   We don't know
+          ret+='$';
+          ret+=seg;
+        }
         continue;
       }
 

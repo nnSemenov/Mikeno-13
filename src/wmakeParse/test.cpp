@@ -7,6 +7,13 @@
 #include <print>
 
 extern const char* const test_string;
+[[maybe_unused]] const char* const test_string2="\n"
+                               " EXE_INC = -g \\\n"
+                               " -I$(LIB_SRC)/sampling/lnInclude\n"
+                               " \n"
+                               " LIB_LIBS = \\\n"
+                               "     -lOpenFOAM \\\n"
+                               " -lsampling";
 
 int main() {
 
@@ -44,6 +51,7 @@ int main() {
   std::cout<<std::endl;
   return 0;
 }
+
 
 const char* const test_string="triSurfaceTools                       = triSurface/triSurfaceTools\n"
                               "geometricSurfacePatch                 = triSurface/geometricSurfacePatch\n"
