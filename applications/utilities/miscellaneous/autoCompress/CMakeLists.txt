@@ -20,6 +20,8 @@ target_link_libraries(${target_name} PRIVATE
     genericFvFields
     lagrangian
     ZLIB::ZLIB
+
+    OpenMP::OpenMP_CXX
 )
 
 target_compile_definitions(${target_name} PRIVATE

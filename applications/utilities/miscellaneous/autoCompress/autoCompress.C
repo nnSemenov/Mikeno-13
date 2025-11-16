@@ -8,6 +8,11 @@
 #include <format>
 #include <cstdio>
 #include <expected>
+
+#include <omp.h>
+#include <mutex>
+#include <atomic>
+#include <thread>
 //#include <span>
 
 #include "Time.H"
@@ -19,17 +24,6 @@
 #include "volFields.H"
 #include "surfaceFields.H"
 #include "pointFields.H"
-//#include "cellIOList.H"
-//#include "IOobjectList.H"
-//#include "IOPtrList.H"
-//#include "cloud.H"
-//#include "labelIOField.H"
-//#include "scalarIOField.H"
-//#include "sphericalTensorIOField.H"
-//#include "symmTensorIOField.H"
-//#include "tensorIOField.H"
-//#include "labelFieldIOField.H"
-//#include "vectorFieldIOField.H"
 #include "Cloud.H"
 #include "passiveParticle.H"
 #include "fieldDictionary.H"
@@ -68,12 +62,13 @@ std::expected<compress_stat, std::string> compress_file(const stdfs::path &file,
                                                         const stdfs::path &dest,
                                                         int level,
                                                         bool keep_old,
-                                                        std::vector<uint8_t> &cache) noexcept;
+                                                        std::vector<uint8_t> &buf) noexcept;
 
 
 int main(int argc, char **argv) {
   using namespace Foam;
   argList::addOption("level", "0~9", "Compress level");
+  argList::addOption("j","0","Number of threads for compilation");
   argList::addBoolOption("follow-symlink", "Follow symbolic link when processing data files");
   argList::addBoolOption("list-class", "Print all compressible classes and exit");
   argList::addBoolOption("withZero", "include the '0/' dir in the times list");
@@ -151,24 +146,49 @@ int main(int argc, char **argv) {
   const bool compress_keep = args.optionFound("keep");
 
   const stdfs::path case_path = runTime.path().c_str();
-  std::vector<uint8_t> buffer;
+  int num_threads=args.optionLookupOrDefault<int>("j",1);
+  if(num_threads<=0) {
+    num_threads=std::thread::hardware_concurrency();
+  }
+  Info<<"Compressing with "<<num_threads<<" threads"<<endl;
+  omp_set_num_threads(num_threads);
+
+  // Parallel compression
+  std::mutex info_lock;
+  std::atomic_int error_num{0};
+#pragma omp parallel for schedule(runtime)
   for (const stdfs::path &src_file: compressible_files) {
+    thread_local std::vector<uint8_t> buffer;
+    if(error_num>0) {
+      continue;
+    }
+
     stdfs::path compressed = src_file;
     compressed += ".gz";
     const auto relative_path = stdfs::relative(src_file, case_path);
 
-    Info << std::format("Compressing {} ...", relative_path.string()).c_str();
     auto compress_opt = compress_file(src_file, compressed, compress_level, compress_keep, buffer);
     if (not compress_opt) {
-      Info << endl;
-      FatalErrorIn(args.executable()) << "Failure: " << compress_opt.error() << endl;
-      return 1;
+      error_num++;
+      FatalErrorIn(args.executable()) <<std::format("Compressing {} ... Failure: {}",
+                                                    relative_path.string(),compress_opt.error()) << endl;
+      continue;
     }
     auto &compress_info = compress_opt.value();
     const scalar ratio = 100 * scalar(compress_info.compressed_bytes) / scalar(compress_info.original_bytes);
-    Info << std::format("Finish, {} bytes => {} bytes, {:.2f}%",
-                        compress_info.original_bytes,
-                        compress_info.compressed_bytes, ratio).c_str() << endl;
+
+    {
+      std::lock_guard<std::mutex> lkgd{info_lock};
+      Info << std::format("Compressing {} ... Finish, {} bytes => {} bytes, {:.2f}%",
+                          relative_path.string(),
+                          compress_info.original_bytes,
+                          compress_info.compressed_bytes, ratio).c_str() << endl;
+    }
+  }
+
+  if(error_num>0) {
+    Info<<std::format("{} file(s) failed to be compressed. Exit with error",error_num.load());
+    return 1;
   }
 
   return 0;
@@ -282,7 +302,7 @@ std::expected<compress_stat, std::string> compress_file(const stdfs::path &file,
                                                         bool keep_old,
                                                         std::vector<uint8_t> &buf) noexcept {
   FILE *ifile = fopen64(file.c_str(), "rb+");
-  if (ifile == NULL) {
+  if (ifile == nullptr) {
     return std::unexpected{std::format("Failed to read file {}", file.string())};
   }
 
