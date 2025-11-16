@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@
+
 export WM_COMPILER=@WM_COMPILER@
 export WM_PRECISION_OPTION=@WM_PRECISION_OPTION@
 export WM_MPLIB=@WM_MPLIB@
@@ -35,8 +37,8 @@ export ParaView_TYPE=@ParaView_TYPE@
 
 
 # shellcheck disable=SC2046
-cmake_install_prefix=$(dirname $(realpath "${BASH_SOURCE[0]}"))
-platforms_dir=$(dirname "$cmake_install_prefix")
+MIKENO_BINARY_INSTALL_PREFIX=$(dirname $(realpath "${BASH_SOURCE[0]}"))
+platforms_dir=$(dirname "$MIKENO_BINARY_INSTALL_PREFIX")
 
 # shellcheck disable=SC2155
 export WM_PROJECT_DIR=$(dirname "$platforms_dir")
@@ -53,8 +55,8 @@ export FOAM_USER_APPBIN=$WM_PROJECT_USER_DIR/platforms/$WM_OPTIONS/bin
 export FOAM_USER_LIBBIN=$WM_PROJECT_USER_DIR/platforms/$WM_OPTIONS/lib
 #export FOAM_SITE_LIBBIN=@FOAM_SITE_LIBBIN@
 #export FOAM_SITE_APPBIN=@FOAM_SITE_APPBIN@
-export FOAM_APPBIN=$cmake_install_prefix/bin
-export FOAM_LIBBIN=$cmake_install_prefix/lib
+export FOAM_APPBIN=$MIKENO_BINARY_INSTALL_PREFIX/bin
+export FOAM_LIBBIN=$MIKENO_BINARY_INSTALL_PREFIX/lib
 #export FOAM_EXT_LIBBIN=@FOAM_EXT_LIBBIN@
 
 
@@ -62,15 +64,16 @@ export FOAM_INST_DIR=$WM_PROJECT_INST_DIR
 export FOAM_ETC=$WM_PROJECT_DIR/etc
 export FOAM_TUTORIALS=$WM_PROJECT_DIR/tutorials
 export FOAM_SRC=$WM_PROJECT_DIR/src
+export LIB_SRC=$FOAM_SRC
 export FOAM_APP=$WM_PROJECT_DIR/applications
 export FOAM_UTILITIES=$FOAM_APP/utilities
 export FOAM_SOLVERS=$FOAM_APP/solvers
 export FOAM_MODULES=$FOAM_APP/modules
 
 
-export PATH=$cmake_install_prefix/bin:$WM_PROJECT_DIR/bin:$WM_PROJECT_DIR/bin/tools:$WM_PROJECT_DIR/wmake:$WM_PROJECT_DIR/wmake/platforms/$WM_ARCH$WM_COMPILER:$PATH
+export PATH=$MIKENO_BINARY_INSTALL_PREFIX/bin:$WM_PROJECT_DIR/bin:$WM_PROJECT_DIR/bin/tools:$WM_PROJECT_DIR/wmake:$WM_PROJECT_DIR/wmake/platforms/$WM_ARCH$WM_COMPILER:$PATH
 export LD_LIBRARY_PATH=$FOAM_LIBBIN:$FOAM_LIBBIN/$FOAM_MPI:$FOAM_LIBBIN/dummy:$LD_LIBRARY_PATH
 export LIBRARY_PATH=$FOAM_LIBBIN:$FOAM_LIBBIN/$FOAM_MPI:$FOAM_LIBBIN/dummy:$LIBRARY_PATH
 
-unset cmake_install_prefix
-unset platforms_dir
+#unset MIKENO_BINARY_INSTALL_PREFIX
+#unset platforms_dir

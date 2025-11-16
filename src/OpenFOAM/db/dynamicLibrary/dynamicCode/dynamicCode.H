@@ -99,7 +99,7 @@ protected:
     // Static Data Members
 
         //- Root of the LIB target for Make/files
-        static const char* const libTargetRoot;
+//        static const char* const libTargetRoot;
 
         //- Top-level directory name for copy/compiling
         static const char* const topDirName;

@@ -32,6 +32,8 @@ License
 #include "etcFiles.H"
 #include "dictionary.H"
 
+#include "parse_wmake.H"
+
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 int Foam::dynamicCode::allowSystemOperations
@@ -45,9 +47,13 @@ const Foam::word Foam::dynamicCode::codeTemplateEnvName
 
 const Foam::fileName Foam::dynamicCode::codeTemplateDirName
     = "codeTemplates/dynamicCode";
-
-const char* const Foam::dynamicCode::libTargetRoot =
-    "LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/lib";
+#ifndef WM_OPTIONS
+#error "WM_OPTIONS must be defined as macro, in compile command"
+#else
+const char* const wm_options_string = STR(WM_OPTIONS);
+#endif
+//const char* const Foam::dynamicCode::libTargetRoot =
+//    "LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/lib";
 
 const char* const Foam::dynamicCode::topDirName = "dynamicCode";
 
@@ -235,7 +241,7 @@ bool Foam::dynamicCode::createMakeFiles() const
         return false;
     }
 
-    const fileName dstFile(this->codePath()/"Make/files");
+    const fileName dstFile(this->codePath()/"CMakeLists.txt");
 
     // Create dir
     mkDir(dstFile.path());
@@ -251,14 +257,25 @@ bool Foam::dynamicCode::createMakeFiles() const
 
     writeCommentSHA1(os);
 
+    os<<"cmake_minimum_required(VERSION 3.28)"<<nl;
+
+    os<<"project("<<codeName_.c_str()<<" LANGUAGES CXX)"<<nl;
+
+    os<<"set(target_name "<<codeName_.c_str()<<")"<<nl;
+    //$(PWD)/../platforms/$(WM_OPTIONS)/lib/lib";
+    os<<"set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../platforms/"<<wm_options_string<<"/lib)"<<nl;
+
+    os<<"add_library(${target_name} SHARED "<<nl;
     // Write compile files
     forAll(compileFiles_, fileI)
     {
+        os<<"    ";
         os.writeQuoted(compileFiles_[fileI].name(), false) << nl;
     }
 
-    os  << nl
-        << libTargetRoot << codeName_.c_str() << nl;
+    os<<")"<<nl;
+
+    os<<"include(options.cmake)"<<nl;
 
     return true;
 }
@@ -272,11 +289,10 @@ bool Foam::dynamicCode::createMakeOptions() const
         return false;
     }
 
-    const fileName dstFile(this->codePath()/"Make/options");
+    const fileName dstFile(this->codePath()/"options.cmake");
 
     // Create dir
     mkDir(dstFile.path());
-
     OFstream os(dstFile);
     // Info<< "Writing to " << dstFile << endl;
     if (!os.good())
@@ -287,7 +303,46 @@ bool Foam::dynamicCode::createMakeOptions() const
     }
 
     writeCommentSHA1(os);
-    os.writeQuoted(makeOptions_, false) << nl;
+
+    auto vars = wmakeParse::get_environment_variables();
+
+    wmakeParse::wmake_parse_option option{};
+    option.when_undefined_reference=wmakeParse::undefined_reference_behavior::throw_exception;
+    wmakeParse::parse_wmake_file(makeOptions_,vars,option);
+
+    os<<"# Original value of makeOptions: \n# ";
+    for(char ch:makeOptions_) {
+      os<<ch;
+      if(ch=='\n') {
+        os<<"# ";
+      }
+    }
+    os<<nl<<nl;
+
+    os<<"find_package(Mikeno CONFIG REQUIRED)"<<nl;
+
+    {
+        os<<"target_compile_options(${target_name} PRIVATE"<<nl;
+        auto it= vars.find("EXE_INC");
+        if(it not_eq vars.end()) {
+            os<<"    "<<it->second.c_str()<<nl;
+        }
+        os<<")"<<nl;
+    }
+
+    {
+        os<<"target_link_libraries(${target_name} PRIVATE"<<nl;
+        os<<"\n"
+            "    Mikeno::OpenFOAM_Defines\n"
+            "    Mikeno::OpenFOAM\n"
+            "    Mikeno::OSspecific\n\n";
+
+        auto it=vars.find("LIB_LIBS");
+        if(it not_eq vars.end()) {
+            os<<"    "<<it->second.c_str()<<nl;
+        }
+        os<<")"<<nl;
+    }
 
     return true;
 }
@@ -519,17 +574,34 @@ bool Foam::dynamicCode::copyOrCreateFiles(const bool verbose) const
 
 bool Foam::dynamicCode::wmakeLibso() const
 {
-    const Foam::string wmakeCmd("wmake -s libso " + this->codePath());
-    Info<< "Invoking " << wmakeCmd << endl;
-
-    if (Foam::system(wmakeCmd))
-    {
+    Foam::string configCmd("cmake");
+    configCmd+=" -S"+this->codePath();
+    configCmd+=" -B"+this->codePath()/"Make";
+    configCmd+=" -DCMAKE_C_COMPILER=$WM_CC";
+    configCmd+=" -DCMAKE_CXX_COMPILER=$WM_CXX";
+    configCmd+=" -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE";
+    configCmd+=" -DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX";
+    configCmd+=" --no-warn-unused-cli";
+#ifndef FULLDEBUG
+    configCmd+=" --log-level=ERROR";
+#endif
+    Info<< "Invoking " << configCmd << endl;
+    if (Foam::system(configCmd)) {
         return false;
     }
-    else
-    {
-        return true;
+
+    Foam::string buildCmd("cmake");
+    buildCmd+=" --build "+this->codePath()/"Make";
+#ifndef FULLDEBUG
+    buildCmd+=" --log-level=ERROR";
+#endif
+
+    Info<<"Invoking "<<buildCmd<<endl;
+    if(Foam::system(buildCmd)) {
+        return false;
     }
+
+    return true;
 }
 
 
