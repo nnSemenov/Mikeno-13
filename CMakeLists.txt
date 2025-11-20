@@ -33,6 +33,7 @@ set(FOAM_SIGFPE "" CACHE STRING "")
 set(FOAM_SETNAN "" CACHE STRING "")
 #export FOAM_SETNAN=
 
+option(MIKENO_UNIT_TEST "Enable unit test for Mikeno" ON)
 
 include(cmake/3rdParty.cmake)
 
