@@ -63,6 +63,7 @@ jobs:
         ./boundaryLayer/Allrun
         ./IO/Allrun
         ./chemistriy/Allrun
+        ./multiphaseEuler/Allrun
         
 
     - name: Run unit test
