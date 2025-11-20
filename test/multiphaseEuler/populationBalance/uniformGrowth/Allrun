@@ -72,7 +72,10 @@ EOF
 
 ! isTest "$@" && [ -n "$1" ] && mode=$1 || mode=all
 
-wmake uniformGrowth
+cmake -S uniformGrowth -B uniformGrowth/build  -DCMAKE_CXX_COMPILER=$WM_CXX -DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
+cmake --build uniformGrowth/build --parallel
+
+#wmake uniformGrowth
 
 runApplication zeroDimensionalMesh
 
