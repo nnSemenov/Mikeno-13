@@ -592,9 +592,6 @@ bool Foam::dynamicCode::wmakeLibso() const
 
     Foam::string buildCmd("cmake");
     buildCmd+=" --build "+this->codePath()/"Make";
-#ifndef FULLDEBUG
-    buildCmd+=" --log-level=ERROR";
-#endif
 
     Info<<"Invoking "<<buildCmd<<endl;
     if(Foam::system(buildCmd)) {

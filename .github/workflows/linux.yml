@@ -63,6 +63,12 @@ jobs:
         foamDictionary -expand testCalcNewton
         foamDictionary -expand simpleBlockMeshDict
 
+    - name: Prepare for unit test
+      run: |
+        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
+        cd tutorials/mesh/blockMesh/pipe
+        blockMesh
+
     - name: Run unit test
       run: |
         source platforms/linux64ClangDPInt32Release/FOAMenv.sh

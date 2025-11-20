@@ -49,3 +49,13 @@ FOAM_unit_test(SOURCES boundSphere/Test-boundSphere.C
     TEST_COMMAND_ARGS -nTests 1000 1000
 )
 FOAM_unit_test(SOURCES callback/Test-callback.C)
+FOAM_unit_test(SOURCES Circulator/Test-Circulator.C)
+FOAM_unit_test(SOURCES codeStream/Test-codeStream.C
+    TEST_COMMAND_ARGS ${CMAKE_CURRENT_SOURCE_DIR}/codeStream/codeStreamDict1
+)
+FOAM_unit_test(SOURCES CompactIOList/Test-CompactIOList.C
+    TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/mesh/blockMesh/pipe
+)
+FOAM_unit_test(SOURCES CompactListList/Test-CompactListList.C
+    TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/mesh/blockMesh/pipe
+)
