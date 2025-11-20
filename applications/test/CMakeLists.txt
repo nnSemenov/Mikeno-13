@@ -84,3 +84,5 @@ add_test(NAME Test-cubicEOS_mix_PR
     COMMAND Test-cubicEOS -eos PR
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cubicEOS/Mix
 )
+
+FOAM_unit_test(SOURCES cubicEqn/Test-cubicEqn.C)
