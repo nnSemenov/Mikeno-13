@@ -13,7 +13,6 @@
 #include <mutex>
 #include <atomic>
 #include <thread>
-//#include <span>
 
 #include "Time.H"
 #include "messageStream.H"
@@ -116,6 +115,7 @@ int main(int argc, char **argv) {
       volSymmTensorField::Internal::typeName,
       volTensorField::Internal::typeName,
 
+      "scalarField",
       "vectorField",
       "labelList",
       "faceList",
@@ -125,6 +125,8 @@ int main(int argc, char **argv) {
       "cellLabels",
       "pointLabels",
       "faceCompactList",
+      "cellZoneList",
+
   };
 
   {
@@ -148,7 +150,7 @@ int main(int argc, char **argv) {
   const stdfs::path case_path = runTime.path().c_str();
   int num_threads=args.optionLookupOrDefault<int>("j",1);
   if(num_threads<=0) {
-    num_threads=std::thread::hardware_concurrency();
+    num_threads=static_cast<int>(std::thread::hardware_concurrency());
   }
   Info<<"Compressing with "<<num_threads<<" threads"<<endl;
   omp_set_num_threads(num_threads);
@@ -156,7 +158,8 @@ int main(int argc, char **argv) {
   // Parallel compression
   std::mutex info_lock;
   std::atomic_int error_num{0};
-#pragma omp parallel for schedule(runtime)
+#pragma omp parallel for schedule(runtime) default(none) \
+  shared(compressible_files,compress_level,error_num,case_path,info_lock,Info,args,FatalError,compress_keep)
   for (const stdfs::path &src_file: compressible_files) {
     thread_local std::vector<uint8_t> buffer;
     if(error_num>0) {
