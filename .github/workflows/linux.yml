@@ -7,8 +7,8 @@ on:
     branches: [ "master" ]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+  # Customize the CMake build type here (Release, Release, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
 
 jobs:
   build:
@@ -45,20 +45,26 @@ jobs:
     - name: Test secondary development
       run: | 
         cd test/find_package
-        cmake -S . -B build -DCMAKE_PREFIX_PATH=../../platforms/linux64ClangDPInt32Debug
+        cmake -S . -B build -DCMAKE_PREFIX_PATH=../../platforms/linux64ClangDPInt32Release
         cmake --build build --parallel
 
     - name: Test dynamic linking
       run: |
-        cd platforms/linux64ClangDPInt32Debug
+        cd platforms/linux64ClangDPInt32Release
         source FOAMenv.sh
         cmake "-Dsearch_dirs=./bin;./lib" -P ../../cmake/check_linking.cmake
 
     - name: Test expand dictionary
       run: |
-        source platforms/linux64ClangDPInt32Debug/FOAMenv.sh
+        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
         cd test/dictionary
         foamDictionary -expand testDict
         foamDictionary -expand testCalc
         foamDictionary -expand testCalcNewton
         foamDictionary -expand simpleBlockMeshDict
+
+    - name: Run unit test
+      run: |
+        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
+        cd build
+        ctest 
