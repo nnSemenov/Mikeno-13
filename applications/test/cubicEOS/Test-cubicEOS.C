@@ -3,7 +3,7 @@
 
 #include "fluidThermo.H"
 #include "fluidMulticomponentThermo.H"
-#include "compressibleMomentumTransportModel.H"
+//#include "compressibleMomentumTransportModel.H"
 
 #include "specie.H"
 

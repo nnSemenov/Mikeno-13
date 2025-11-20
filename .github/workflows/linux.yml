@@ -68,6 +68,10 @@ jobs:
         source platforms/linux64ClangDPInt32Release/FOAMenv.sh
         cd tutorials/mesh/blockMesh/pipe
         blockMesh
+        cd $FOAM_APP/test/cubicEOS/pure
+        blockMesh
+        cd $FOAM_APP/test/cubicEOS/Mix
+        blockMesh
 
     - name: Run unit test
       run: |
