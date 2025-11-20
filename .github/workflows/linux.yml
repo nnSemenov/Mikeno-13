@@ -43,7 +43,8 @@ jobs:
       run: cmake --install build
 
     - name: Test secondary development
-      run: | 
+      run: |
+        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
         cd test/find_package
         cmake -S . -B build -DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_CXX_COMPILER=$WM_CXX
         cmake --build build --parallel
