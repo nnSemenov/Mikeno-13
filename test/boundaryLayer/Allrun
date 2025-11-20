@@ -1,0 +1,10 @@
+#!/bin/sh
+# shellcheck disable=SC3028
+# shellcheck disable=SC2046
+# shellcheck disable=SC3054
+cur_dir=$(dirname $(realpath "${BASH_SOURCE[0]}"))
+
+"$cur_dir/boundaryLaunderSharma/Allrun"
+"$cur_dir/boundaryNonNewtonian/Allrun"
+"$cur_dir/boundaryWallFunctions/Allrun"
+"$cur_dir/boundaryWallFunctionsProfile/Allrun"
