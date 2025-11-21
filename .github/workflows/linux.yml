@@ -44,20 +44,20 @@ jobs:
 
     - name: Test secondary development
       run: |
-        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
+        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
         cd test/find_package
         cmake -S . -B build -DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_CXX_COMPILER=$WM_CXX
         cmake --build build --parallel
 
     - name: Test dynamic linking
       run: |
-        cd platforms/linux64ClangDPInt32Release
+        cd platforms/linux64ClangDPInt32Opt
         source FOAMenv.sh
         cmake "-Dsearch_dirs=./bin;./lib" -P ../../cmake/check_linking.cmake
 
     - name: Run tests
       run: |
-        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
+        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
         cd test
         ./dictionary/Allrun
         ./fvMeshTools/Allrun
@@ -69,6 +69,6 @@ jobs:
 
     - name: Run unit test
       run: |
-        source platforms/linux64ClangDPInt32Release/FOAMenv.sh
+        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
         cd build
         ctest 
