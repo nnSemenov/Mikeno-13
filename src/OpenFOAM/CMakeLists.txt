@@ -236,6 +236,7 @@ target_sources(OpenFOAM PRIVATE
 set(Tstreams ${Streams}/Tstreams)
 target_sources(OpenFOAM PRIVATE
     ${Tstreams}/ITstream.C
+    ${Tstreams}/OTstream.C
 )
 
 set(StringStreams ${Streams}/StringStreams)
@@ -291,11 +292,12 @@ target_sources(OpenFOAM PRIVATE
 
 set(functionEntries ${dictionary}/functionEntries)
 target_sources(OpenFOAM PRIVATE
+    ${functionEntries}/functionEntry/functionEntry.C
+    ${functionEntries}/dummyEntry/dummyEntry.C
     ${functionEntries}/negEntry/negEntry.C
     ${functionEntries}/calcIncludeEntry/calcIncludeEntry.C
     ${functionEntries}/calcEntry/calcEntry.C
     ${functionEntries}/codeStream/codeStream.C
-    ${functionEntries}/functionEntry/functionEntry.C
     ${functionEntries}/includeEntry/includeEntry.C
     ${functionEntries}/includeEtcEntry/includeEtcEntry.C
     ${functionEntries}/includeFuncEntry/includeFuncEntry.C
@@ -304,6 +306,9 @@ target_sources(OpenFOAM PRIVATE
     ${functionEntries}/removeEntry/removeEntry.C
     ${functionEntries}/ifeqEntry/ifeqEntry.C
     ${functionEntries}/ifEntry/ifEntry.C
+    ${functionEntries}/elseEntry/elseEntry.C
+    ${functionEntries}/elifEntry/elifEntry.C
+    ${functionEntries}/endifEntry/endifEntry.C
 )
 
 set(IOdictionary db/IOobjects/IOdictionary)
