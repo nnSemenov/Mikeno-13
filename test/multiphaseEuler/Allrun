@@ -3,8 +3,8 @@
 # shellcheck disable=SC3028 disable=SC3054
 cur_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 
-"$cur_dir"/heatTransferLimitedPhaseChange/waterEvaporation/Allrun
-"$cur_dir"/massDiffusionLimitedPhaseChange/waterEvaporation/Allrun
-"$cur_dir"/massDiffusionLimitedPhaseChange/waterAndIsopropanolEvaporation/Allrun
+"$cur_dir/heatTransferLimitedPhaseChange/waterEvaporation/Allrun"
+"$cur_dir/massDiffusionLimitedPhaseChange/waterEvaporation/Allrun"
+"$cur_dir/massDiffusionLimitedPhaseChange/waterAndIsopropanolEvaporation/Allrun"
 
-"$cur_dir"/populationBalance/Allrun
+"$cur_dir/populationBalance/Allrun"
