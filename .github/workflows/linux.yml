@@ -45,7 +45,7 @@ jobs:
     - name: Archive
       run: |
         source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
-        7z a -mx=9 -mmt=0 -snl -sse platform.7z 'platforms/$WM_OPTIONS'
+        7z a -mx=9 -mmt=0 -snl -sse platform.7z platforms
 #        7z a -mx=9 -mmt=0 -xr'!build' -xr'!.git' -xr'!.github' -xr'!idea' -xr'!.vscode' -snl -sse linux64ClangDPInt32Opt.7z
 
     - name: Upload archive
