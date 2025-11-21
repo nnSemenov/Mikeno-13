@@ -10,3 +10,8 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     -ftemplate-depth-256
 
 )
+
+list(APPEND Mikeno_fp_strict_option
+    -frounding-math
+    -ftrapping-math
+)

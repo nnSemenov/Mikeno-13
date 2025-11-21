@@ -23,6 +23,8 @@ target_compile_definitions(OpenFOAM_Defines INTERFACE
     NoRepository
     WM_${WM_PRECISION_OPTION}
 )
+# Options like -ffp-exception-behavior=maytrap
+set(Mikeno_fp_strict_option )
 
 ####### wmake env vars
 set(WM_PROJECT_DIR ${PROJECT_SOURCE_DIR})
