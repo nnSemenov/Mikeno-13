@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2016-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "includeFuncEntry.H"
-#include "addToMemberFunctionSelectionTable.H"
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -32,15 +32,8 @@ namespace Foam
 {
 namespace functionEntries
 {
-    defineTypeNameAndDebug(includeFuncEntry, 0);
-
-    addToMemberFunctionSelectionTable
-    (
-        functionEntry,
-        includeFuncEntry,
-        execute,
-        dictionaryIstream
-    );
+    defineFunctionTypeNameAndDebug(includeFuncEntry, 0);
+    addToRunTimeSelectionTable(functionEntry, includeFuncEntry, dictionary);
 }
 }
 
@@ -58,22 +51,52 @@ Foam::functionEntries::includeFuncEntry::functionObjectTemplatePath
 );
 
 
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::functionEntries::includeFuncEntry::includeFuncEntry
+(
+    const functionName& functionType,
+    const label lineNumber,
+    const dictionary& parentDict,
+    Istream& is
+)
+:
+    functionEntry
+    (
+        functionType,
+        lineNumber,
+        parentDict,
+        is,
+        readFuncNameArgList(functionType, is)
+    )
+{}
+
+
+Foam::functionEntries::includeFuncEntry::includeFuncEntry
+(
+    const label lineNumber,
+    const dictionary& parentDict,
+    Istream& is
+)
+:
+    includeFuncEntry(typeName, lineNumber, parentDict, is)
+{}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::includeFuncEntry::execute
 (
-    dictionary& parentDict,
+    dictionary& contextDict,
     Istream& is
 )
 {
-    // Read line containing the function name and the optional arguments
-    const Tuple2<string, label> fNameArgs(readFuncNameArgs(is));
-
     return readConfigFile
     (
         "function",
-        fNameArgs,
-        parentDict,
+        // Read line containing the function name and the optional arguments
+        funcNameArgs(),
+        contextDict,
         functionObjectDictPath,
         "system"
     );

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -46,9 +46,8 @@ SourceFiles
 #ifndef functionEntry_H
 #define functionEntry_H
 
-#include "word.H"
-#include "memberFunctionSelectionTables.H"
 #include "primitiveEntry.H"
+#include "memberFunctionSelectionTables.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -67,72 +66,145 @@ class functionEntry
 {
     // Private Member Functions
 
-        //- Read line as word token
-        static token readLine(Istream& is);
+        //- Read the rest of the argument list following the part attached
+        // to the function name
+        void readRestOfArgs(string& fNameArgs, Istream& is) const;
 
 
 protected:
 
-        //- Read the function name and optional argument list
-        //  and return as a string.
-        //  The optional argument list can be on one or more lines.
-        static Tuple2<string, label> readFuncNameArgs(Istream& is);
+    // Constructors
 
-        //- Insert the given string in a sub-dict context
-        static bool insert
+        //- Construct from function type and parent dictionary
+        functionEntry
         (
-            dictionary& parentDict,
-            const string&
+            const functionName&,
+            const label lineNumber,
+            const dictionary&
         );
 
-        //- Insert the given string in a primitiveEntry context
+        //- Construct from function type, parent dictionary and a token
+        functionEntry
+        (
+            const functionName&,
+            const label lineNumber,
+            const dictionary&,
+            const Istream& is,
+            const token&
+        );
+
+        //- Construct from function type, parent dictionary and tokenList
+        functionEntry
+        (
+            const functionName&,
+            const label lineNumber,
+            const dictionary&,
+            const Istream& is,
+            const tokenList&
+        );
+
+        //- Copy construct
+        functionEntry(const functionEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const = 0;
+
+
+    // Protected member functions
+
+        tokenList readArgList
+        (
+            const functionName& functionType,
+            Istream& is,
+            const bool optional = false
+        ) const;
+
+        //- Read the function name and optional argument list
+        //  The argument list can be on one or more lines.
+        tokenList readFuncNameArgList
+        (
+            const functionName& functionType,
+            Istream& is
+        ) const;
+
+        //- Read the filen name and optional argument list
+        //  The argument list can be on one or more lines.
+        tokenList readFileNameArgList
+        (
+            const functionName& functionType,
+            Istream& is
+        ) const;
+
+        //- Read entry starting from token t and insert into contextDict
         static bool insert
         (
             const dictionary& parentDict,
-            primitiveEntry& thisEntry,
+            dictionary& contextDict,
+            const token& t,
+            Istream& is
+        );
+
+        //- Insert token t into contextEntry, expanding as required
+        //  which may read subsequent tokens from Istream
+        static bool insert
+        (
+            const dictionary& parentDict,
+            primitiveEntry& contextEntry,
+            const token& t,
+            Istream& is
+        );
+
+        //- Read entry from the given string and insert into contextDict
+        static bool insert
+        (
+            dictionary& contextDict,
+            const string&
+        );
+
+        //- Read tokens from the given string and insert into contextEntry
+        static bool insert
+        (
+            const dictionary& parentDict,
+            primitiveEntry& contextEntry,
             const string&
         );
 
 
 public:
 
-    // Constructors
+    FunctionTypeName("functionEntry");
 
-        //- Construct from keyword, parent dictionary and Istream
-        functionEntry(const word&, const dictionary&, Istream&);
+    // Declare run-time constructor selection tables
 
-        //- Copy construct
-        functionEntry(const functionEntry&) = default;
+        declareRunTimeSelectionTable
+        (
+            autoPtr,
+            functionEntry,
+            dictionary,
+            (
+                const label lineNumber,
+                const dictionary& parentDict,
+                Istream& is
+            ),
+            (lineNumber, parentDict, is)
+        );
 
-        //- Clone
-        autoPtr<entry> clone(const dictionary&) const
-        {
-            return autoPtr<entry>(new functionEntry(*this));
-        }
+
+    // Selectors
+
+        //- Construct from Istream and insert into dictionary
+        static autoPtr<functionEntry> New
+        (
+            const keyType& functionName,
+            const dictionary& parentDict,
+            Istream& is
+        );
 
 
     // Member Function Selectors
 
-        declareMemberFunctionSelectionTable
-        (
-            bool,
-            functionEntry,
-            execute,
-            dictionaryIstream,
-            (
-                dictionary& parentDict,
-                Istream& is
-            ),
-            (parentDict, is)
-        );
-
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute
-        (
-            const word& functionName,
-            dictionary& parentDict,
-            Istream&
-        );
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream& is) = 0;
 
         declareMemberFunctionSelectionTable
         (
@@ -141,19 +213,19 @@ public:
             execute,
             primitiveEntryIstream,
             (
-                const dictionary& parentDict,
-                primitiveEntry& entry,
+                const dictionary& contextDict,
+                primitiveEntry& contextEntry,
                 Istream& is
             ),
-            (parentDict, entry, is)
+            (contextDict, entry, is)
         );
 
-        //- Execute the functionEntry in a primitiveEntry context
+        //- Expand the functionEntry into the contextEntry
         static bool execute
         (
             const word& functionName,
-            const dictionary& parentDict,
-            primitiveEntry&,
+            const dictionary& contextDict,
+            primitiveEntry& contextEntry,
             Istream&
         );
 

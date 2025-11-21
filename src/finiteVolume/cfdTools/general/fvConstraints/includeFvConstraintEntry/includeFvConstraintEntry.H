@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2023-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -73,7 +73,7 @@ SourceFiles
 #ifndef includeFvConstraintEntry_H
 #define includeFvConstraintEntry_H
 
-#include "functionEntry.H"
+#include "includeFuncEntry.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -88,13 +88,33 @@ namespace functionEntries
 
 class includeFvConstraintEntry
 :
-    public functionEntry
+    public includeFuncEntry
 {
 
 public:
 
     //- Runtime type information
-    ClassName("includeConstraint");
+    FunctionTypeName("#includeConstraint");
+
+
+    // Constructors
+
+        //- Construct from line number, dictionary and Istream
+        includeFvConstraintEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        includeFvConstraintEntry(const includeFvConstraintEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new includeFvConstraintEntry(*this));
+        }
 
 
     // Static Data Members
@@ -106,8 +126,8 @@ public:
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream&);
 };
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2019 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -68,6 +68,8 @@ class keyType
 :
     public variable
 {
+public:
+
     //- Enumeration of the keyword types
     enum type
     {
@@ -78,6 +80,8 @@ class keyType
         PATTERN
     };
 
+
+private:
 
     // Private Data
 
@@ -105,13 +109,13 @@ public:
         inline keyType(const word&);
 
         //- Construct as functionName
-        inline explicit keyType(const functionName&);
+        inline keyType(const functionName&);
 
         //- Construct as variable
-        inline explicit keyType(const variable&);
+        inline keyType(const variable&);
 
         //- Construct as pattern
-        inline explicit keyType(const string&);
+        inline keyType(const string&);
 
         //- Construct as word from character array.
         inline keyType(const char*);
@@ -124,6 +128,11 @@ public:
 
 
     // Member Functions
+
+        inline type Type() const
+        {
+            return type_;
+        }
 
         //- Return true if the type has not been defined
         inline bool isUndefined() const;

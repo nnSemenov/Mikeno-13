@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,55 +24,108 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "removeEntry.H"
-#include "dictionary.H"
 #include "stringListOps.H"
-#include "IStringStream.H"
-#include "OStringStream.H"
-#include "addToMemberFunctionSelectionTable.H"
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-const Foam::word Foam::functionEntries::removeEntry::typeName
-(
-    Foam::functionEntries::removeEntry::typeName_()
-);
-
-// Don't lookup the debug switch here as the debug switch dictionary
-// might include removeEntry
-int Foam::functionEntries::removeEntry::debug(0);
 
 namespace Foam
 {
 namespace functionEntries
 {
-    addToMemberFunctionSelectionTable
+    defineFunctionTypeNameAndDebug(removeEntry, 0);
+    addToRunTimeSelectionTable(functionEntry, removeEntry, dictionary);
+}
+}
+
+
+// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+
+Foam::tokenList Foam::functionEntries::removeEntry::readArgOrList
+(
+    const functionName& functionType,
+    Istream& is
+) const
+{
+    tokenList argList;
+
+    // Read the next token to check for '('
+    // in case the optional arguments start on the next line
+    token currToken(is);
+
+    if
     (
-        functionEntry,
-        removeEntry,
-        execute,
-        dictionaryIstream
-    );
+        currToken.isPunctuation()
+     && currToken.pToken() == token::BEGIN_LIST
+    )
+    {
+        do
+        {
+            argList.append(currToken);
+        }
+        while
+        (
+            !(currToken == token::END_LIST)
+         && !is.read(currToken).bad()
+         && currToken.good()
+        );
+
+        if
+        (
+            !currToken.isPunctuation()
+         || currToken.pToken() != token::END_LIST
+        )
+        {
+            FatalIOErrorInFunction(is)
+                << "Unclosed argument list " << currToken
+                << " in functionEntry " << functionType
+                << exit(FatalIOError);
+        }
+    }
+    else
+    {
+        argList.append(currToken);
+    }
+
+    return argList;
 }
-}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::functionEntries::removeEntry::removeEntry
+(
+    const label lineNumber,
+    const dictionary& parentDict,
+    Istream& is
+)
+:
+    functionEntry
+    (
+        typeName,
+        lineNumber,
+        parentDict,
+        is,
+        readArgOrList(typeName, is)
+    ),
+    patterns_(readList<wordRe>(stream()))
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::removeEntry::execute
 (
-    dictionary& parentDict,
+    dictionary& contextDict,
     Istream& is
 )
 {
-    const wordList dictKeys = parentDict.toc();
+    const wordList dictKeys = contextDict.toc();
+    const labelList indices = findStrings(patterns_, dictKeys);
 
-    const wordReList patterns = readList<wordRe>(is);
-
-    const labelList indices = findStrings(patterns, dictKeys);
-
-    forAll(indices, indexI)
+    forAll(indices, i)
     {
-        parentDict.remove(dictKeys[indices[indexI]]);
+        contextDict.remove(dictKeys[indices[i]]);
     }
 
     return true;

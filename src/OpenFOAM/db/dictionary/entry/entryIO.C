@@ -100,6 +100,8 @@ bool Foam::entry::getKeyword
 }
 
 
+// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
+
 bool Foam::entry::New(dictionary& parentDict, Istream& is)
 {
     is.fatalCheck("entry::New(const dictionary& parentDict, Istream&)");
@@ -150,26 +152,21 @@ bool Foam::entry::New(dictionary& parentDict, Istream& is)
     {
         if (keyword.isFunctionName())      // ... Function entry
         {
-            const word functionName = keyword(1, keyword.size() - 1);
+            autoPtr<functionEntry> fe
+            (
+                functionEntry::New(keyword, parentDict, is)
+            );
 
             if (disableFunctionEntries)
             {
-                bool success = parentDict.add
-                (
-                    new functionEntry
-                    (
-                        keyword,
-                        parentDict,
-                        is
-                    ),
-                    false
-                );
-
-                return success;
+                // Add the unexpanded functionEntry to the dictionary
+                // for future processing
+                return parentDict.add(fe.ptr(), false);
             }
             else
             {
-                return functionEntry::execute(functionName, parentDict, is);
+                // Expand the functionEntry
+                return fe->execute(parentDict, is);
             }
         }
         else if

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2016-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -82,11 +82,63 @@ class includeFuncEntry
 :
     public functionEntry
 {
+protected:
+
+        //- Return the function name + arguments string
+        //  for processing by readConfigFile
+        Tuple2<string, label> funcNameArgs() const
+        {
+            Tuple2<string, label> fNameArgs
+            (
+                operator[](0).wordToken(),
+                operator[](0).lineNumber()
+            );
+
+            if (size() > 1)
+            {
+                fNameArgs.first() +=
+                    char(operator[](1).pToken())
+                  + operator[](2).stringToken()
+                  + char(operator[](3).pToken());
+            }
+
+            return fNameArgs;
+        }
+
 
 public:
 
     //- Runtime type information
-    ClassName("includeFunc");
+    FunctionTypeName("#includeFunc");
+
+
+    // Constructors
+
+        //- Construct from functionType, dictionary and Istream
+        includeFuncEntry
+        (
+            const functionName& functionType,
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Construct from line number, dictionary and Istream
+        includeFuncEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        includeFuncEntry(const includeFuncEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new includeFuncEntry(*this));
+        }
 
 
     // Static Data Members
@@ -102,8 +154,8 @@ public:
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream&);
 };
 
 

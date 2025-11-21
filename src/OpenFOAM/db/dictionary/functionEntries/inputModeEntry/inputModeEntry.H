@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -80,28 +80,33 @@ class inputModeEntry
         static inputMode mode_;
 
 
-    // Private Member Functions
-
-        //- Read the mode as a word and set enum appropriately
-        static void setMode(Istream&);
-
-
 public:
 
     //- Runtime type information
-    ClassName("inputMode");
+    FunctionTypeName("#inputMode");
 
 
     // Constructors
 
-        //- Disallow default bitwise copy construction
-        inputModeEntry(const inputModeEntry&) = delete;
+        //- Construct from line number, dictionary and Istream
+        inputModeEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        inputModeEntry(const inputModeEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new inputModeEntry(*this));
+        }
 
 
     // Member Functions
-
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
 
         //- Reset the inputMode to %default (ie, %merge)
         static void clear();
@@ -117,6 +122,9 @@ public:
 
         //- Return true if the inputMode is %error
         static bool error();
+
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream&);
 
 
     // Member Operators

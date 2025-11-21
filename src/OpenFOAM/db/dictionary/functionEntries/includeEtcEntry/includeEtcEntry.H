@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2015-2020 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -82,11 +82,17 @@ class includeEtcEntry
     // Private Member Functions
 
         //- Expand include fileName and return
-        static fileName includeEtcFileName
+        fileName includeEtcFileName
         (
             const fileName&,
             const dictionary&
-        );
+        ) const;
+
+        //- Return the file name
+        const string& fName() const
+        {
+            return operator[](0).stringToken();
+        }
 
 
 public:
@@ -98,25 +104,39 @@ public:
 
 
     //- Runtime type information
-    ClassName("includeEtc");
+    FunctionTypeName("#includeEtc");
 
 
     // Constructors
 
-        //- Disallow default bitwise copy construction
-        includeEtcEntry(const includeEtcEntry&) = delete;
+        //- Construct from line number, dictionary and Istream
+        includeEtcEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        includeEtcEntry(const includeEtcEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new includeEtcEntry(*this));
+        }
 
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream&);
 
-        //- Execute the functionEntry in a primitiveEntry context
+        //- Expand the functionEntry into the contextEntry
         static bool execute
         (
-            const dictionary& parentDict,
-            primitiveEntry&,
+            const dictionary& contextDict,
+            primitiveEntry& contextEntry,
             Istream&
         );
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2018-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ifEntry.H"
-#include "Switch.H"
+#include "addToRunTimeSelectionTable.H"
 #include "addToMemberFunctionSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -33,68 +33,65 @@ namespace Foam
 {
 namespace functionEntries
 {
-    defineTypeNameAndDebug(ifEntry, 0);
+    defineFunctionTypeNameAndDebug(ifEntry, 0);
+    addToRunTimeSelectionTable(functionEntry, ifEntry, dictionary);
 
     addToMemberFunctionSelectionTable
     (
         functionEntry,
         ifEntry,
         execute,
-        dictionaryIstream
+        primitiveEntryIstream
     );
 }
 }
 
 
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-bool Foam::functionEntries::ifEntry::execute
+Foam::functionEntries::ifEntry::ifEntry
 (
-    DynamicList<filePos>& stack,
-    dictionary& parentDict,
+    const label lineNumber,
+    const dictionary& parentDict,
     Istream& is
 )
-{
-    const label nNested = stack.size();
-
-    stack.append(filePos(is.name(), is.lineNumber()));
-
-    // Read line
-    string line;
-    dynamic_cast<ISstream&>(is).getLine(line);
-    line += ';';
-    IStringStream lineStream(line);
-    const primitiveEntry e("ifEntry", parentDict, lineStream);
-    const Switch doIf(e.stream());
-
-    // Info<< "Using #" << typeName << " " << doIf
-    //     << " at line " << stack.last().second()
-    //     << " in file " <<  stack.last().first() << endl;
-
-    bool ok = ifeqEntry::execute(doIf, stack, parentDict, is);
-
-    if (stack.size() != nNested)
-    {
-        FatalIOErrorInFunction(parentDict)
-            << "Did not find matching #endif for condition starting"
-            << " at line " << stack.last().second()
-            << " in file " <<  stack.last().first() << exit(FatalIOError);
-    }
-
-    return ok;
-}
+:
+    ifeqEntry
+    (
+        typeName,
+        lineNumber,
+        parentDict,
+        is,
+        functionEntry::readArgList(typeName, is)
+    )
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::ifEntry::execute
 (
-    dictionary& parentDict,
+    dictionary& contextDict,
     Istream& is
 )
 {
     DynamicList<filePos> stack(10);
-    return execute(stack, parentDict, is);
+    return execute(stack, contextDict, contextDict, is);
+}
+
+
+bool Foam::functionEntries::ifEntry::execute
+(
+    const dictionary& contextDict,
+    primitiveEntry& contextEntry,
+    Istream& is
+)
+{
+    DynamicList<filePos> stack(10);
+    return ifEntry(is.lineNumber(), contextDict, is).execute
+    (
+        stack, contextDict, contextEntry, is
+    );
 }
 
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2023-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -66,7 +66,7 @@ SourceFiles
 #ifndef includeFvModelEntry_H
 #define includeFvModelEntry_H
 
-#include "functionEntry.H"
+#include "includeFuncEntry.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -81,13 +81,33 @@ namespace functionEntries
 
 class includeFvModelEntry
 :
-    public functionEntry
+    public includeFuncEntry
 {
 
 public:
 
     //- Runtime type information
-    ClassName("includeModel");
+    FunctionTypeName("#includeModel");
+
+
+    // Constructors
+
+        //- Construct from line number, dictionary and Istream
+        includeFvModelEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        includeFvModelEntry(const includeFvModelEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new includeFvModelEntry(*this));
+        }
 
 
     // Static Data Members
@@ -99,8 +119,8 @@ public:
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream&);
 };
 
 

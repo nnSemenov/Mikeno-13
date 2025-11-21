@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2018-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,15 +32,7 @@ namespace Foam
 {
 namespace functionEntries
 {
-    defineTypeNameAndDebug(negEntry, 0);
-
-    addToMemberFunctionSelectionTable
-    (
-        functionEntry,
-        negEntry,
-        execute,
-        dictionaryIstream
-    );
+    defineFunctionTypeNameAndDebug(negEntry, 0);
 
     addToMemberFunctionSelectionTable
     (
@@ -107,22 +99,12 @@ Foam::string Foam::functionEntries::negEntry::negateVariable
 
 bool Foam::functionEntries::negEntry::execute
 (
-    dictionary& parentDict,
+    const dictionary& contextDict,
+    primitiveEntry& contextEntry,
     Istream& is
 )
 {
-    return insert(parentDict, negateVariable(parentDict, is));
-}
-
-
-bool Foam::functionEntries::negEntry::execute
-(
-    const dictionary& parentDict,
-    primitiveEntry& thisEntry,
-    Istream& is
-)
-{
-    return insert(parentDict, thisEntry, negateVariable(parentDict, is));
+    return insert(contextDict, contextEntry, negateVariable(contextDict, is));
 }
 
 

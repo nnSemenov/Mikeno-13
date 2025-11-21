@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2023-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2023-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "includeFvModelEntry.H"
-#include "addToMemberFunctionSelectionTable.H"
+#include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -32,15 +32,8 @@ namespace Foam
 {
 namespace functionEntries
 {
-    defineTypeNameAndDebug(includeFvModelEntry, 0);
-
-    addToMemberFunctionSelectionTable
-    (
-        functionEntry,
-        includeFvModelEntry,
-        execute,
-        dictionaryIstream
-    );
+    defineFunctionTypeNameAndDebug(includeFvModelEntry, 0);
+    addToRunTimeSelectionTable(functionEntry, includeFvModelEntry, dictionary);
 }
 }
 
@@ -51,22 +44,32 @@ Foam::fileName Foam::functionEntries::includeFvModelEntry::fvModelDictPath
 );
 
 
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::functionEntries::includeFvModelEntry::includeFvModelEntry
+(
+    const label lineNumber,
+    const dictionary& parentDict,
+    Istream& is
+)
+:
+    includeFuncEntry(typeName, lineNumber, parentDict, is)
+{}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::includeFvModelEntry::execute
 (
-    dictionary& parentDict,
+    dictionary& contextDict,
     Istream& is
 )
 {
-    // Read line containing the function name and the optional arguments
-    const Tuple2<string, label> fNameArgs(readFuncNameArgs(is));
-
     return readConfigFile
     (
         "model",
-        fNameArgs,
-        parentDict,
+        funcNameArgs(),
+        contextDict,
         fvModelDictPath,
         "constant"
     );

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2023-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2023-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -75,22 +75,45 @@ class calcIncludeEntry
         static DynamicList<fileName> includeFiles_;
 
 
+    // Private member functions
+
+        //- Return the file name
+        const string& fName() const
+        {
+            return operator[](0).stringToken();
+        }
+
+
 public:
 
     //- Runtime type information
-    ClassName("calcInclude");
+    FunctionTypeName("#calcInclude");
 
 
     // Constructors
 
-        //- Disallow default bitwise copy construction
-        calcIncludeEntry(const calcIncludeEntry&) = delete;
+        //- Construct from line number, dictionary and Istream
+        calcIncludeEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        calcIncludeEntry(const calcIncludeEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new calcIncludeEntry(*this));
+        }
 
 
     // Member Functions
 
         //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        virtual bool execute(dictionary& parentDict, Istream&);
 
         //- Reset the cache of \#calc include file names
         static void clear();

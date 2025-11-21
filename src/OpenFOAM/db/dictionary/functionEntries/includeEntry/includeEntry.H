@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -80,28 +80,61 @@ class includeEntry
     // Private Member Functions
 
         //- Return the optional named arguments
-        //  temporarily inserted into parentDict
-        static List<Tuple3<word, string, label>> insertNamedArgs
+        //  temporarily inserted into contextDict
+        List<Tuple3<word, string, label>> insertNamedArgs
         (
-            dictionary& parentDict,
-            Istream& is
-        );
+            dictionary& contextDict,
+            const Tuple2<string, label>& args
+        ) const;
 
-        //- Remove named argument entries from parentDict
+        //- Remove named argument entries from contextDict
         //  renaming any existing entries which had the same name
-        static void removeInsertNamedArgs
+        void removeInsertNamedArgs
         (
-            dictionary& parentDict,
+            dictionary& contextDict,
             const List<Tuple3<word, string, label>>& namedArgs
-        );
+        ) const;
+
+
+protected:
+
+        //- Return the file name
+        const string& fName() const
+        {
+            return operator[](0).stringToken();
+        }
+
+        //- Return the arguments string for processing by insertNamedArgs
+        Tuple2<string, label> args() const
+        {
+            if (size() > 1)
+            {
+                return Tuple2<string, label>
+                (
+                    char(operator[](1).pToken())
+                  + operator[](2).stringToken()
+                  + char(operator[](3).pToken()),
+                    operator[](1).lineNumber()
+                );
+            }
+            else
+            {
+                return Tuple2<string, label>(string::null, 0);
+            }
+        }
 
 
 protected:
 
     // Protected Member Functions
 
-        //- Read the include fileName from Istream, expand and return
-        static fileName includeFileName(Istream&, const dictionary&);
+        //- Expand fileName and return
+        static fileName includeFileName
+        (
+            const Istream& is,
+            const fileName&,
+            const dictionary&
+        );
 
         //- Expand include fileName and return
         static fileName includeFileName
@@ -119,27 +152,49 @@ public:
         //- Report which file is included to stdout
         static bool log;
 
-
-    //- Runtime type information
-    ClassName("include");
+        //- Runtime type information
+        FunctionTypeName("#include");
 
 
     // Constructors
 
-        //- Disallow default bitwise copy construction
-        includeEntry(const includeEntry&) = delete;
+        //- Construct from functionType, dictionary and Istream
+        includeEntry
+        (
+            const functionName& functionType,
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Construct from line number, dictionary and Istream
+        includeEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        includeEntry(const includeEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new includeEntry(*this));
+        }
 
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream&);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream&);
 
-        //- Execute the functionEntry in a primitiveEntry context
+        //- Expand the functionEntry into the contextEntry
         static bool execute
         (
-            const dictionary& parentDict,
-            primitiveEntry&,
+            const dictionary& contextDict,
+            primitiveEntry& contextEntry,
             Istream&
         );
 

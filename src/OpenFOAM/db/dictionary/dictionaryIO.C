@@ -31,6 +31,8 @@ License
 #include "stringOps.H"
 #include "etcFiles.H"
 #include "wordAndDictionary.H"
+#include "ITstream.H"
+#include "OTstream.H"
 #include "OSspecific.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -757,19 +759,19 @@ bool Foam::readConfigFile
             << exit(FatalIOError);
     }
 
-    // Re-parse the funcDict to execute the functionEntries
+    // Expand the funcDict executing the functionEntries
     // now that the argument entries have been added
     dictionary funcArgsDict;
     funcArgsDict.add(entryName, funcDict);
 
     {
-        OStringStream os;
+        OTstream os(fileStream.name());
         funcArgsDict.write(os);
         funcArgsDict = dictionary
         (
             funcType,
             funcDict,
-            IStringStream(os.str())()
+            ITstream(os.name(), os)()
         );
     }
 

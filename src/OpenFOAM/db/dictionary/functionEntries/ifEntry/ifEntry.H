@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2018-2020 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,26 +25,28 @@ Class
     Foam::functionEntries::ifEntry
 
 Description
-    Conditional parsing of dictionary entries.
+    Conditional parsing of and within dictionary entries.
 
     E.g.
     \verbatim
-        U_inlet 15;
+        Uinlet 15;
 
-        #if #calc "${U_inlet} < 10"
+        #if (#calc "${Uinlet} < 10")
             ..
         #else
             ..
         #endif
+
+        pOutlet #if (#calc "${Uinlet} < 10") 0 #else 100 #endif;
     \endverbatim
 
-    Note:
-    - only supports single line, '\' is not supported
-    - condition should be readable as a \c Switch
-      (supports 0,1, true, false, etc.)
+    The condition should return any boolean representation supported by
+    \c Switch i.e 0, 1, true, false, on, off, yes, no.
 
 See also
     Foam::functionEntries::ifeqEntry
+    Foam::functionEntries::elseEntry
+    Foam::functionEntries::endifEntry
     Foam::Switch
 
 SourceFiles
@@ -76,31 +78,55 @@ class ifEntry
 
     // Private Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute
+        //- Execute the functionEntry in the given context
+        template<class Context>
+        bool execute
         (
             DynamicList<filePos>& stack,
-            dictionary& parentDict,
+            const dictionary& contextDict,
+            Context& context,
             Istream& is
-        );
+        ) const;
 
 
 public:
 
     //- Runtime type information
-    ClassName("if");
+    FunctionTypeName("#if");
 
 
     // Constructors
 
-        //- Disallow default bitwise copy construction
-        ifEntry(const ifEntry&) = delete;
+        //- Construct from line number, dictionary and Istream
+        ifEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        ifEntry(const ifEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new ifEntry(*this));
+        }
 
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        static bool execute(dictionary& parentDict, Istream& is);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream& is);
+
+        //- Expand the functionEntry into the contextEntry
+        static bool execute
+        (
+            const dictionary& contextDict,
+            primitiveEntry& contextEntry,
+            Istream&
+        );
 
 
     // Member Operators
@@ -114,6 +140,13 @@ public:
 
 } // End namespace functionEntries
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "ifEntryTemplates.C"
+    #include "ifeqEntryTemplates.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

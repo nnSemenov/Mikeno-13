@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2018-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,9 +24,12 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ifeqEntry.H"
-#include "stringOps.H"
 #include "ifEntry.H"
-#include "Switch.H"
+#include "elifEntry.H"
+#include "elseEntry.H"
+#include "endifEntry.H"
+#include "stringOps.H"
+#include "addToRunTimeSelectionTable.H"
 #include "addToMemberFunctionSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -35,37 +38,85 @@ namespace Foam
 {
 namespace functionEntries
 {
-    defineTypeNameAndDebug(ifeqEntry, 0);
+    defineFunctionTypeNameAndDebug(ifeqEntry, 0);
+    addToRunTimeSelectionTable(functionEntry, ifeqEntry, dictionary);
 
     addToMemberFunctionSelectionTable
     (
         functionEntry,
         ifeqEntry,
         execute,
-        dictionaryIstream
+        primitiveEntryIstream
     );
 }
 }
 
-const Foam::functionName Foam::functionEntries::ifeqEntry::ifName("#if");
-const Foam::functionName Foam::functionEntries::ifeqEntry::ifeqName("#ifeq");
-const Foam::functionName Foam::functionEntries::ifeqEntry::elifName("#elif");
-const Foam::functionName Foam::functionEntries::ifeqEntry::elseName("#else");
-const Foam::functionName Foam::functionEntries::ifeqEntry::endifName("#endif");
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::functionEntries::ifeqEntry::readToken(token& t, Istream& is)
+Foam::tokenList Foam::functionEntries::ifeqEntry::readArgList
+(
+    Istream& is
+) const
+{
+    tokenList args;
+
+    {
+        const token startArgs(is);
+
+        if
+        (
+            startArgs.isPunctuation()
+         && startArgs.pToken() == token::BEGIN_LIST
+        )
+        {
+            args.append(startArgs);
+        }
+        else
+        {
+            FatalIOErrorInFunction(is)
+                << "Expected " << token::BEGIN_LIST
+                << " to start the argument list but found " << startArgs
+                << " in " << typeName
+                << exit(FatalIOError);
+        }
+    }
+
+    // Read the two arguments
+    args.append(token(is));
+    args.append(token(is));
+
+    {
+        const token endArgs(is);
+
+        if
+        (
+            endArgs.isPunctuation()
+        && endArgs.pToken() == token::END_LIST
+        )
+        {
+            args.append(endArgs);
+        }
+        else
+        {
+            FatalIOErrorInFunction(is)
+                << "Expected " << token::END_LIST
+                << " to end the argument list but found " << endArgs
+                << " in " << typeName
+                << exit(FatalIOError);
+        }
+    }
+
+    return args;
+}
+
+
+void Foam::functionEntries::ifeqEntry::readToken(token& t, Istream& is) const
 {
     // Skip dummy tokens - avoids entry::getKeyword consuming #else, #endif
     do
     {
-        if
-        (
-            is.read(t).bad()
-         || is.eof()
-         || !t.good()
-        )
+        if( is.read(t).bad() || is.eof() || !t.good())
         {
             return;
         }
@@ -78,7 +129,7 @@ Foam::token Foam::functionEntries::ifeqEntry::expand
 (
     const dictionary& dict,
     const token& t
-)
+) const
 {
     if (t.isVariable())
     {
@@ -119,7 +170,7 @@ bool Foam::functionEntries::ifeqEntry::equalToken
 (
     const token& t1,
     const token& t2
-)
+) const
 {
     const bool eqType = (t1.type() == t2.type());
 
@@ -285,10 +336,10 @@ bool Foam::functionEntries::ifeqEntry::equalToken
 void Foam::functionEntries::ifeqEntry::skipUntil
 (
     DynamicList<filePos>& stack,
-    const dictionary& parentDict,
+    const dictionary& contextDict,
     const functionName& endWord,
     Istream& is
-)
+) const
 {
     while (!is.eof())
     {
@@ -298,12 +349,12 @@ void Foam::functionEntries::ifeqEntry::skipUntil
         {
             if
             (
-                t.functionNameToken() == ifName
-             || t.functionNameToken() == ifeqName
+                t.functionNameToken() == ifEntry::typeName
+             || t.functionNameToken() == ifeqEntry::typeName
             )
             {
                 stack.append(filePos(is.name(), is.lineNumber()));
-                skipUntil(stack, parentDict, endifName, is);
+                skipUntil(stack, contextDict, endifEntry::typeName, is);
                 stack.remove();
             }
             else if (t.functionNameToken() == endWord)
@@ -313,195 +364,63 @@ void Foam::functionEntries::ifeqEntry::skipUntil
         }
     }
 
-    FatalIOErrorInFunction(parentDict)
-        << "Did not find matching " << endWord << exit(FatalIOError);
+    FatalIOErrorInFunction(contextDict)
+        << "Did not find matching " << endWord
+        << " for " << typeName << " condition"
+        << exit(FatalIOError);
 }
 
 
-bool Foam::functionEntries::ifeqEntry::evaluate
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::functionEntries::ifeqEntry::ifeqEntry
 (
-    const bool doIf,
-    DynamicList<filePos>& stack,
-    dictionary& parentDict,
+    const functionName& functionType,
+    const label lineNumber,
+    const dictionary& parentDict,
+    const Istream& is,
+    const tokenList& tokens
+)
+:
+    functionEntry(functionType, lineNumber, parentDict, is, tokens)
+{}
+
+
+Foam::functionEntries::ifeqEntry::ifeqEntry
+(
+    const label lineNumber,
+    const dictionary& parentDict,
     Istream& is
 )
-{
-    while (!is.eof())
-    {
-        token t;
-        readToken(t, is);
-
-        if (t.isFunctionName() && t.functionNameToken() == ifeqName)
-        {
-            // Recurse to evaluate
-            execute(stack, parentDict, is);
-        }
-        else if (t.isFunctionName() && t.functionNameToken() == ifName)
-        {
-            // Recurse to evaluate
-            ifEntry::execute(stack, parentDict, is);
-        }
-        else if
-        (
-            doIf
-         && t.isFunctionName()
-         && (
-                t.functionNameToken() == elseName
-             || t.functionNameToken() == elifName
-            )
-        )
-        {
-            // Now skip until #endif
-            skipUntil(stack, parentDict, endifName, is);
-            stack.remove();
-            break;
-        }
-        else if (t.isFunctionName() && t.functionNameToken() == endifName)
-        {
-            stack.remove();
-            break;
-        }
-        else
-        {
-            is.putBack(t);
-            bool ok = entry::New(parentDict, is);
-            if (!ok)
-            {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-
-bool Foam::functionEntries::ifeqEntry::execute
-(
-    const bool doIf,
-    DynamicList<filePos>& stack,
-    dictionary& parentDict,
-    Istream& is
-)
-{
-    if (doIf)
-    {
-        evaluate(true, stack, parentDict, is);
-    }
-    else
-    {
-        // Fast-forward to #else
-        token t;
-        while (!is.eof())
-        {
-            readToken(t, is);
-
-            if (t.isFunctionName())
-            {
-                if
-                (
-                    t.functionNameToken() == ifName
-                 || t.functionNameToken() == ifeqName
-                )
-                {
-                    stack.append(filePos(is.name(), is.lineNumber()));
-                    skipUntil(stack, parentDict, endifName, is);
-                    stack.remove();
-                }
-                else if (t.functionNameToken() == elseName)
-                {
-                    break;
-                }
-                else if (t.functionNameToken() == elifName)
-                {
-                    // Read line
-                    string line;
-                    dynamic_cast<ISstream&>(is).getLine(line);
-                    line += ';';
-                    IStringStream lineStream(line);
-                    const primitiveEntry e("ifEntry", parentDict, lineStream);
-                    const Switch doIf(e.stream());
-
-                    if (doIf)
-                    {
-                        // Info<< "Using #elif " << doIf
-                        //     << " at line " << lineNo
-                        //     << " in file " << is.name() << endl;
-                        break;
-                    }
-                }
-                else if (t.functionNameToken() == endifName)
-                {
-                    stack.remove();
-                    break;
-                }
-            }
-        }
-
-        if (t.functionNameToken() == elseName)
-        {
-            // Evaluate until we hit #endif
-            evaluate(false, stack, parentDict, is);
-        }
-        else if (t.functionNameToken() == elifName)
-        {
-            // Evaluate until we hit #else or #endif
-            evaluate(true, stack, parentDict, is);
-        }
-    }
-    return true;
-}
-
-
-bool Foam::functionEntries::ifeqEntry::execute
-(
-    DynamicList<filePos>& stack,
-    dictionary& parentDict,
-    Istream& is
-)
-{
-    const label nNested = stack.size();
-
-    stack.append(filePos(is.name(), is.lineNumber()));
-
-    // Read first token and expand if a variable
-    token cond1(is);
-    cond1 = expand(parentDict, cond1);
-
-    // Read second token and expand if a variable
-    token cond2(is);
-    cond2 = expand(parentDict, cond2);
-
-    const bool equal = equalToken(cond1, cond2);
-
-    // Info<< "Using #" << typeName << " " << cond1
-    //     << " == " << cond2
-    //     << " at line " << stack.last().second()
-    //     << " in file " <<  stack.last().first() << endl;
-
-    bool ok = ifeqEntry::execute(equal, stack, parentDict, is);
-
-    if (stack.size() != nNested)
-    {
-        FatalIOErrorInFunction(parentDict)
-            << "Did not find matching #endif for condition starting"
-            << " at line " << stack.last().second()
-            << " in file " <<  stack.last().first() << exit(FatalIOError);
-    }
-
-    return ok;
-}
+:
+    ifeqEntry(typeName, lineNumber, parentDict, is, readArgList(is))
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::ifeqEntry::execute
 (
-    dictionary& parentDict,
+    dictionary& contextDict,
     Istream& is
 )
 {
     DynamicList<filePos> stack(10);
-    return execute(stack, parentDict, is);
+    return execute(stack, contextDict, contextDict, is);
+}
+
+
+bool Foam::functionEntries::ifeqEntry::execute
+(
+    const dictionary& contextDict,
+    primitiveEntry& contextEntry,
+    Istream& is
+)
+{
+    DynamicList<filePos> stack(10);
+    const ifeqEntry ifeqe(is.lineNumber(), contextDict, is);
+
+    return ifeqe.execute(stack, contextDict, contextEntry, is);
 }
 
 

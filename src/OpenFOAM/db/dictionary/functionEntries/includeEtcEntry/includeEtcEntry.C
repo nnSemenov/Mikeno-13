@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2015-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -26,35 +26,20 @@ License
 #include "includeEtcEntry.H"
 #include "etcFiles.H"
 #include "stringOps.H"
-#include "addToMemberFunctionSelectionTable.H"
 #include "IOobject.H"
-#include "fileOperation.H"
+#include "addToRunTimeSelectionTable.H"
+#include "addToMemberFunctionSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-const Foam::word Foam::functionEntries::includeEtcEntry::typeName
-(
-    Foam::functionEntries::includeEtcEntry::typeName_()
-);
-
-// Don't lookup the debug switch here as the debug switch dictionary
-// might include includeEtcEntry
-int Foam::functionEntries::includeEtcEntry::debug(0);
-
 bool Foam::functionEntries::includeEtcEntry::log(false);
-
 
 namespace Foam
 {
 namespace functionEntries
 {
-    addToMemberFunctionSelectionTable
-    (
-        functionEntry,
-        includeEtcEntry,
-        execute,
-        dictionaryIstream
-    );
+    defineFunctionTypeNameAndDebug(includeEtcEntry, 0);
+    addToRunTimeSelectionTable(functionEntry, includeEtcEntry, dictionary);
 
     addToMemberFunctionSelectionTable
     (
@@ -66,13 +51,14 @@ namespace functionEntries
 }
 }
 
+
 // * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * * //
 
 Foam::fileName Foam::functionEntries::includeEtcEntry::includeEtcFileName
 (
     const fileName& f,
     const dictionary& dict
-)
+) const
 {
     fileName fName(f);
 
@@ -92,19 +78,37 @@ Foam::fileName Foam::functionEntries::includeEtcEntry::includeEtcFileName
 }
 
 
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::functionEntries::includeEtcEntry::includeEtcEntry
+(
+    const label lineNumber,
+    const dictionary& parentDict,
+    Istream& is
+)
+:
+    functionEntry
+    (
+        typeName,
+        lineNumber,
+        parentDict,
+        is,
+        readFileNameArgList(typeName, is)
+    )
+{}
+
+
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::functionEntries::includeEtcEntry::execute
 (
-    dictionary& parentDict,
+    dictionary& contextDict,
     Istream& is
 )
 {
-    const fileName rawFName(is);
-
     const fileName fName
     (
-        includeEtcFileName(rawFName, parentDict)
+        includeEtcFileName(this->fName(), contextDict)
     );
 
     // IFstream ifs(fName);
@@ -120,21 +124,21 @@ bool Foam::functionEntries::includeEtcEntry::execute
 
         // Cache the FoamFile entry if present
         dictionary foamFileDict;
-        if (parentDict.found(IOobject::foamFile))
+        if (contextDict.found(IOobject::foamFile))
         {
-            foamFileDict = parentDict.subDict(IOobject::foamFile);
+            foamFileDict = contextDict.subDict(IOobject::foamFile);
         }
 
         // Read and clear the FoamFile entry
-        parentDict.read(ifs);
+        contextDict.read(ifs);
 
         // Reinstate original FoamFile entry
         if (foamFileDict.size() != 0)
         {
-            dictionary parentDictTmp(parentDict);
-            parentDict.clear();
-            parentDict.add(IOobject::foamFile, foamFileDict);
-            parentDict += parentDictTmp;
+            dictionary contextDictTmp(contextDict);
+            contextDict.clear();
+            contextDict.add(IOobject::foamFile, foamFileDict);
+            contextDict += contextDictTmp;
         }
 
         return true;
@@ -145,8 +149,8 @@ bool Foam::functionEntries::includeEtcEntry::execute
         (
             is
         )   << "Cannot open etc file "
-            << (ifs.name().size() ? ifs.name() : rawFName)
-            << " while reading dictionary " << parentDict.name()
+            << (ifs.name().size() ? ifs.name() : this->fName())
+            << " while reading dictionary " << contextDict.name()
             << exit(FatalIOError);
 
         return false;
@@ -156,16 +160,16 @@ bool Foam::functionEntries::includeEtcEntry::execute
 
 bool Foam::functionEntries::includeEtcEntry::execute
 (
-    const dictionary& parentDict,
-    primitiveEntry& entry,
+    const dictionary& contextDict,
+    primitiveEntry& contextEntry,
     Istream& is
 )
 {
-    const fileName rawFName(is);
+    const includeEtcEntry iee(is.lineNumber(), contextDict, is);
 
     const fileName fName
     (
-        includeEtcFileName(rawFName, parentDict)
+        iee.includeEtcFileName(iee.fName(), contextDict)
     );
 
     autoPtr<ISstream> ifsPtr(fileHandler().NewIFstream(fName));
@@ -177,7 +181,7 @@ bool Foam::functionEntries::includeEtcEntry::execute
         {
             Info<< fName << endl;
         }
-        entry.read(parentDict, ifs);
+        contextEntry.read(contextDict, ifs);
         return true;
     }
     else
@@ -186,8 +190,8 @@ bool Foam::functionEntries::includeEtcEntry::execute
         (
             is
         )   << "Cannot open etc file "
-            << (ifs.name().size() ? ifs.name() : rawFName)
-            << " while reading dictionary " << parentDict.name()
+            << (ifs.name().size() ? ifs.name() : iee.fName())
+            << " while reading dictionary " << contextDict.name()
             << exit(FatalIOError);
 
         return false;
