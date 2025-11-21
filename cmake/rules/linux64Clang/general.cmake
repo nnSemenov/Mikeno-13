@@ -16,3 +16,7 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     #    -Wno-tautological-undefined-compare
     #    -Wno-shift-negative-value
 )
+
+list(APPEND Mikeno_fp_strict_option
+    -ffp-exception-behavior=maytrap
+)
