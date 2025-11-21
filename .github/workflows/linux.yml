@@ -59,6 +59,7 @@ jobs:
       run: |
         source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
         cd test
+        chmod +x $(find . -name Allrun)
         ./dictionary/Allrun
         ./fvMeshTools/Allrun
         ./boundaryLayer/Allrun
