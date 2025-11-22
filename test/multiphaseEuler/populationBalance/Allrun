@@ -1,12 +1,10 @@
 #!/bin/sh
-
-# shellcheck disable=SC3028 disable=SC3054
-cur_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+cd ${0%/*} || exit 1    # Run from this directory
 
 
-"$cur_dir/binaryBreakup/Allrun"
-"$cur_dir/breakup/Allrun"
-"$cur_dir/coalescence/Allrun"
-"$cur_dir/coalescenceAndBreakup/Allrun"
-"$cur_dir/expansion/Allrun"
-"$cur_dir/uniformGrowth/Allrun"
+./binaryBreakup/Allrun
+./breakup/Allrun
+./coalescence/Allrun
+./coalescenceAndBreakup/Allrun
+./expansion/Allrun
+./uniformGrowth/Allrun

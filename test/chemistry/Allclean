@@ -1,10 +1,8 @@
 #!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
 
-# shellcheck disable=SC3028 disable=SC3054
-cur_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-
-"$cur_dir/gri/Allclean"
-"$cur_dir/h2/Allclean"
-"$cur_dir/ic8h18/Allclean"
-"$cur_dir/ic8h18_TDAC/Allclean"
-"$cur_dir/nc7h16/Allclean"
+./gri/Allclean
+./h2/Allclean
+./ic8h18/Allclean
+./ic8h18_TDAC/Allclean
+./nc7h16/Allclean
