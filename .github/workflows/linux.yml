@@ -76,14 +76,30 @@ jobs:
         export FOAM_SIGFPE=set
         cd test
         chmod +x $(find . -name Allrun)
+        chmod +x $(find . -name Allclean)
         ./dictionary/Allrun
+        ./dictionary/Allclean
         ./realFluidEOS/Allrun
+        ./realFluidEOS/Allclean
         ./fvMeshTools/Allrun
+        ./fvMeshTools/Allclean
         ./boundaryLayer/Allrun
+        ./boundaryLayer/Allclean
         ./IO/Allrun
+        ./IO/fileHandler/Allclean
         ./multiphaseEuler/Allrun
+        ./multiphaseEuler/Allclean
         ./chemistriy/Allrun
-        
+        ./chemistriy/Allclean
+
+    - name: Upload test files
+      uses: actions/upload-artifact@v4
+      if: ${{ failure() }}
+      with:
+        name: test-failure-files
+        path: test
+        if-no-files-found: error
+        compression-level: 7
 
 #    - name: Run unit test
 #      run: |
