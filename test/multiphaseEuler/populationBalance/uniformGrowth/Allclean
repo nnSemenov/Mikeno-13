@@ -6,4 +6,6 @@ cd ${0%/*} || exit 1    # Run from this directory
 
 cleanCase && rm -f include 0/f[0-9]*.air[12] 0/integerMoment* postProcessing.eps postProcessing_*.eps
 
+rm -r uniformGrowth/build
+
 #------------------------------------------------------------------------------

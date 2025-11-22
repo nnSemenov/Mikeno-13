@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# shellcheck disable=SC3028 disable=SC3054
+cur_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+
+
+"$cur_dir/binaryBreakup/Allclean"
+"$cur_dir/breakup/Allclean"
+"$cur_dir/coalescence/Allclean"
+"$cur_dir/coalescenceAndBreakup/Allclean"
+"$cur_dir/expansion/Allclean"
+"$cur_dir/uniformGrowth/Allclean"
