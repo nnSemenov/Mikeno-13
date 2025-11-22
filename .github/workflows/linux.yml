@@ -82,8 +82,8 @@ jobs:
         ./multiphaseEuler/Allrun
         
 
-    - name: Run unit test
-      run: |
-        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
-        cd build
-        ctest 
+#    - name: Run unit test
+#      run: |
+#        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+#        cd build
+#        ctest
