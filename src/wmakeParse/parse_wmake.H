@@ -19,6 +19,7 @@ namespace Foam::wmakeParse {
 
   struct wmake_parse_option {
     undefined_reference_behavior when_undefined_reference=undefined_reference_behavior::empty_string;
+    bool parse_brace_expression{false}; // Parse ${VAR}
   };
 
   std::vector<std::string> parse_wmake_file(std::string_view file_content,

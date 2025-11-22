@@ -97,7 +97,7 @@ namespace Foam::wmakeParse {
         bracket=seg[0];
         reverse_bracket=')';
       }
-      if(seg[0]=='{') {
+      if(option.parse_brace_expression and seg[0]=='{') {
         bracket=seg[0];
         reverse_bracket='}';
       }
@@ -106,7 +106,7 @@ namespace Foam::wmakeParse {
         const ptrdiff_t head_offset=seg.data()-raw.data();
         if(head_offset<=0) { // Head of string ,somthing link EXE_INC = $(...)
           ret+=seg;
-        }else { // Middle of string, like EXE_INC = $ENV_VAR   We don't know
+        }else { // Middle of string, like EXE_INC = $ENV_VAR
           ret+='$';
           ret+=seg;
         }

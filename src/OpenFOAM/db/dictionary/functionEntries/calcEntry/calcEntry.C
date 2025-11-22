@@ -106,7 +106,7 @@ Foam::string Foam::functionEntries::calcEntry::calc
         primitiveEntry
         (
             "codeOptions",
-            "#{ -fno-show-column -fno-diagnostics-show-caret #}",
+            "#{ -fno-show-column $<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},GNU>:-fno-diagnostics-show-caret> #}",
             0
         )
     );
