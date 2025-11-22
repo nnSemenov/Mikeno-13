@@ -27,6 +27,8 @@ License
 #include "phaseSystem.H"
 #include "addToRunTimeSelectionTable.H"
 
+#include <cassert>
+
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
@@ -39,7 +41,52 @@ namespace dragModels
 }
 
 
+Foam::List<Foam::word> read_solids(const Foam::dictionary& dict) {
+    using Foam::word,Foam::List;
+
+    if(dict.found("solid")) {
+        word single=dict.lookup("solid");
+        List ret{single};
+        return ret;
+    }
+
+    return dict.lookup<List<word>>("solids");
+}
+
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+
+Foam::List<const Foam::phaseModel*>
+Foam::dragModels::AttouFerschneider::solidPhases(const phaseSystem&ps) const {
+    Foam::List<const Foam::phaseModel*> ret(this->solidNames_.size());
+    forAll(this->solidNames_, index) {
+        ret[index]=&ps.phases()[this->solidNames_[index]];
+    }
+    return ret;
+}
+
+
+Foam::dragModels::AttouFerschneider::effective_alpha_d
+Foam::dragModels::AttouFerschneider::effective_solid_info(const List<const phaseModel*>&solids) {
+    assert(solids.size()>0);
+    tmp<volScalarField> alphaSum=max(static_cast<const volScalarField &>(*solids[0]), solids[0]->residualAlpha());
+    tmp<volScalarField> inv_diameter_sum=alphaSum.ref()/solids[0]->d();
+    for(label i=1;i<solids.size();i++) {
+        tmp<volScalarField> alpha_i=max(static_cast<const volScalarField &>(*solids[i]), solids[i]->residualAlpha());
+        alphaSum.ref()+=alpha_i;
+        inv_diameter_sum.ref()+= alpha_i/solids[i]->d();
+    }
+    inv_diameter_sum=alphaSum.ref()/inv_diameter_sum;
+    return effective_alpha_d{
+        .alpha=alphaSum,
+        .d=inv_diameter_sum,
+    };
+}
+
+Foam::dragModels::AttouFerschneider::effective_alpha_d
+Foam::dragModels::AttouFerschneider::get_solid_phase_info(const Foam::phaseSystem &ps) const {
+    List<const phaseModel*> solids= solidPhases(ps);
+    return effective_solid_info({solids.begin(),solids.end()});
+}
 
 Foam::tmp<Foam::volScalarField>
 Foam::dragModels::AttouFerschneider::KGasLiquid
@@ -48,19 +95,20 @@ Foam::dragModels::AttouFerschneider::KGasLiquid
     const phaseModel& liquid
 ) const
 {
-    const phaseModel& solid = gas.fluid().phases()[solidName_];
+    effective_alpha_d solid_info= get_solid_phase_info(gas.fluid());
+//    const phaseModel& solid = gas.fluid().phases()[solidName_];
 
     const volScalarField oneMinusGas(max(1 - gas, liquid.residualAlpha()));
     const volScalarField cbrtR
     (
-        cbrt(max(solid, solid.residualAlpha())/oneMinusGas)
+        cbrt(solid_info.alpha/oneMinusGas)
     );
     const volScalarField magURel(mag(gas.U() - liquid.U()));
 
     return
-        E2_*gas.fluidThermo().mu()*sqr(oneMinusGas/solid.d())*sqr(cbrtR)
+        E1_*gas.fluidThermo().mu()*sqr(oneMinusGas/solid_info.d.ref())*sqr(cbrtR)
        /max(gas, gas.residualAlpha())
-      + E2_*gas.rho()*magURel*(1 - gas)/solid.d()*cbrtR;
+      + E2_*gas.rho()*magURel*(1 - gas)/solid_info.d*cbrtR;
 }
 
 
@@ -114,10 +162,14 @@ Foam::dragModels::AttouFerschneider::AttouFerschneider
     interface_(interface),
     gasName_(dict.lookup("gas")),
     liquidName_(dict.lookup("liquid")),
-    solidName_(dict.lookup("solid")),
+    solidNames_(read_solids(dict)),
     E1_("E1", dimless, dict),
     E2_("E2", dimless, dict)
-{}
+{
+    if(solidNames_.empty()) {
+        FatalErrorInFunction<<"Required at least 1 solid phase"<<exit(FatalError);
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -133,19 +185,28 @@ Foam::dragModels::AttouFerschneider::K() const
 {
     const phaseModel& gas = interface_.fluid().phases()[gasName_];
     const phaseModel& liquid = interface_.fluid().phases()[liquidName_];
-    const phaseModel& solid = interface_.fluid().phases()[solidName_];
+    List<const phaseModel*> solids= solidPhases(interface_.fluid());
+
+    const phaseModel* matched_solid_phase= nullptr;
+    for(const phaseModel* solid: solids) {
+        if(interface_.contains(*solid)) {
+            matched_solid_phase=solid;
+            break;
+        }
+    }
+//    const phaseModel& solid = interface_.fluid().phases()[solidName_];
 
     if (interface_.contains(gas) && interface_.contains(liquid))
     {
         return KGasLiquid(gas, liquid);
     }
-    if (interface_.contains(gas) && interface_.contains(solid))
+    if (interface_.contains(gas) && matched_solid_phase)
     {
-        return KGasSolid(gas, solid);
+        return KGasSolid(gas, *matched_solid_phase);
     }
-    if (interface_.contains(liquid) && interface_.contains(solid))
+    if (interface_.contains(liquid) && matched_solid_phase)
     {
-        return KLiquidSolid(liquid, solid);
+        return KLiquidSolid(liquid, *matched_solid_phase);
     }
 
     FatalErrorInFunction

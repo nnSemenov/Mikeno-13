@@ -74,7 +74,7 @@ class AttouFerschneider
         const word liquidName_;
 
         //- Name of the solid phase
-        const word solidName_;
+        const List<word> solidNames_;
 
         //- Ergun constant 1
         const dimensionedScalar E1_;
@@ -106,11 +106,22 @@ class AttouFerschneider
             const phaseModel& solid
         ) const;
 
-
 public:
 
+        List<const phaseModel*> solidPhases(const phaseSystem&) const;
+
+        struct effective_alpha_d {
+          tmp<volScalarField> alpha;
+          tmp<volScalarField> d;
+        };
+private:
+        static effective_alpha_d effective_solid_info(const List<const phaseModel*>&);
+
+        effective_alpha_d get_solid_phase_info(const phaseSystem&) const;
+public:
     //- Runtime type information
     TypeName("AttouFerschneider");
+
 
 
     // Constructors
