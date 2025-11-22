@@ -36,8 +36,8 @@ export ZOLTAN_TYPE=@ZOLTAN_TYPE@
 export ParaView_TYPE=@ParaView_TYPE@
 
 
-# shellcheck disable=SC2046
-MIKENO_BINARY_INSTALL_PREFIX=$(dirname $(realpath "${BASH_SOURCE[0]}"))
+# shellcheck disable=SC2046 disable=SC2155
+export MIKENO_BINARY_INSTALL_PREFIX=$(dirname $(realpath "${BASH_SOURCE[0]}"))
 platforms_dir=$(dirname "$MIKENO_BINARY_INSTALL_PREFIX")
 
 # shellcheck disable=SC2155
