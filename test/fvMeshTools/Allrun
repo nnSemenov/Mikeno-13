@@ -1,13 +1,10 @@
 #!/bin/sh
 cd ${0%/*} || exit 1    # Run from this directory
 
-# shellcheck disable=SC3028 disable=SC2046 disable=SC3054
-cur_dir=$(dirname $(realpath "${BASH_SOURCE[0]}"))
-
-cmake -S "$cur_dir/Test-fvMeshTools" -B "$cur_dir/Test-fvMeshTools/build" "-DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE" "-DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX" "-DCMAKE_CXX_COMPILER=$WM_CXX"
+cmake -S "./Test-fvMeshTools" -B "./Test-fvMeshTools/build" "-DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE" "-DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX" "-DCMAKE_CXX_COMPILER=$WM_CXX"
 cmake --build Test-fvMeshTools/build
 
 
-export PATH="$PATH:$cur_dir/Test-fvMeshTools/build"
+export PATH="$PATH:$(pwd)/Test-fvMeshTools/build"
 
-"$cur_dir/cavity/Allrun"
+./cavity/Allrun

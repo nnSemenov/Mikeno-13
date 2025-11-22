@@ -16,4 +16,5 @@ target_link_libraries(Test-fvMeshTools PRIVATE
     Mikeno::meshTools
     Mikeno::finiteVolume
     Mikeno::genericFvFields
+    Mikeno::Pstream_mpi
 )
