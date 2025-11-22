@@ -3,4 +3,6 @@
 # shellcheck disable=SC3028 disable=SC3054
 cur_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 
+export MPI_BUFFER_SIZE=16384
+
 "$cur_dir/fileHandler/Allrun"
