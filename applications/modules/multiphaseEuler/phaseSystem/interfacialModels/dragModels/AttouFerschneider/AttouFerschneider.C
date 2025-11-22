@@ -75,10 +75,10 @@ Foam::dragModels::AttouFerschneider::effective_solid_info(const List<const phase
         alphaSum.ref()+=alpha_i;
         inv_diameter_sum.ref()+= alpha_i/solids[i]->d();
     }
-    tmp<volScalarField> avg_diameter=alphaSum/inv_diameter_sum;
+    inv_diameter_sum=alphaSum.ref()/inv_diameter_sum;
     return effective_alpha_d{
         .alpha=alphaSum,
-        .d=avg_diameter,
+        .d=inv_diameter_sum,
     };
 }
 
@@ -106,7 +106,7 @@ Foam::dragModels::AttouFerschneider::KGasLiquid
     const volScalarField magURel(mag(gas.U() - liquid.U()));
 
     return
-        E1_*gas.fluidThermo().mu()*sqr(oneMinusGas/solid_info.d)*sqr(cbrtR)
+        E1_*gas.fluidThermo().mu()*sqr(oneMinusGas/solid_info.d.ref())*sqr(cbrtR)
        /max(gas, gas.residualAlpha())
       + E2_*gas.rho()*magURel*(1 - gas)/solid_info.d*cbrtR;
 }
