@@ -5,6 +5,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Mikeno CONFIG REQUIRED)
 
+include(rapidcsv.cmake)
+
 add_executable(Test-cubicEOS Test-cubicEOS.C)
 
 target_include_directories(Test-cubicEOS PRIVATE
@@ -30,4 +32,6 @@ target_link_libraries(Test-cubicEOS PRIVATE
     Mikeno::momentumTransportModels
     Mikeno::compressibleMomentumTransportModels
     Mikeno::multicomponentThermophysicalModels
+
+    rapidcsv
 )
