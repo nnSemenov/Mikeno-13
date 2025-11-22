@@ -75,11 +75,12 @@ jobs:
         cd test
         chmod +x $(find . -name Allrun)
         ./dictionary/Allrun
+        ./realFluidEOS/Allrun
         ./fvMeshTools/Allrun
         ./boundaryLayer/Allrun
         ./IO/Allrun
-        ./chemistriy/Allrun
         ./multiphaseEuler/Allrun
+        ./chemistriy/Allrun
         
 
 #    - name: Run unit test
