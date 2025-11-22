@@ -6,6 +6,5 @@ cmake --build Test-fvMeshTools/build
 
 
 export PATH="$PATH:$(pwd)/Test-fvMeshTools/build"
-export MPI_BUFFER_SIZE=65536
 
 ./cavity/Allrun

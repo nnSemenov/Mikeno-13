@@ -1,6 +1,4 @@
 #!/bin/sh
 cd ${0%/*} || exit 1    # Run from this directory
 
-export MPI_BUFFER_SIZE=16384
-
 ./fileHandler/Allrun

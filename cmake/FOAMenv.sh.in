@@ -1,7 +1,13 @@
 #!/bin/bash
 
-export CMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@
+# Run settings ########################################################################################################
+export FOAM_SIGFPE=@FOAM_SIGFPE@
+# By default, SETNAN is disabled
+#export FOAM_SETNAN=@FOAM_SETNAN@
+export MPI_BUFFER_SIZE=20000000
 
+# Build and source file information ###################################################################################
+export CMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@
 export WM_COMPILER=@WM_COMPILER@
 export WM_PRECISION_OPTION=@WM_PRECISION_OPTION@
 export WM_MPLIB=@WM_MPLIB@
@@ -22,13 +28,9 @@ export WM_LDFLAGS="@WM_LDFLAGS@"
 export WM_CXX=@WM_CXX@
 export WM_COMPILE_OPTION=@WM_COMPILE_OPTION@
 export WM_COMPILER_LIB_ARCH=@WM_COMPILER_LIB_ARCH@
-
 export FOAM_SETTINGS=@FOAM_SETTINGS@
 export FOAM_MPI=@FOAM_MPI@
 export FOAM_JOB_DIR=@FOAM_JOB_DIR@
-export FOAM_SIGFPE=@FOAM_SIGFPE@
-export FOAM_SETNAN=@FOAM_SETNAN@
-
 export SCOTCH_TYPE=@SCOTCH_TYPE@
 export METIS_TYPE=@METIS_TYPE@
 export PARMETIS_TYPE=@PARMETIS_TYPE@
@@ -74,6 +76,7 @@ export FOAM_MODULES=$FOAM_APP/modules
 export PATH=$MIKENO_BINARY_INSTALL_PREFIX/bin:$WM_PROJECT_DIR/bin:$WM_PROJECT_DIR/bin/tools:$WM_PROJECT_DIR/wmake:$WM_PROJECT_DIR/wmake/platforms/$WM_ARCH$WM_COMPILER:$PATH
 export LD_LIBRARY_PATH=$FOAM_LIBBIN:$FOAM_LIBBIN/$FOAM_MPI:$FOAM_LIBBIN/dummy:$FOAM_USER_LIBBIN:$LD_LIBRARY_PATH
 export LIBRARY_PATH=$FOAM_LIBBIN:$FOAM_LIBBIN/$FOAM_MPI:$FOAM_LIBBIN/dummy:$LIBRARY_PATH
+
 
 #unset MIKENO_BINARY_INSTALL_PREFIX
 #unset platforms_dir
