@@ -43,9 +43,9 @@ function(FOAM_unit_test)
 endfunction()
 
 FOAM_unit_test(SOURCES alloc/Test-alloc.C BUILD_ONLY)
-FOAM_unit_test(SOURCES BinSum/Test-BinSum.C)
+FOAM_unit_test(SOURCES BinSum/Test-BinSum.C LINK_LIBS Pstream_best)
 FOAM_unit_test(SOURCES boundSphere/Test-boundSphere.C
-    LINK_LIBS fileFormats
+    LINK_LIBS fileFormats Pstream_best
     TEST_COMMAND_ARGS -nTests 1000 1000
 )
 FOAM_unit_test(SOURCES callback/Test-callback.C)
