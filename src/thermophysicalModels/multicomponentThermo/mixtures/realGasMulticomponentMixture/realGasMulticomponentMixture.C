@@ -203,6 +203,16 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::dedp_T(scalar
     return core.dedp_T(p, T, this->W());
 }
 
+template<class ThermoType>
+Foam::scalar
+Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::dhedp_T(scalar p, scalar T) const {
+
+    if (ThermoType::enthalpy()) { // can be constexpr on C++17
+        return this->dhdp_T(p, T);
+    }else {
+        return this->dedp_T(p, T);
+    }
+}
 
 // Cp or Cv
 // thermoMixtureFunction(Cpv)
