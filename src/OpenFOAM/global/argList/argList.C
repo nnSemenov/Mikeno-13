@@ -1313,8 +1313,8 @@ void Foam::argList::printUsage() const
     printNotes();
 
     Info<< nl
-        <<"Using: OpenFOAM-" << Foam::FOAMversion
-        << " (see https://openfoam.org)" << nl
+        <<"Using: Mikeno-" << Foam::FOAMversion
+        << " (see https://github.com/nnSemenov)" << nl
         <<"Build: " << Foam::FOAMbuild << nl
         << endl;
 }
