@@ -27,13 +27,13 @@ jobs:
 
     - name: Install deps
       run: | 
-        sudo apt install --fix-missing flex libfl-dev libopenmpi-dev paraview-dev libscotch-dev libptscotch-dev libmetis-dev libparmetis-dev libtrilinos-zoltan-dev libboost-all-dev
+        sudo apt install --fix-missing flex libfl-dev libopenmpi-dev paraview-dev libscotch-dev libptscotch-dev libmetis-dev libparmetis-dev libtrilinos-zoltan-dev libboost-all-dev gnuplot
         
 #    - name: Install paraview and related deps
 #      run: sudo apt install --fix-missing paraview paraview-dev libvtk9-dev
 
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_INSTALL_PREFIX=./install -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20
 
     - name: Build
       # Build your program with the given configuration
