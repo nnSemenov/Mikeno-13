@@ -12,7 +12,7 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 ## Modifications
 
 ### Utilities
-1. `autoCompress`: 
+1. `autoCompress`: Compress all heavy fields (non-uniform, including mesh) to gzip, regardless of format(ascii or binary)
 
 ### Code and compiler
 1. Migrated all subprojects from wmake to modern cmake.
@@ -20,7 +20,8 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
    - More convenient to import external dependencies
    - More efficient parallel build
    - More convenient for secondary development with `find_package(OpenFOAM CONFIG)`
-2. DynamicCode is not migrated now. Currently still depend on wmake
+2. Performance optimization
+   - Add `-march=native` for optimization mode, enabling more vectorization from compiler
 3. Support `AOCC`.
 4. Add `Tc_` `Pc_` `Vc_` `omega_` to `specie` and remove revelant member from `PengRobinsonGas`. In `physicalProperties`, user should write them into `specie` dictionary.
    - Critial point and acentric factor are intrinstic nature similar to mole weight.
@@ -53,7 +54,7 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 4. Modify dynamicCode implementation, use cmake instead of wmake.
 
 
-## Existing Bugs(Up to 20250823):
+## Existing Bugs(Up to 20251123):
 1. `decomposePar` crashes with Largrangian fields(Some cases in `test/Largrangian` fail)
 2. Some postprocessing fails (`test/postProcessing/channel`)
 3. ~~`blockMesh` trapped by SIGFPE when compiled with single-precision, optimization.~~ (Almost impossible to fix, compiler generates SSE instructions that produce NAN but don't use them. Only way is to `unset FOAM_SIGFPE`)

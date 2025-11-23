@@ -11,18 +11,22 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 
 ## 修改内容
 
+### 新工具：
+1. `autoCompress`: 自动压缩较大的流场文件（非均匀的场，包括网格）。不论是ascii还是binary都压缩为gzip格式（其他格式不能被OpenFOAM和paraivew直接读取）
+
 ### 真正的CMake构建系统：
 1. 将所有子项目的wmake构建系统替换为Modern cmake
    - 与现代IDE更加兼容，clangd提供良好的语法提示
    - 更方便引入外部依赖
    - 更高效的并行编译
    - `find_package(OpenFOAM CONFIG)`即可导入OpenFOAM，方便二次开发
-2. DyanmicCode功能尚未移植，仍然依赖wmake
-3. 支持 `AOCC`.
-4. 在 `specie` 字典中添加 `Tc_` `Pc_` `Vc_` `omega_` 字段，从 `equationOfState`字典中删除相应字段。在编写 `physicalProperties` 时，用户应该把临界性质和偏心因子写入 `specie` 字典。
+2. 性能优化
+   - `Opt`模式编译时开启`-march=native`，允许编译器充分利用SIMD
+2. 支持 `AOCC`.
+3. 在 `specie` 字典中添加 `Tc_` `Pc_` `Vc_` `omega_` 字段，从 `equationOfState`字典中删除相应字段。在编写 `physicalProperties` 时，用户应该把临界性质和偏心因子写入 `specie` 字典。
    - 理由：临界点和偏心因子是物质的本征性质，与摩尔量类似
    - 这样更方便添加其他真实气体状态方程
-5. 删除一些求解器模块代码中的冗余引用
+4. 删除一些求解器模块代码中的冗余引用
    1. 目前清理了 `isothermalFluidSolver`、`fluidSolver`、`multicomponentFluidSolver`、`XiFluidSolver`。
 
 
@@ -52,7 +56,7 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 4. 修改dynamicCode相关代码，采用cmake而非wmake编译
 
 
-## 现存bug(截至20250823):
+## 现存bug(截至20251123):
 1. 算例包含拉格朗日场时，`decomposePar`崩溃（`test/Largrangian`的一些算例测试不通过）
 2. `test/postProcessing/channel`的一些后处理算例不通过
-3. ~~单精度+优化时`blockMesh`因SIGFPE崩溃~~（无解，编译器优化产生的SSE指令会除零产生NAN，但不使用错误结果。只能取消SIGFPE）
+3. ~~单精度+优化时`blockMesh`因SIGFPE崩溃~~（无解，编译器优化产生的SSE指令会除零产生NAN，但不使用错误结果。只能`unset FOAM_SIGFPE`）
