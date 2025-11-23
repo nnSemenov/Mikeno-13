@@ -79,13 +79,12 @@ target_sources(OpenFOAM PRIVATE
     primitives/Vector/complexVector/complexVector.C
 )
 
-if (NOT ${WM_PRECISION_OPTION} EQUAL "SP")
+if (NOT ${WM_PRECISION_OPTION} STREQUAL "SP")
     target_sources(OpenFOAM PRIVATE
         primitives/Vector/floatVector/floatVector.C
         primitives/Tensor/floatTensor/floatTensor.C
     )
 endif ()
-
 
 target_sources(OpenFOAM PRIVATE
     primitives/Vector/labelVector/labelVector.C
