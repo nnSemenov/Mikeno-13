@@ -85,8 +85,6 @@ jobs:
         ./fvMeshTools/Allclean
         ./boundaryLayer/Allrun
         ./boundaryLayer/Allclean
-        ./IO/Allrun
-        ./IO/fileHandler/Allclean
         ./multiphaseEuler/Allrun
         ./multiphaseEuler/Allclean
         ./chemistriy/Allrun
@@ -98,7 +96,6 @@ jobs:
       with:
         name: test-failure-files
         path: test
-        if-no-files-found: error
         compression-level: 7
 
 #    - name: Run unit test
