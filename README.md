@@ -22,11 +22,11 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
    - `find_package(OpenFOAM CONFIG)`即可导入OpenFOAM，方便二次开发
 2. 性能优化
    - `Opt`模式编译时开启`-march=native`，允许编译器充分利用SIMD
-2. 支持 `AOCC`.
-3. 在 `specie` 字典中添加 `Tc_` `Pc_` `Vc_` `omega_` 字段，从 `equationOfState`字典中删除相应字段。在编写 `physicalProperties` 时，用户应该把临界性质和偏心因子写入 `specie` 字典。
+3. 支持 `AOCC`.
+4. 在 `specie` 字典中添加 `Tc_` `Pc_` `Vc_` `omega_` 字段，从 `equationOfState`字典中删除相应字段。在编写 `physicalProperties` 时，用户应该把临界性质和偏心因子写入 `specie` 字典。
    - 理由：临界点和偏心因子是物质的本征性质，与摩尔量类似
    - 这样更方便添加其他真实气体状态方程
-4. 删除一些求解器模块代码中的冗余引用
+5. 删除一些求解器模块代码中的冗余引用
    1. 目前清理了 `isothermalFluidSolver`、`fluidSolver`、`multicomponentFluidSolver`、`XiFluidSolver`。
 
 
