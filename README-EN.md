@@ -7,11 +7,12 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 1. Better support for modeling chemical engineering process. 
 2. Continually merge upstream updates
 3. Build system migration: Replace wmake with CMake.
-4. Fix unexpected SIGFPE trapping, mainly for double-precision. (Compiler optimizes float-point computation with SIMD, but they generates unexpected NAN sometimes. These NAN are never used, but emits SIGFPE)
+4. Fix unexpected SIGFPE trapping, mainly for double-precision. 
+   - Compiler optimizes float-point computation with SIMD, but they generates unexpected NAN sometimes. These NAN are never used, but emits SIGFPE
 
 ## Modifications
 
-### Utilities
+### New Utilities
 1. `autoCompress`: Compress all heavy fields (non-uniform, including mesh) to gzip, regardless of format(ascii or binary)
 
 ### Code and compiler
@@ -45,13 +46,13 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 
 ## Fix unexpected SIGFPE trapping (compile option in brackes)
 1. Fix `flowRateInletVelocity` trapped by SIGFPE when writting flow field. This is caused by division in `unitConversion::toUser(const T& t) const`. (`Clang DP Opt`)
+2. Fix `chemistryModel` trapped by SIGFPE when calculating reaction rate. This is is trapped in `Foam::Reaction<ThermoType>::C`, probably caused by branching logic. (`Clang DP Release`)
 
 
 ## Pending works
 1. More equation of state: Patel-Teja, Martin-Hou
 2. Extend porous media heat trSolveransfer to multicomponent
 3. Stabilize `porousMediaFluid` for non-equilibrium heat transfer with large coefficient or specific area
-4. Modify dynamicCode implementation, use cmake instead of wmake.
 
 
 ## Existing Bugs(Up to 20251123):

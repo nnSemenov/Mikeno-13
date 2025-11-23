@@ -6,8 +6,9 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 ## 这个分支的目标
 1. 更好的支持化工CFD模拟
 2. 持续合并上游（基金会版本）的更新
-3. 构建系统换血：用cmake全面替代wmake
-4. 修复编译器优化后意外触发SIGFPE的bug，主要针对双精度（编译器会用向量化指令加速浮点运算，但有时会产生不应该出现的NAN。这些NAN值不会被使用，却触发SIGFPE）
+3. 构建系统换血：用cmake全面替代wmake（已完成）
+4. 修复编译器优化后意外触发SIGFPE的bug，主要针对双精度
+   - 编译器会用向量化指令加速浮点运算，但有时会产生不应该出现的NAN。这些NAN值不会被使用，却触发SIGFPE
 
 ## 修改内容
 
@@ -36,7 +37,7 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 ### 多孔介质传热
 1. `porousMediaFluidSolver` 模块允许任意数量的多孔相，可以模拟流-固传热和固-固传热，同时支持热平衡模式和热非平衡模式。
 
-### 更严格的热力学[README-EN.md](README-EN.md)
+### 更严格的热力学
 1. 状态方程：增加 `RedlichKwongGas`，重写 `PengRobinsonGas`
 2. 以上的真实气体状态方程都用AspenPlusV14检验过
 3. Van der vaals 混合规则
@@ -47,14 +48,13 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
    2. 从剩余性质计算以下物性的真实性质： `Cp` `Cv` `hs` `ha` `es` `ea`。所有剩余性质都是从混合状态方程计算的。
 
 ## 修复意外触发SIGFPE（括号备注编译选项）
-1. 修复`flowRateInletVelocity`在写出流场时触发SIGFPE。该bug来自于`unitConversion::toUser(const T& t) const`中的除法。（`Clang DP Opt`）
+1. 修复`flowRateInletVelocity`在写出流场时触发SIGFPE。该误触来自于`unitConversion::toUser(const T& t) const`中的除法。（`Clang DP Opt`）
+2. 修复`chemistryModel`在计算反应速率触发SIGFPE。该误触来自于`void Foam::Reaction<ThermoType>::C`，可能是分支逻辑导致。（`Clang DP Release`）
 
 ## 计划添加的
 1. 更多状态方程：Patel-Teja、Martin-Hou等
 2. 把多孔介质传热模块拓展到单相多组分
 3. 改进`porousMediaFluidSolver`的热非平衡模型，使它在大比表面积、高传热系数时更加稳定
-4. 修改dynamicCode相关代码，采用cmake而非wmake编译
-
 
 ## 现存bug(截至20251123):
 1. 算例包含拉格朗日场时，`decomposePar`崩溃（`test/Largrangian`的一些算例测试不通过）
