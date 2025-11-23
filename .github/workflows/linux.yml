@@ -69,7 +69,7 @@ jobs:
         source FOAMenv.sh
         cmake "-Dsearch_dirs=./bin;./lib" -P ../../cmake/check_linking.cmake
 
-    - name: Run tests
+    - name: Run function tests
       run: |
         source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
         export FOAM_SETNAN=set
@@ -87,8 +87,8 @@ jobs:
         ./boundaryLayer/Allclean
         ./multiphaseEuler/Allrun
         ./multiphaseEuler/Allclean
-        ./chemistriy/Allrun
-        ./chemistriy/Allclean
+        ./chemistry/Allrun
+        ./chemistry/Allclean
 
     - name: Upload test files
       uses: actions/upload-artifact@v4
