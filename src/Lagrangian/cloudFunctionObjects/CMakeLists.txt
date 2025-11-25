@@ -3,6 +3,8 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 set(target_name LagrangianCloudFunctionObjects)
 
 add_library(${target_name} SHARED
+    cloudPosition/cloudPosition.C
+
     cloudVolume/cloudVolume.C
     cloudSurfaceArea/cloudSurfaceArea.C
     cloudMass/cloudMass.C

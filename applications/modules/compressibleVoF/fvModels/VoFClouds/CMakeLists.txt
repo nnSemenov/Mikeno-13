@@ -33,6 +33,7 @@ target_link_libraries(${target_name} PRIVATE
 
     lagrangian
     lagrangianParcel
+    compressibleVoFSolver
 )
 
 target_compile_definitions(${target_name} PRIVATE
