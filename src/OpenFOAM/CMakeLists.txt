@@ -292,7 +292,7 @@ target_sources(OpenFOAM PRIVATE
 set(functionEntries ${dictionary}/functionEntries)
 target_sources(OpenFOAM PRIVATE
     ${functionEntries}/functionEntry/functionEntry.C
-    ${functionEntries}/dummyEntry/dummyEntry.C
+#    ${functionEntries}/dummyEntry/dummyEntry.C
     ${functionEntries}/negEntry/negEntry.C
     ${functionEntries}/calcIncludeEntry/calcIncludeEntry.C
     ${functionEntries}/calcEntry/calcEntry.C
