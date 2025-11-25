@@ -9,9 +9,14 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     -Wno-attributes
     -ftemplate-depth-256
 
-)
-
-list(APPEND Mikeno_fp_strict_option
     -frounding-math
     -ftrapping-math
+)
+
+
+list(APPEND Mikeno_less_warn_options
+    -Wno-old-style-cast
+    -Wno-unused-local-typedefs
+    -Wno-tautological-undefined-compare
+    -Wno-shift-negative-value
 )

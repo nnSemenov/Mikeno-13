@@ -57,10 +57,6 @@ target_link_libraries(chemistryModel PRIVATE
     meshTools
 )
 
-target_compile_options(chemistryModel PRIVATE
-    ${Mikeno_fp_strict_option}
-)
-
 target_compile_definitions(chemistryModel PRIVATE
     LIB_NAME=libchemistryModel.so
 )
