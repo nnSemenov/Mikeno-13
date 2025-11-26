@@ -62,7 +62,6 @@ target_link_libraries(triSurface PRIVATE
     surfMesh
 )
 
-
 target_compile_definitions(triSurface PRIVATE
     LIB_NAME=libtriSurface.so
 )

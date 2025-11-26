@@ -90,6 +90,7 @@ target_sources(Lagrangian PRIVATE
     ${derivedLagrangianFieldSources}/NaN/NaNLagrangianFieldSources.C
     ${derivedLagrangianFieldSources}/distribution/distributionLagrangianScalarFieldSource.C
     ${derivedLagrangianFieldSources}/noneState/noneStateLagrangianLabelFieldSource.C
+    ${derivedLagrangianFieldSources}/position/positionLagrangianVectorFieldSource.C
 )
 
 target_sources(Lagrangian PRIVATE
@@ -104,6 +105,7 @@ target_sources(Lagrangian PRIVATE
     Lagrangian/LagrangianSpSchemes/LagrangianSpScheme/LagrangianSpSchemes.C
     Lagrangian/LagrangianSpSchemes/implicit/implicit_LagrangianSpSchemes.C
     Lagrangian/LagrangianSpSchemes/Explicit/Explicit_LagrangianSpSchemes.C
+    Lagrangian/LagrangianSpSchemes/upwind/upwind_LagrangianSpSchemes.C
     Lagrangian/LagrangianAccumulationSchemes/LagrangianAccumulationScheme/LagrangianAccumulationSchemes.C
     Lagrangian/LagrangianAccumulationSchemes/cell/cell_LagrangianAccumulationSchemes.C
     Lagrangian/LagrangianAccumulationSchemes/cellPoint/cellPoint_LagrangianAccumulationSchemes.C

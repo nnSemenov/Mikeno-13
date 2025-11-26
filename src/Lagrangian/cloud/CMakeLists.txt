@@ -10,10 +10,11 @@ add_library(${target_name} SHARED
     clouds/shaped/shaped.C
     clouds/spherical/spherical.C
     clouds/coupled/coupled.C
-    clouds/coupledToIncompressibleFluid/coupledToIncompressibleFluid.C
+    clouds/coupledToConstantDensityFluid/coupledToConstantDensityFluid.C
     clouds/coupledToFluid/coupledToFluid.C
     clouds/sphericalCoupled/sphericalCoupled.C
     clouds/massive/massive.C
+    clouds/massiveCoupledToFluid/massiveCoupledToFluid.C
     clouds/grouped/grouped.C
 
     # Derived Clouds
@@ -54,6 +55,8 @@ add_library(${target_name} SHARED
     LagrangianModels/SaffmanMeiLift/SaffmanMeiLift.C
     LagrangianModels/SchillerNaumannDrag/SchillerNaumannDrag.C
     LagrangianModels/turbulentDispersion/turbulentDispersion.C
+    LagrangianModels/collisionPhaseTransfer/collisionPhaseTransfer.C
+    LagrangianModels/constantFluxCarrierTransfer/constantFluxCarrierTransfer.C
     LagrangianModels/pointInjection/pointInjection.C
     LagrangianModels/patchInjection/patchInjection.C
     LagrangianModels/volumeInjection/volumeInjection.C

@@ -10,13 +10,12 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     -Wno-unqualified-std-cast-call
     -ftemplate-depth-256
 
-    # less warn
-    #    -Wno-old-style-cast
-    #    -Wno-unused-local-typedefs
-    #    -Wno-tautological-undefined-compare
-    #    -Wno-shift-negative-value
+    -ffp-exception-behavior=maytrap
 )
 
-list(APPEND Mikeno_fp_strict_option
-    -ffp-exception-behavior=maytrap
+list(APPEND Mikeno_less_warn_options
+        -Wno-old-style-cast
+        -Wno-unused-local-typedefs
+        -Wno-tautological-undefined-compare
+        -Wno-shift-negative-value
 )
