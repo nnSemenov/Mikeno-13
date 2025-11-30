@@ -72,7 +72,7 @@ Foam::dragModels::AttouFerschneider::effective_solid_info(const List<const phase
     tmp<volScalarField> inv_diameter_sum=alphaSum.ref()/solids[0]->d();
     for(label i=1;i<solids.size();i++) {
         tmp<volScalarField> alpha_i=max(static_cast<const volScalarField &>(*solids[i]), solids[i]->residualAlpha());
-        alphaSum.ref()+=alpha_i;
+        alphaSum.ref()+=alpha_i.ref();
         inv_diameter_sum.ref()+= alpha_i/solids[i]->d();
     }
     inv_diameter_sum=alphaSum.ref()/inv_diameter_sum;
