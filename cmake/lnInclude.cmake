@@ -1,5 +1,5 @@
 function(lnInclude dir)
-    cmake_parse_arguments(arg "" "RESULT_DIR" "" ${ARGN})
+    cmake_parse_arguments(arg "" "RESULT_DIR;HEADER_LIST;SOURCE_LIST" "" ${ARGN})
 
     cmake_path(ABSOLUTE_PATH dir)
 
@@ -10,6 +10,19 @@ function(lnInclude dir)
 
     cmake_path(RELATIVE_PATH dir BASE_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE disp_dir)
 
+
+    file(GLOB_RECURSE headers "${dir}/*.H")
+    file(GLOB_RECURSE h_headers "${dir}/*.h")
+    file(GLOB_RECURSE sources "${dir}/*.C")
+    set(full_sources "${headers};${h_headers};${sources}")
+
+    if(arg_HEADER_LIST)
+        set(${arg_HEADER_LIST} "${headers};${h_headers}" PARENT_SCOPE)
+    endif ()
+    if(arg_SOURCE_LIST)
+        set(${arg_SOURCE_LIST} ${sources} PARENT_SCOPE)
+    endif ()
+
     if(IS_DIRECTORY ${lnInclude_dir})
         message(STATUS "lnInclude ${disp_dir} ... Already finished.")
         return()
@@ -18,12 +31,6 @@ function(lnInclude dir)
     endif ()
 
     file(MAKE_DIRECTORY ${lnInclude_dir})
-
-
-    file(GLOB_RECURSE headers "${dir}/*.H")
-    file(GLOB_RECURSE h_headers "${dir}/*.h")
-    file(GLOB_RECURSE sources "${dir}/*.C")
-    set(full_sources "${headers};${h_headers};${sources}")
 
     foreach (file ${full_sources})
         if(${file} MATCHES "lnInclude")
