@@ -114,4 +114,7 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/FOAMenv.sh.in ${env_file} @ONLY)
 
 install(FILES ${env_file}
     DESTINATION .
+    PERMISSIONS OWNER_READ OWNER_WRITE
+                GROUP_READ
+                WORLD_READ
 )
