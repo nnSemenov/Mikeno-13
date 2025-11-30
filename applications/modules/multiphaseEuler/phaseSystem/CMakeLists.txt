@@ -1,8 +1,10 @@
-lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
+lnInclude(${CMAKE_CURRENT_SOURCE_DIR} HEADER_LIST target_headers)
 
 set(target_name phaseSystem)
 
 add_library(${target_name} SHARED
+    ${target_headers}
+
     phaseModel/phaseModel.C
     phaseModel/phaseModelNew.C
     phaseModels/phaseModels.C
