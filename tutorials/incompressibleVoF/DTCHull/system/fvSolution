@@ -94,7 +94,7 @@ PIMPLE
     maxCo               10;
     maxAlphaCo          1;
 
-    rDeltaTSmoothingCoeff 0.05;
+    rDeltaTSmoothingCoeff 0.025;
     rDeltaTDampingCoeff 0.5;
     nAlphaSpreadIter    0;
     nAlphaSweepIter     0;
