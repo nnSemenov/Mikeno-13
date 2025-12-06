@@ -1,3 +1,8 @@
-**.C linguist-language=C++ text eol=lf
-**.H linguist-language=C++ text eol=lf
+**.C   linguist-language=C++ text eol=lf
+**.H   linguist-language=C++ text eol=lf
+**.h   linguist-language=C++ text eol=lf
+**.cpp linguist-language=C++ text eol=lf
 **.L linguist-language=Lex text eol=lf
+**.cmake       text eol=lf
+CMakeLists.txt text eol=lf
+**.sh          text eol=lf
