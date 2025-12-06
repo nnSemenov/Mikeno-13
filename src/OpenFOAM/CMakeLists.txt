@@ -516,20 +516,15 @@ target_sources(OpenFOAM PRIVATE
 
 
 set(GAMGProcAgglomerations ${GAMG}/GAMGProcAgglomerations)
-set(GAMGProcAgglomeration ${GAMGProcAgglomerations}/GAMGProcAgglomeration)
-set(masterCoarsestGAMGProcAgglomeration ${GAMGProcAgglomerations}/masterCoarsestGAMGProcAgglomeration)
-set(manualGAMGProcAgglomeration ${GAMGProcAgglomerations}/manualGAMGProcAgglomeration)
-set(eagerGAMGProcAgglomeration ${GAMGProcAgglomerations}/eagerGAMGProcAgglomeration)
-set(noneGAMGProcAgglomeration ${GAMGProcAgglomerations}/noneGAMGProcAgglomeration)
-set(procFacesGAMGProcAgglomeration ${GAMGProcAgglomerations}/procFacesGAMGProcAgglomeration)
 target_sources(OpenFOAM PRIVATE
-    ${GAMGProcAgglomeration}/GAMGProcAgglomeration.C
-    ${masterCoarsestGAMGProcAgglomeration}/masterCoarsestGAMGProcAgglomeration.C
-    ${manualGAMGProcAgglomeration}/manualGAMGProcAgglomeration.C
-    ${eagerGAMGProcAgglomeration}/eagerGAMGProcAgglomeration.C
-    ${noneGAMGProcAgglomeration}/noneGAMGProcAgglomeration.C
-    ${procFacesGAMGProcAgglomeration}/procFacesGAMGProcAgglomeration.C
+    ${GAMGProcAgglomerations}/GAMGProcAgglomeration/GAMGProcAgglomeration.C
+    ${GAMGProcAgglomerations}/all/allGAMGProcAgglomeration.C
+    ${GAMGProcAgglomerations}/manual/manualGAMGProcAgglomeration.C
+    ${GAMGProcAgglomerations}/sequential/sequentialGAMGProcAgglomeration.C
+    ${GAMGProcAgglomerations}/none/noneGAMGProcAgglomeration.C
+    ${GAMGProcAgglomerations}/pair/pairGAMGProcAgglomeration.C
 )
+
 
 target_sources(OpenFOAM PRIVATE
     meshes/lduMesh/lduMesh.C
