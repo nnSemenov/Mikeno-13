@@ -4,7 +4,11 @@ lnInclude(OpenFOAM RESULT_DIR OpenFOAM_lnInclude_dir)
 message(STATUS "OpenFOAM_lnInclude_dir = ${OpenFOAM_lnInclude_dir}")
 
 add_subdirectory(wmakeParse)
-add_subdirectory(OSspecific/POSIX)
+if(${WIN32})
+    add_subdirectory(OSspecific/WIN)
+else ()
+    add_subdirectory(OSspecific/POSIX)
+endif ()
 add_subdirectory(Pstream)
 add_subdirectory(OpenFOAM)
 
