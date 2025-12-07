@@ -40,8 +40,11 @@ set(SCOTCH_OK ON)
 find_file(ptscotch_header
 	NAMES ptscotch.h
 	PATH_SUFFIXES scotch
-	REQUIRED
 )
+if(NOT ${ptscotch_header})
+	message(WARNING "Failed to find ptscotch header. Skip ptscotch")
+	return()
+endif ()
 message(STATUS "Found ptscotch header file: ${ptscotch_header}")
 cmake_path(GET ptscotch_header PARENT_PATH ptscotch_include_dir)
 
