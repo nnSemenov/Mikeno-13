@@ -11,8 +11,9 @@
 #include <cstdlib>
 #include <format>
 
+#ifndef WIN32
 #include <unistd.h>
-
+#endif
 #include "parse_wmake.H"
 
 namespace Foam::wmakeParse {
