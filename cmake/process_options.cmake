@@ -26,6 +26,10 @@ target_compile_definitions(OpenFOAM_Defines INTERFACE
 # Options to reduce warning, usually used on flex. TODO: Supress there warnings for flex
 set(Mikeno_less_warn_options )
 
+if(${WIN32})
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif ()
+
 ####### wmake env vars
 set(WM_PROJECT_DIR ${PROJECT_SOURCE_DIR})
 set(WM_CC ${CMAKE_C_COMPILER})
