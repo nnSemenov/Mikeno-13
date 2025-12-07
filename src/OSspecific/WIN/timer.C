@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include <unistd.h>
+#include <cstdlib>
 
 #include "error.H"
 #include "timer.H"

@@ -24,19 +24,24 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "clockTime.H"
-#include <sys/time.h>
+//#include <sys/time.h>
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 void Foam::clockTime::getTime(timeType& t)
 {
-    gettimeofday(&t, 0);
+  t=std::chrono::system_clock::now();
+//    gettimeofday(&t, 0);
 }
 
 
 double Foam::clockTime::timeDifference(const timeType& beg, const timeType& end)
 {
-    return end.tv_sec - beg.tv_sec + 1e-6*(end.tv_usec - beg.tv_usec);
+
+  const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-beg);
+  return double(duration.count())*1e-6;
+
+//    return end.tv_sec - beg.tv_sec + 1e-6*(end.tv_usec - beg.tv_usec);
 }
 
 

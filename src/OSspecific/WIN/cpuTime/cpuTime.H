@@ -41,7 +41,7 @@ SourceFiles
 #ifndef cpuTime_H
 #define cpuTime_H
 
-#include <time.h>
+#include <ctime>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

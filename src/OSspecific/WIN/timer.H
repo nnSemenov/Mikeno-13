@@ -62,8 +62,8 @@ SourceFiles
 
 #include "className.H"
 
-#include <signal.h>
-#include <setjmp.h>
+#include <csignal>
+#include <csetjmp>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

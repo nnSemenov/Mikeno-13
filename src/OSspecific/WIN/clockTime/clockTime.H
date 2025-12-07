@@ -36,7 +36,7 @@ SourceFiles
 #ifndef clockTime_H
 #define clockTime_H
 
-#include <sys/types.h>
+#include <chrono>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,7 +52,7 @@ class clockTime
     // Private Data
 
         //- Time structure used
-        typedef struct timeval timeType;
+        using timeType = std::chrono::system_clock::time_point;
 
         timeType startTime_;
 
