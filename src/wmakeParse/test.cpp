@@ -25,8 +25,8 @@ int main() {
 
   std::map<std::string,std::string> dict;
 //  dict=Foam::wmakeParse::get_environment_variables();
-  dict["FOAM_LIBBIN"]="<FOAM_LIBBIN>";
-  dict["LIB_SRC"]="<LIBSRC>";
+  dict["FOAM_LIBBIN"]="FOAM_LIBBIN";
+  dict["LIB_SRC"]="src";
 
   std::vector<std::string> files;
   try {
@@ -63,7 +63,7 @@ const char* const test_string="triSurfaceTools                       = triSurfac
                               "triSurface/stitchTriangles.C\n"
                               "\n"
                               "interfaces = triSurface/interfaces\n"
-                              "$(interfaces)/STL/writeSTL.C\n"
+                              "$(interfaces)/STL/$(interfaces)/writeSTL.C\n"
                               "$(interfaces)/STL/readSTL.C\n"
                               "$(interfaces)/STL/readSTLASCII.L\n"
                               "$(interfaces)/STL/readSTLBINARY.C\n"

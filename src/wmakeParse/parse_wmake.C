@@ -16,6 +16,8 @@
 #endif
 #include "parse_wmake.H"
 
+#include <boost/regex.hpp>
+
 namespace Foam::wmakeParse {
 
   std::string_view trim(std::string_view sv) noexcept {
@@ -64,82 +66,72 @@ namespace Foam::wmakeParse {
     return ret;
   }
 
-  std::optional<size_t> first_quote_location(std::string_view line) {
-    size_t quote_counter=0;
-    for(size_t idx=0;idx<line.size();idx++) {
-      const char ch=line[idx];
-      if(ch=='\'' or ch=='\"') {
-        quote_counter++;
-      }
-      if(ch=='=') {
-        if(quote_counter>0) { // = after quote, not a variable statement
-          return std::nullopt;
-        }
-        return idx;
-      }
-    }
-    return std::nullopt;
-  }
+//  std::optional<size_t> first_quote_location(std::string_view line) {
+//    size_t quote_counter=0;
+//    for(size_t idx=0;idx<line.size();idx++) {
+//      const char ch=line[idx];
+//      if(ch=='\'' or ch=='\"') {
+//        quote_counter++;
+//      }
+//      if(ch=='=') {
+//        if(quote_counter>0) { // = after quote, not a variable statement
+//          return std::nullopt;
+//        }
+//        return idx;
+//      }
+//    }
+//    return std::nullopt;
+//  }
 
-  std::string evaluate_string(std::string_view raw,
+  std::string evaluate_string(const std::string &input,
                               const std::map<std::string,std::string>& vars,
                               const wmake_parse_option&option) {
+    namespace rules=boost::regex_constants;
+
+    auto match_replace_with_re=[&vars,&option](const std::string&raw,const boost::regex &pattern) {
+      std::string ret;
+      ret.reserve(raw.size());
+      boost::sregex_iterator end;
+      auto prev_loc=raw.begin();
+      for(auto it=boost::sregex_iterator{raw.begin(),raw.end(),pattern};it not_eq end;++it) {
+        // Location of $
+        const auto loc=it->operator[](0).begin();
+        assert(loc>=prev_loc);
+        // Copy string before $
+        ret+= std::string_view{prev_loc,loc};
+        // Update prev_loc to next character of )
+        prev_loc=it->operator[](0).end();
+
+        const std::string var_name{loc+2,it->operator[](0).end()-1};
+        auto value_it=vars.find(var_name);
+        const char* value = nullptr;
+        if(value_it==vars.end()) { // non-existence variable
+          switch (option.when_undefined_reference) {
+            case undefined_reference_behavior::empty_string:
+              value="";
+              break;
+            case undefined_reference_behavior::throw_exception:
+              throw std::runtime_error{std::format("Undefined reference to variable \"{}\"",var_name)};
+          }
+        } else{
+          value=value_it->second.c_str();
+        }
+        assert(value not_eq nullptr);
+        // Append value of expression
+        ret+=value;
+      }
+      // Append rest part
+      ret+=std::string_view{prev_loc,raw.end()};
+      return ret;
+    };
+
+    const boost::regex reg_bracket{R"(\$\(\w+\))"};
     std::string ret;
-    for(const auto & seg_: raw | std::views::split('$')) {
-      std::string_view seg{seg_};
-      if(seg.empty()) {
-        continue;
-//        throw std::runtime_error{std::format("Found invalid expression: \"{}\"",raw)};
-      }
-
-      char bracket=0;
-      char reverse_bracket=0;
-      if(seg[0]=='(') {
-        bracket=seg[0];
-        reverse_bracket=')';
-      }
-      if(option.parse_brace_expression and seg[0]=='{') {
-        bracket=seg[0];
-        reverse_bracket='}';
-      }
-
-      if(bracket==0) {
-        const ptrdiff_t head_offset=seg.data()-raw.data();
-        if(head_offset<=0) { // Head of string ,somthing link EXE_INC = $(...)
-          ret+=seg;
-        }else { // Middle of string, like EXE_INC = $ENV_VAR
-          ret+='$';
-          ret+=seg;
-        }
-        continue;
-      }
-
-      const size_t reverse_bracket_loc=seg.find_first_of(reverse_bracket);
-      if(reverse_bracket_loc==std::string_view::npos) {
-        throw std::runtime_error{std::format("Found incomplete evaluate expression: \"${}\"",raw)};
-      }
-
-      const std::string var_name{seg.data()+1,seg.data()+reverse_bracket_loc};
-      auto it = vars.find(var_name);
-      const char* value = nullptr;
-      if(it==vars.end()) { // non-existence variable
-        switch (option.when_undefined_reference) {
-          case undefined_reference_behavior::empty_string:
-            value="";
-            break;
-          case undefined_reference_behavior::throw_exception:
-            throw std::runtime_error{std::format("Undefined reference to variable \"{}\"",var_name)};
-        }
-      } else{
-        value=it->second.c_str();
-      }
-      assert(value not_eq nullptr);
-
-      ret+=value;
-      std::string_view reset_part{seg.begin()+reverse_bracket_loc+1,seg.end()};
-      ret += reset_part;
+    ret=match_replace_with_re(input,reg_bracket);
+    if(option.parse_brace_expression and ret.contains('}')) {
+      const boost::regex reg_brace{R"(\$\{\w+\})"};
+      ret=match_replace_with_re(ret,reg_brace);
     }
-
     return ret;
   }
 
@@ -147,25 +139,36 @@ namespace Foam::wmakeParse {
                                             const wmake_parse_option&option) {
     std::vector<std::string> files;
     auto lines = filter_file_lines(text);
+    const boost::regex file_pattern{R"(^\s*([\w\/\.]+)\s*$)"};
+    const boost::regex single_variable_pattern{R"((\w+)\s*=\s*([\w/]+))"};
+    const boost::regex multi_variable_pattern{R"((\w+)\s*=\s*([\S\s]+?)\s*$)"};
     for(std::string & line: lines) {
       if(line.contains('$')) {
         line= evaluate_string(line,parent_dict,option);
       }
-
-      const auto quote_loc_opt= first_quote_location(line);
-      if(not quote_loc_opt) { // not a variable statement
-        files.emplace_back(line);
+      boost::smatch match;
+      if(boost::regex_search(line,match,file_pattern)) {
+        std::string filename=match[1].str();
+        files.emplace_back(filename);
         continue;
       }
+      match=boost::smatch{};
+      if(boost::regex_search(line,match,single_variable_pattern)) {
+        std::string var_name{match[1]};
+        std::string var_value{match[2]};
 
-      const size_t quote_loc=quote_loc_opt.value();
-      std::string_view var_name_raw{line.data(),quote_loc};
-      std::string_view var_name = trim(var_name_raw);
+        parent_dict.emplace(var_name,var_value);
+        continue;
+      }
+      match=boost::smatch{};
+      if(boost::regex_search(line,match,multi_variable_pattern)) {
+        std::string var_name{match[1]};
+        std::string var_value{match[2]};
 
-      std::string_view var_value_raw{line.begin()+ptrdiff_t(quote_loc+1),line.end()};
-      std::string_view var_value= trim(var_value_raw);
-
-      parent_dict.emplace(var_name,var_value);
+        parent_dict.emplace(var_name,var_value);
+        continue;
+      }
+      throw std::runtime_error{std::format("Expression is neither filename nor variable: \"{}\"",line)};
     }
     return files;
   }

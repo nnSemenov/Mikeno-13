@@ -17,6 +17,7 @@ target_include_directories(${target_name} PRIVATE
 
 target_link_libraries(${target_name} PRIVATE
     OpenFOAM_Defines
+    Boost::regex
 )
 
 target_compile_definitions(${target_name} PRIVATE

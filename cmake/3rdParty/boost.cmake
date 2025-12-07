@@ -1,5 +1,5 @@
 find_package(Boost
-    COMPONENTS graph
+    COMPONENTS graph regex
     REQUIRED
     CONFIG
 )
