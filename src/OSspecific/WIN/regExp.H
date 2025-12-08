@@ -42,8 +42,9 @@ SourceFiles
 #ifndef regExp_H
 #define regExp_H
 
-#include <regex.h>
+//#include <regex.h>
 #include <string>
+#include <boost/regex.hpp>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -64,8 +65,8 @@ class regExp
     // Private Data
 
         //- Precompiled regular expression
-        mutable regex_t* preg_;
-
+//        mutable regex_t* preg_;
+        mutable boost::regex preg;
 
     // Private Member Functions
 
@@ -126,21 +127,24 @@ public:
         // Access
 
             //- Return true if a precompiled expression does not exist
-            inline bool empty() const
+            [[nodiscard]] inline bool empty() const
             {
-                return !preg_;
+              return preg.empty();
+//                return !preg_;
             }
 
             //- Does a precompiled expression exist?
-            inline bool exists() const
+            [[nodiscard]] inline bool exists() const
             {
-                return preg_ ? true : false;
+              return preg.empty();
+//                return preg_ ? true : false;
             }
 
             //- Return the number of (groups)
             inline int ngroups() const
             {
-                return int(preg_ ? preg_->re_nsub : 0);
+                return static_cast<int>(preg.mark_count());
+//                return int(preg_ ? preg_->re_nsub : 0);
             }
 
 

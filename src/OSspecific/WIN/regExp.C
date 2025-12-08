@@ -83,13 +83,13 @@ bool Foam::regExp::matchGrouping
 
 Foam::regExp::regExp()
 :
-    preg_(0)
+    preg{}
 {}
 
 
 Foam::regExp::regExp(const char* pattern, const bool ignoreCase)
 :
-    preg_(0)
+  preg{}
 {
     set(pattern, ignoreCase);
 }
@@ -97,7 +97,7 @@ Foam::regExp::regExp(const char* pattern, const bool ignoreCase)
 
 Foam::regExp::regExp(const std::string& pattern, const bool ignoreCase)
 :
-    preg_(0)
+  preg{}
 {
     set(pattern.c_str(), ignoreCase);
 }
@@ -168,16 +168,9 @@ void Foam::regExp::set(const std::string& pattern, const bool ignoreCase) const
 
 bool Foam::regExp::clear() const
 {
-    if (preg_)
-    {
-        regfree(preg_);
-        delete preg_;
-        preg_ = 0;
-
-        return true;
-    }
-
-    return false;
+  const bool exist=this->exists();
+  preg=boost::regex{};
+  return exist;
 }
 
 

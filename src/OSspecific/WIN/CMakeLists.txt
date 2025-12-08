@@ -43,6 +43,7 @@ target_compile_options(OSspecific PRIVATE -fPIC)
 
 target_link_libraries(OSspecific PUBLIC
     OpenFOAM_Defines
+    Boost::regex
 )
 
 target_include_directories(OSspecific PUBLIC
