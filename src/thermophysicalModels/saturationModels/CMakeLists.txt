@@ -12,6 +12,7 @@ add_library(saturationModels SHARED
     constantPressure/constantPressure.C
     constantTemperature/constantTemperature.C
     function1Temperature/function1Temperature.C
+    function1Pressure/function1Pressure.C
     polynomialTemperature/polynomialTemperature.C
 )
 
