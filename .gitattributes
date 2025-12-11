@@ -6,3 +6,6 @@
 **.cmake       text eol=lf
 CMakeLists.txt text eol=lf
 **.sh          text eol=lf
+Allrun         text eol=lf
+Allmesh        text eol=lf
+Allclean       text eol=lf
