@@ -8,43 +8,65 @@
 
 using Foam::scalar;
 using Foam::word;
+using Foam::vanDerWaals_solution;
 
-Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0) {
 
-    const scalar Q = (3 * a1 - a2 * a2) / 9.0;
-    const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
+std::variant<vanDerWaals_solution,scalar> Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0) {
+  const scalar Q = (3 * a1 - a2 * a2) / 9.0;
+  const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
 
-    const scalar Q3 = Q * Q * Q;
-    const scalar D = Q3 + Rl * Rl;
+  const scalar Q3 = Q * Q * Q;
+  const scalar D = Q3 + Rl * Rl;
 
-    scalar root = -1;
+//  scalar root = -1;
 
-    if (D <= 0) {
-        const scalar th = ::acos(Rl / sqrt(-Q3));
-        const scalar qm = 2 * sqrt(-Q);
-        const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
-        const scalar r2 =
-                qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
-        const scalar r3 =
-                qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
+  if (D <= 0) {
+    const scalar th = ::acos(Rl / sqrt(-Q3));
+    const scalar qm = 2 * sqrt(-Q);
+    const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
+    const scalar r2 =
+        qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
+    const scalar r3 =
+        qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
 
-        root = max(r1, max(r2, r3));
+    vanDerWaals_solution sol{};
+    sol.x_max=max(r1, max(r2, r3));
+    sol.x_min=min(r1, min(r2, r3));
+    sol.x_middle=min(max(r2,r3),max(min(r2,r3),r1));
+    assert(sol.x_min<=sol.x_middle);
+    assert(sol.x_middle<=sol.x_max);
+    assert(sol.x_min>0);
+    return sol;
+//    root = max(r1, max(r2, r3));
+  } else {
+    // One root is real
+    const scalar D05 = sqrt(D);
+    const scalar S = cbrt(Rl + D05);
+    scalar Tl = 0;
+    if (D05 > Rl) {
+      Tl = -cbrt(mag(Rl - D05));
     } else {
-        // One root is real
-        const scalar D05 = sqrt(D);
-        const scalar S = cbrt(Rl + D05);
-        scalar Tl = 0;
-        if (D05 > Rl) {
-            Tl = -cbrt(mag(Rl - D05));
-        } else {
-            Tl = cbrt(Rl - D05);
-        }
-
-        root = S + Tl - a2 / 3.0;
+      Tl = cbrt(Rl - D05);
     }
+
+    const scalar root = S + Tl - a2 / 3.0;
     assert(root > 0);
 
     return root;
+  }
+}
+
+
+Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max) {
+  const auto result= solveCubicEquation(a2,a1,a0);
+  const vanDerWaals_solution* vdw=std::get_if<vanDerWaals_solution>(&result);
+  if(vdw) {
+    if (prefer_max) {
+      return vdw->x_max;
+    }
+    return vdw->x_min;
+  }
+  return std::get<scalar>(result);
 }
 
 word Foam::parseBinarySpeciePair(const word&str, word&sp0, word&sp1) {

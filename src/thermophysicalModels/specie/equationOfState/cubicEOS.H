@@ -11,6 +11,7 @@
 #include <cassert>
 #include <type_traits>
 #include <functional>
+#include <variant>
 
 namespace Foam {
 
@@ -19,8 +20,15 @@ namespace Foam {
         scalar B;
     };
 
+    struct vanDerWaals_solution {
+      scalar x_min; // Minimum root
+      scalar x_middle; // Middle root, usually unstable
+      scalar x_max; // Maximum root
+    };
     // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
-    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0);
+    std::variant<vanDerWaals_solution,scalar> solveCubicEquation(scalar a2, scalar a1, scalar a0);
+    // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
+    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max);
 
     struct residualEnergy {
         scalar h_R;//[J/kg]
