@@ -48,6 +48,10 @@ template<class Specie>
 void Foam::RedlichKwongGas<Specie>::write(Ostream& os) const
 {
     Specie::write(os);
+    dictionary dict("equationOfState");
+    const char* phase_val=this->preferGas_?"vapor":"liquid";
+    dict.add("phase",phase_val);
+    os<<indent<<dict.dictName()<<dict;
 }
 
 

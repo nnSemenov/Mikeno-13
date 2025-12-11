@@ -48,7 +48,7 @@ Usage
         Vc        0.0285;
         Pc        4.595e6;
         omega     0.0115;
-
+        phase     vapor;
     }
     \endverbatim
 
@@ -114,6 +114,7 @@ namespace Foam {
             :
                     public Specie {
         // Private Data
+        bool is_gas{true};
 
     public:
 
@@ -122,6 +123,7 @@ namespace Foam {
             scalar b;
             scalar da_dT;
             scalar dd2a_dT2;
+            bool is_gas;
 
             inline cubicEOSDimlessCoefficient dimlessCoeff(scalar p, scalar T) const {
                 const scalar A = a * p / sqr(RR * T);
@@ -140,7 +142,7 @@ namespace Foam {
                 const scalar a2 = B-1;
                 const scalar a1=A -2*B -3*sqr(B);
                 const scalar a0 = pow3(B) + sqr(B)-A*B;
-                const scalar Z = solveCubicEquation(a2,a1,a0);
+                const scalar Z = solveCubicEquation(a2,a1,a0,this->is_gas);
                 assert(Z>B);
                 return Z;
             }
@@ -331,7 +333,7 @@ namespace Foam {
             const scalar da_dT = a_c*dalpha_dT;
             const scalar d2a_dT2 = a_c*d2alpha_dT2;
 
-            return {a,b,da_dT,d2a_dT2};
+            return {a,b,da_dT,d2a_dT2,this->preferGas_};
         }
 
         //- Is the equation of state is incompressible i.e. rho != f(p)
@@ -456,6 +458,7 @@ namespace Foam {
                 scalar da_dT_sum=0;
                 scalar d2a_dT2_sum=0;
                 scalar bSum=0;
+                const bool is_gas=coreFun(0).is_gas;
                 for(label i=0;i<nSpecie;i++) {
                     const scalar Xi=specieMoleFracFun(i);
                     const EOSCore iCore=coreFun(i);
@@ -487,7 +490,7 @@ namespace Foam {
                         d2a_dT2_sum += Xi*Xj*(1-kij) *d2_dT2_sqrt_aiaj;
                     }
                 }
-                return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum};
+                return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum,is_gas};
             }
 
         };

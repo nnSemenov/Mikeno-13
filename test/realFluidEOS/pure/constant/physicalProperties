@@ -27,6 +27,7 @@ mixture {
         Pc 1292977.4;
         Vc 0.06503;
         omega -0.22014;
+        phase vapor;
     }
     thermodynamics {
         //Cp 10392.5;

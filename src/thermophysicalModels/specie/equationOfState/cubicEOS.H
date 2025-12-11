@@ -20,17 +20,21 @@ namespace Foam {
         scalar B;
     };
 
-    struct vanDerWaals_solution {
-      scalar x_min; // Minimum root
-      scalar x_middle; // Middle root, usually unstable
-      scalar x_max; // Maximum root
-    };
-    // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
-    std::variant<vanDerWaals_solution,scalar> solveCubicEquation(scalar a2, scalar a1, scalar a0);
-    // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
+    // Solve z^3 + a2 *z^2 + a1 * z + a0 = 0
     scalar solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max);
 
-    struct residualEnergy {
+    constexpr inline scalar take_min_positive(scalar x0,scalar x1,scalar x2) noexcept {
+        constexpr scalar gr=std::numeric_limits<scalar>::max();
+
+        const scalar r0=(x0>0. ? x0: gr);
+        const scalar r1=(x1>0. ? x1: gr);
+        const scalar r2=(x2>0. ? x2: gr);
+        const scalar r=std::min(r0,std::min(r1,r2));
+        return r;
+    }
+
+
+  struct residualEnergy {
         scalar h_R;//[J/kg]
         scalar e_R;//[J/kg]
         scalar Z;

@@ -48,6 +48,7 @@ public:
     struct EOSCore {
         scalar a;
         scalar b;
+        bool is_gas;
 
     protected:
         //- Molar volume [m^3/kmol]
@@ -66,7 +67,9 @@ public:
             const scalar a1 = A - B - sqr(B);
             const scalar a0 = -A * B;
 
-            return solveCubicEquation(a2, a1, a0);
+            const scalar Z= solveCubicEquation(a2, a1, a0, this->is_gas);
+            assert(Z>B);
+            return Z;
         }
         //- Return residual h and e
         inline Foam::residualEnergy residualHE(const scalar p, const scalar T, scalar W) const {
@@ -238,7 +241,7 @@ public:
         const auto Pc_ = this->Pc_;
         const scalar a = 0.42748025 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
         const scalar b = 0.08664035 * RR * Tc_ / Pc_;
-        return {a, b};
+        return {a, b, this->preferGas_};
     }
 
     //- Is the equation of state is incompressible i.e. rho != f(p)
@@ -323,13 +326,14 @@ public:
                            getXiFun &specieMoleFracFun) const {
             scalar sqrt_a_sum = 0;
             scalar bSum = 0;
+            const bool is_gas=coreFun(0).is_gas;
             for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
                 const EOSCore core_i = coreFun(spIdx);
                 const scalar Xi = specieMoleFracFun(spIdx);
                 sqrt_a_sum += Xi * sqrt(core_i.a);
                 bSum += Xi * core_i.b;
             }
-            return EOSCore{sqr(sqrt_a_sum), bSum};
+            return EOSCore{sqr(sqrt_a_sum), bSum, is_gas};
         }
     };
 

@@ -49,6 +49,10 @@ Foam::PengRobinsonGas<Specie>::PengRobinsonGas
 template<class Specie>
 void Foam::PengRobinsonGas<Specie>::write(Ostream &os) const {
     Specie::write(os);
+    dictionary dict("equationOfState");
+    const char* phase_val=this->preferGas_?"vapor":"liquid";
+    dict.add("phase",phase_val);
+    os<<indent<<dict.dictName()<<dict;
 }
 
 

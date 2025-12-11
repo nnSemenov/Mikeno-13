@@ -44,7 +44,8 @@ Foam::specie::specie(const word& name, const dictionary& dict)
     Tc_(dict.subDict("specie").lookupOrDefault("Tc", -1.0)),
     Vc_(dict.subDict("specie").lookupOrDefault("Vc", -1.0)),
     Pc_(dict.subDict("specie").lookupOrDefault("Pc", -1.0)),
-    omega_(dict.subDict("specie").lookupOrDefault("omega", -2.0))
+    omega_(dict.subDict("specie").lookupOrDefault("omega", -2.0)),
+    preferGas_(true)
 {
     auto eosDict = dict.subDictPtr("equationOfState");
     if (eosDict not_eq nullptr) {
@@ -52,9 +53,19 @@ Foam::specie::specie(const word& name, const dictionary& dict)
         forAll(oldKeyWords, wordIdx) {
             if (eosDict->found(oldKeyWords[wordIdx])) {
                 WarningIn(__PRETTY_FUNCTION__) << "EOS parameter " << oldKeyWords[wordIdx]
-                                               << " has been moved to \"specie\" dict. This change is introduced in OpenFOAMCE because they are eigen properties of specie. Your input will not take effect."
+                                               << " has been moved to \"specie\" dict. This change is introduced in Mikeno because they are eigen properties of specie. Your input will not take effect."
                                                << endl;
             }
+        }
+
+        const word phase=eosDict->lookupOrDefault<word>("phase","vapor");
+        if(phase=="vapor") {
+            preferGas_=true;
+        } else if(phase=="liquid") {
+            preferGas_=false;
+        } else {
+            FatalErrorInFunction<<"Invalid value for phase: \""<<phase<<"\". Valid values: (vapor liquid)"<<endl;
+            ::Foam::abort(::Foam::FatalError);
         }
     }
 
