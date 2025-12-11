@@ -13,6 +13,8 @@ add_library(${target_name} SHARED
     multiValveEngineState/multiValveEngineState.C
     zoneGenerators/cylinderHeadPoints/cylinderHeadPoints.C
     zoneGenerators/pistonBowlPoints/pistonBowlPoints.C
+    solidBodyMotionFunctions/multiValveEnginePistonMotion/multiValveEnginePistonMotion.C
+    solidBodyMotionFunctions/multiValveEngineValveMotion/multiValveEngineValveMotion.C
 )
 
 target_include_directories(${target_name} PUBLIC
@@ -26,6 +28,7 @@ target_link_libraries(${target_name} PRIVATE
 
     finiteVolume
     meshTools
+    motionSolvers
 )
 
 target_compile_definitions(${target_name} PRIVATE
