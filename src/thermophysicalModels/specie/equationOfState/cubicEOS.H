@@ -21,14 +21,14 @@ namespace Foam {
     };
 
     // Solve z^3 + a2 *z^2 + a1 * z + a0 = 0
-    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max);
+    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max, scalar lower_bound);
 
-    constexpr inline scalar take_min_positive(scalar x0,scalar x1,scalar x2) noexcept {
+    constexpr inline scalar take_min_valid(scalar x0,scalar x1,scalar x2, scalar lower_bound) noexcept {
         constexpr scalar gr=std::numeric_limits<scalar>::max();
 
-        const scalar r0=(x0>0. ? x0: gr);
-        const scalar r1=(x1>0. ? x1: gr);
-        const scalar r2=(x2>0. ? x2: gr);
+        const scalar r0=(x0>lower_bound ? x0: gr);
+        const scalar r1=(x1>lower_bound ? x1: gr);
+        const scalar r2=(x2>lower_bound ? x2: gr);
         const scalar r=std::min(r0,std::min(r1,r2));
         return r;
     }

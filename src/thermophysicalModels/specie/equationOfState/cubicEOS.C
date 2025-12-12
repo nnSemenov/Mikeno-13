@@ -9,7 +9,7 @@
 using Foam::scalar;
 using Foam::word;
 
-Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max) {
+Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max, scalar lower_bound) {
   const scalar Q = (3 * a1 - a2 * a2) / 9.0;
   const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
 
@@ -31,7 +31,7 @@ Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0, bool pref
     if(prefer_max) {
       return max(r1, max(r2, r3));
     }
-    return take_min_positive(r1,r2,r3);
+    return take_min_valid(r1,r2,r3,lower_bound);
   } else {
     // One root is real
     const scalar D05 = sqrt(D);

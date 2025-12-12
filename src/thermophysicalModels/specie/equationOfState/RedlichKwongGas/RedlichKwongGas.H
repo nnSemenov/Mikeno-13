@@ -67,7 +67,7 @@ public:
             const scalar a1 = A - B - sqr(B);
             const scalar a0 = -A * B;
 
-            const scalar Z= solveCubicEquation(a2, a1, a0, this->is_gas);
+            const scalar Z= solveCubicEquation(a2, a1, a0, this->is_gas, B);
             assert(Z>B);
             return Z;
         }

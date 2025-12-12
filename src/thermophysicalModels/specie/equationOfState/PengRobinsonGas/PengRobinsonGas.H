@@ -142,7 +142,7 @@ namespace Foam {
                 const scalar a2 = B-1;
                 const scalar a1=A -2*B -3*sqr(B);
                 const scalar a0 = pow3(B) + sqr(B)-A*B;
-                const scalar Z = solveCubicEquation(a2,a1,a0,this->is_gas);
+                const scalar Z = solveCubicEquation(a2,a1,a0,this->is_gas, B);
                 assert(Z>B);
                 return Z;
             }
