@@ -1,9 +1,40 @@
-//
-// Created by joseph on 25-7-13.
-//
+/*
+License
+    This file is part of Mikeno.
 
-#ifndef realGasMulticomponentMixture_H
-#define realGasMulticomponentMixture_H
+    Mikeno is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Mikeno is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Mikeno.  If not, see <http://www.gnu.org/licenses/>.
+
+Class
+    Foam::idealLiquidMulticomponentMixture
+
+Description
+    Thermophysical properties mixing class for ideal liquid mixture.
+    Apply harmonic mass weighed mixing for density (no extra volume),
+    mass weighed mixing for he and Cp Cv (no extra energy),
+    Arrhenius mixing for mu, Vredeveled mixing for kappa (n=-2).
+
+    That is:
+    kappa^-2 = sum w_i * kappa_i^-2
+    log(mu) = sum w_i * log(mu_i)
+
+SourceFiles
+    idealLiquidMulticomponentMixture.C
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef idealLiquidMulticomponentMixture_H
+#define idealLiquidMulticomponentMixture_H
 
 #include "multicomponentMixture.H"
 #include "FieldListSlice.H"
@@ -266,4 +297,4 @@ public:
 #endif
 
 
-#endif //realGasMulticomponentMixture_H
+#endif //idealLiquidMulticomponentMixture_H
