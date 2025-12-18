@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2023-2025 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,35 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::functionEntries::calcIncludeEntry
+    Foam::functionEntries::endCodeBlockEntry
 
 Description
-    Specify an include file for \#calc, expects a single string to follow.
-
-    For example if functions from transform.H are used in the \#calc expression
-    \verbatim
-    angleOfAttack   5; // degs
-
-    angle           #calc "-degToRad($angleOfAttack)";
-
-    #calcInclude    "transform.H"
-    liftDir         #calc "transform(Ry($angle), vector(0, 0, 1))";
-    dragDir         #calc "transform(Ry($angle), vector(1, 0, 0))";
-    \endverbatim
-
-    The usual expansion of environment variables and other constructs
-    (eg, the \c ~OpenFOAM/ expansion) is retained.
-
-See also
-    Foam::functionEntries::calcEntry
+    Part of the #codeBlock...#endCodeBlock clause
 
 SourceFiles
-    calcIncludeEntry.C
+    endCodeBlockEntry.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef calcIncludeEntry_H
-#define calcIncludeEntry_H
+#ifndef endCodeBlockEntry_H
+#define endCodeBlockEntry_H
 
 #include "functionEntry.H"
 
@@ -62,38 +45,24 @@ namespace functionEntries
 {
 
 /*---------------------------------------------------------------------------*\
-                        Class calcIncludeEntry Declaration
+                           Class endCodeBlockEntry Declaration
 \*---------------------------------------------------------------------------*/
 
-class calcIncludeEntry
+class endCodeBlockEntry
 :
     public functionEntry
 {
-    // Private static data
-
-        // Static include file name cache
-        static DynamicList<fileName> includeFiles_;
-
-
-    // Private member functions
-
-        //- Return the file name
-        const string& fName() const
-        {
-            return operator[](0).stringToken();
-        }
-
 
 public:
 
     //- Runtime type information
-    FunctionTypeName("#calcInclude");
+    FunctionTypeName("#endCodeBlock");
 
 
     // Constructors
 
         //- Construct from line number, dictionary and Istream
-        calcIncludeEntry
+        endCodeBlockEntry
         (
             const label lineNumber,
             const dictionary& parentDict,
@@ -101,32 +70,29 @@ public:
         );
 
         //- Copy construct
-        calcIncludeEntry(const calcIncludeEntry&) = default;
+        endCodeBlockEntry(const endCodeBlockEntry&) = default;
 
         //- Clone
         virtual autoPtr<entry> clone(const dictionary&) const
         {
-            return autoPtr<entry>(new calcIncludeEntry(*this));
+            return autoPtr<entry>(new endCodeBlockEntry(*this));
         }
 
 
     // Member Functions
 
-        //- Execute the functionEntry in a sub-dict context
-        virtual bool execute(dictionary& parentDict, Istream&);
-
-        //- Reset the cache of \#calc include file names
-        static void clear();
-
-        //- Add the cached include file names to the codeInclude entry
-        //  in codeDict
-        static void codeInclude(dictionary& codeDict);
+        //- Expand the functionEntry into the contextDict
+        virtual bool execute(dictionary& contextDict, Istream& is)
+        {
+            NotImplemented;
+            return false;
+        }
 
 
     // Member Operators
 
         //- Disallow default bitwise assignment
-        void operator=(const calcIncludeEntry&) = delete;
+        void operator=(const endCodeBlockEntry&) = delete;
 };
 
 

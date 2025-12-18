@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "calcEntry.H"
-#include "calcIncludeEntry.H"
+#include "codeIncludeEntry.H"
 #include "dictionary.H"
 #include "dynamicCode.H"
 #include "codeStream.H"
@@ -51,78 +51,14 @@ namespace functionEntries
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-Foam::string Foam::functionEntries::calcEntry::calc
+Foam::string Foam::functionEntries::calcEntry::codeString
 (
-    const dictionary& dict,
+    const label index,
+    const dictionary& codeDict,
     Istream& is
 )
 {
-    if (debug)
-    {
-        Info<< "Expanding #calc at line " << is.lineNumber()
-            << " in file " <<  dict.name() << endl;
-    }
-
-    dynamicCode::checkSecurity
-    (
-        "functionEntries::calcEntry::execute(..)",
-        dict
-    );
-
-    // Construct codeDict for codeStream with the parent dictionary provided for
-    // string expansion and variable substitution and the same name as the
-    // parent for consistent error messaging
-    dictionary codeDict(fileName::null, dict);
-
-    // Read the code expression string delimited by either '"..."' or '#{...#}'
-    token t(is);
-
-    if (t.isVerbatimString())
-    {
-        calcIncludeEntry::codeInclude(codeDict);
-        codeDict.add(primitiveEntry("code", t));
-    }
-    else if (t.isString())
-    {
-        const string& s = t.stringToken();
-        calcIncludeEntry::codeInclude(codeDict);
-        codeDict.add
-        (
-            primitiveEntry("code", "os << (" + s + ");", t.lineNumber())
-        );
-    }
-    else
-    {
-        FatalIOErrorInFunction(is)
-            << "Wrong string type for #calc" << nl
-            << "    Expected either a string delimited by '\"...\"' "
-               "or a verbatim string delimited by '#{...#}' " << nl
-            << "    found token " << t
-            << exit(FatalIOError);
-    }
-
-    codeDict.add
-    (
-        primitiveEntry
-        (
-            "codeOptions",
-            "#{ -fno-show-column $<$<STREQUAL:${CMAKE_CXX_COMPILER_ID},GNU>:-fno-diagnostics-show-caret> #}",
-            0
-        )
-    );
-
-    codeStream::streamingFunctionType function = codeStream::getFunction
-    (
-        dict,
-        codeDict
-    );
-
-    // Use function to write stream
-    OStringStream os(is.format());
-    (*function)(os, dict);
-
-    // Return the string containing the results of the calculation
-    return os.str();
+    return streamEntry::codeString(index, codeDict, is, "os << (", ");");
 }
 
 
@@ -135,7 +71,12 @@ bool Foam::functionEntries::calcEntry::execute
     Istream& is
 )
 {
-    return insert(contextDict, contextEntry, calc(contextDict, is));
+    return insert
+    (
+        contextDict,
+        contextEntry,
+        resultStream(contextDict, is, "os << (", ");")
+    );
 }
 
 

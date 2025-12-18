@@ -41,8 +41,8 @@ Description
     the current entry via the \c Ostream \c os.
 
     The verbatim string format \c \#{ ... \c \#} can optionally be used to allow
-    multi-line input without the need to escape the newlines but in this case
-    the result must be written to the \c Ostream \c os explicitly.
+    string/word comparison without the need to escape the quotes and multi-line
+    input without the need to escape the newlines.
 
     Dictionary entries constructed \c \#calc can conveniently access and
     use typed variables.  This means calculations involving vectors and tensors
@@ -58,11 +58,11 @@ Description
     only if the code is changed.
 
 Usage
-    Simple variable multiplication
+    Simple variable multiplication:
     \verbatim
-    a 1.1;
-    b 3.2;
-    c #calc "$a*$b";
+        a 1.1;
+        b 3.2;
+        c #calc "$a*$b";
     \endverbatim
 
     Special care is required for calc entries that include a division since
@@ -71,66 +71,42 @@ Usage
     sub-dictionary named "a". A division can be correctly executed by using a
     space between a variables and "/", e.g.
     \verbatim
-    c #calc "$a / $b";
+        c #calc "$a / $b";
     \endverbatim
 
     or bracketing the variable, e.g.
     \verbatim
-    c #calc "($a)/$b";
+        c #calc "($a)/$b";
     \endverbatim
 
-    // Example using the string type
+    Example using the string type:
     \verbatim
-    s   "field";
-    fieldName #calc "$<string>s + \"Name\" ";
+        s   "field";
+        fieldName #calc "$<string>s + \"Name\" ";
     \endverbatim
 
     Additional include files for the \c \#calc code compilation can be specified
-    using the \c \#calcInclude entry, e.g. if functions from transform.H are
-    used
+    using the \c \#codeInclude entry, e.g. if functions from transform.H are
+    used:
     \verbatim
-    angleOfAttack   5; // degs
+        angleOfAttack   5; // degs
 
-    angle           #calc "-degToRad($angleOfAttack)";
+        angle           #calc "-degToRad($angleOfAttack)";
 
-    #calcInclude    "transform.H"
-    liftDir         #calc "transform(Ry($angle), vector(0, 0, 1))";
-    dragDir         #calc "transform(Ry($angle), vector(1, 0, 0))";
+        #codeInclude    "transform.H"
+        liftDir         #calc "transform(Ry($angle), vector(0, 0, 1))";
+        dragDir         #calc "transform(Ry($angle), vector(1, 0, 0))";
     \endverbatim
 
     Calculate the magnitude of the velocity and turbulent kinetic energy
-    where the velocity is looked-up from testCalc2
+    where the velocity is looked-up from testCalc2:
     \verbatim
-    magU        #calc "mag($<vector>testCalc2!U)";
-    k           #calc "1.5*magSqr(0.05*$<vector>{${FOAM_CASE}/testCalc2!U})";
-    \endverbatim
-
-    If the code string is delimited by \#{ ... \c \#} multiple lines
-    and multiple code statements can be used to generate the entry using
-    'os << ...;'. This is equivalent to \#codeStream but with a more
-    compact syntax.
-
-    \verbatim
-    #calcInclude    "transform.H"
-    maxAngle        30;
-    nAngles         7;
-    Us              #calc
-    #{
-        const vector U($<vector>testCalc2!U);
-        const int nAngles = $nAngles;
-        const scalar angleStep = ($<scalar>maxAngle)/(nAngles - 1);
-        List<vector> Us(nAngles);
-        for(int i=0; i<nAngles; i++)
-        {
-            const scalar angle = degToRad(i*angleStep);
-            Us[i] = transform(Ry(angle), U);
-        }
-        os << Us;
-    #};
+        magU    #calc "mag($<vector>testCalc2!U)";
+        k       #calc "1.5*magSqr(0.05*$<vector>{${FOAM_CASE}/testCalc2!U})";
     \endverbatim
 
     Example to generate a single block blockMeshDict for use with snappyHexMesh
-    with no redundant information
+    with no redundant information:
     \verbatim
         min         (-2.5 -1.2 -3.0);   // Minimum coordinates of the block
         max         (2.5 1.2 3.0);      // Maximum coordinates of the block
@@ -141,7 +117,7 @@ Usage
     "Vector<label>($nCellsByL*($<vector>max - $<vector>min) + vector::one/2)";
 
         // Generate the vertices using a boundBox
-        #calcInclude "boundBox.H"
+        #codeInclude "boundBox.H"
         vertices #calc "boundBox($<vector>min, $<vector>max).points()";
 
         blocks
@@ -158,8 +134,27 @@ Usage
         ();
     \endverbatim
 
+    Example of conditional with \c #calc: showing the benefit of using verbatim
+    string:
+    \verbatim
+        #if (#calc "$fluid == \"waterAndSludge\" || $fluid == \"waterAndSand\"")
+            mixture         multicomponentMixture;
+        #else
+            mixture         pureMixture;
+        #endif
+    \endverbatim
+    same again but showing the benefit of using verbatim string:
+    \verbatim
+        #if (#calc #{$fluid == "waterAndSludge" || $fluid == "waterAndSand"#})
+            mixture         multicomponentMixture;
+        #else
+            mixture         pureMixture;
+        #endif
+    \endverbatim
+
 See also
-    Foam::functionEntries::calcIncludeEntry
+    Foam::functionEntries::codeIncludeEntry
+    Foam::functionEntries::streamEntry
     Foam::functionEntries::codeStream
 
 SourceFiles
@@ -170,15 +165,12 @@ SourceFiles
 #ifndef calcEntry_H
 #define calcEntry_H
 
-#include "functionEntry.H"
+#include "streamEntry.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-class dlLibraryTable;
-
 namespace functionEntries
 {
 
@@ -188,19 +180,26 @@ namespace functionEntries
 
 class calcEntry
 :
-    public functionEntry
+    public streamEntry
 {
     // Private Member Functions
 
-        //- Perform the calculation and return the resulting string
-        static string calc
+        //- Return the code string
+        static string codeString
         (
-            const dictionary& dict,
-            Istream& is
+            const label index,
+            const dictionary& codeDict,
+            Istream&
         );
 
 
 public:
+
+    // Related types
+
+        //- Declare friendship with the calcEntry class
+        friend class codeBlockEntry;
+
 
     //- Runtime type information
     FunctionTypeName("#calc");

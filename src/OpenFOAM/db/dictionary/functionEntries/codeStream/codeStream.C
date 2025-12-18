@@ -39,6 +39,7 @@ namespace Foam
 namespace functionEntries
 {
     defineFunctionTypeNameAndDebug(codeStream, 0);
+
     addToRunTimeSelectionTable(functionEntry, codeStream, dictionary);
 
     addToMemberFunctionSelectionTable
@@ -86,11 +87,43 @@ bool Foam::functionEntries::codeStream::masterOnlyRead
 }
 
 
-Foam::functionEntries::codeStream::streamingFunctionType
-Foam::functionEntries::codeStream::getFunction
+Foam::string Foam::functionEntries::codeStream::codeString
+(
+    const label index,
+    const dictionary& contextDict,
+    Istream& is
+)
+{
+    // Construct code string for codeStream using the context dictionary for
+    // string expansion and variable substitution
+    const dictionary codeDict("#codeStream", contextDict, is);
+
+    if (codeDict.found("codeInclude"))
+    {
+        IOWarningInFunction(is)
+            << "codeInclude entry not supported within #codeBlock, "
+               "use #codeInclude instead."
+            << endl;
+    }
+
+    return
+    (
+        "CODE_BLOCK_FUNCTION(" + Foam::name(index) + ")\n"
+        "{\n"
+        "    #line " + Foam::name(codeDict.lookup("code").lineNumber())
+      + " \"" + codeDict.name() + "\"\n"
+      + codeDict.lookup<verbatimString>("code")
+      + "\n}\n\n"
+    );
+}
+
+
+void* Foam::functionEntries::codeStream::compile
 (
     const dictionary& contextDict,
-    const dictionary& codeDict
+    const dictionary& codeDict,
+    const word& codeTemplateC,
+    word& codeName
 )
 {
     // Get code, codeInclude, ...
@@ -116,7 +149,7 @@ Foam::functionEntries::codeStream::getFunction
 
     if (debug && !lib)
     {
-        Info<< "Using #codeStream with " << libPath << endl;
+        Info<< "Using " << typeName << " with " << libPath << endl;
     }
 
     // Nothing loaded
@@ -300,21 +333,34 @@ Foam::functionEntries::codeStream::getFunction
             << exit(FatalIOError);
     }
 
+    codeName = dynCode.codeName();
+    return lib;
+}
+
+
+Foam::functionEntries::codeStream::streamingFunctionType
+Foam::functionEntries::codeStream::getFunction
+(
+    const dictionary& contextDict,
+    const dictionary& codeDict
+)
+{
+    word codeName;
+    void* lib = compile(contextDict, codeDict, codeTemplateC, codeName);
 
     // Find the function handle in the library
     const streamingFunctionType function =
         reinterpret_cast<streamingFunctionType>
         (
-            dlSym(lib, dynCode.codeName())
+            dlSym(lib, codeName)
         );
-
 
     if (!function)
     {
         FatalIOErrorInFunction
         (
             contextDict
-        )   << "Failed looking up symbol " << dynCode.codeName()
+        )   << "Failed looking up symbol " << codeName
             << " in library " << lib << exit(FatalIOError);
     }
 
@@ -322,7 +368,7 @@ Foam::functionEntries::codeStream::getFunction
 }
 
 
-Foam::string Foam::functionEntries::codeStream::run
+Foam::OTstream Foam::functionEntries::codeStream::resultStream
 (
     const dictionary& contextDict,
     Istream& is
@@ -330,7 +376,7 @@ Foam::string Foam::functionEntries::codeStream::run
 {
     if (debug)
     {
-        Info<< "Using #codeStream at line " << is.lineNumber()
+        Info<< "Using " << typeName << " at line " << is.lineNumber()
             << " in file " <<  contextDict.name() << endl;
     }
 
@@ -340,18 +386,20 @@ Foam::string Foam::functionEntries::codeStream::run
         contextDict
     );
 
-    // Construct codeDict for codeStream
-    // Parent dictionary provided for string expansion and variable substitution
+    // Construct codeDict for codeStream using the context dictionary
+    // for string expansion and variable substitution
     const dictionary codeDict("#codeStream", contextDict, is);
 
+    // Compile and link the code library and get the function pointer
     const streamingFunctionType function = getFunction(contextDict, codeDict);
 
     // Use function to write stream
-    OStringStream os(is.format());
-    (*function)(os, contextDict);
+    OTstream ots(is.name(), is.format());
+    ots.lineNumber() = is.lineNumber();
+    (*function)(ots, contextDict);
 
-    // Return the string containing the results of the code execution
-    return os.str();
+    // Return the OTstream containing the results of the code execution
+    return ots;
 }
 
 
@@ -376,7 +424,7 @@ bool Foam::functionEntries::codeStream::execute
     Istream& is
 )
 {
-    return insert(contextDict, run(contextDict, is));
+    return insert(contextDict, resultStream(contextDict, is));
 }
 
 
@@ -387,7 +435,7 @@ bool Foam::functionEntries::codeStream::execute
     Istream& is
 )
 {
-    return insert(contextDict, contextEntry, run(contextDict, is));
+    return insert(contextDict, contextEntry, resultStream(contextDict, is));
 }
 
 
