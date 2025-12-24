@@ -218,7 +218,7 @@ Foam::idealLiquidMulticomponentMixture<ThermoType>::transportMixtureType::mu
         assert(mu>0);
         return std::log(mu);
     };
-    const scalar log_sum = massWeighed(prop,p,T);
+    const scalar log_sum = moleWeighed(prop,p,T);
     return std::exp(log_sum);
 }
 
