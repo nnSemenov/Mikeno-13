@@ -9,6 +9,6 @@ cmake --build build
 
 export PATH="$PATH:$(pwd)/build"
 
-./pure/Allrun
-./Mix/Allrun
+./pureGas/Allrun
+./realGasMixture/Allrun
 ./idealLiquidMixture/Allrun
