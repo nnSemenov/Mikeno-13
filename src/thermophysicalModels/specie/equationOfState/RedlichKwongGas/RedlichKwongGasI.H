@@ -7,12 +7,11 @@
 template<class Specie>
 inline Foam::RedlichKwongGas<Specie>::RedlichKwongGas
         (
-                const Specie &sp
+          const Specie &sp,
+          const realFluidProperty&prop
         )
         :
-        Specie(sp) {
-
-    this->requireRealGasEOS(false);
+        Specie(sp), property_(prop) {
 
     static_assert(Foam::is_cubic_EOS<Foam::RedlichKwongGas<Specie>>::value, "RK must be cubic EOS");
 }
@@ -25,8 +24,8 @@ inline Foam::RedlichKwongGas<Specie>::RedlichKwongGas
                 const RedlichKwongGas &pg
         )
         :
-        Specie(name, pg) {
-    this->requireRealGasEOS(false);
+        Specie(name, pg),
+        property_(pg.property_) {
 }
 
 

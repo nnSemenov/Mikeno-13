@@ -35,9 +35,9 @@ Foam::RedlichKwongGas<Specie>::RedlichKwongGas
                 const dictionary& dict
         )
         :
-        Specie(name, dict)
-{
-    this->requireRealGasEOS(false);
+        Specie(name, dict),
+        property_(dict) {
+  property_.requireRealGasEOS(name, false);
 }
 
 
@@ -45,13 +45,11 @@ Foam::RedlichKwongGas<Specie>::RedlichKwongGas
 
 
 template<class Specie>
-void Foam::RedlichKwongGas<Specie>::write(Ostream& os) const
-{
-    Specie::write(os);
-    dictionary dict("equationOfState");
-    const char* phase_val=this->preferGas_?"vapor":"liquid";
-    dict.add("phase",phase_val);
-    os<<indent<<dict.dictName()<<dict;
+void Foam::RedlichKwongGas<Specie>::write(Ostream& os) const {
+  Specie::write(os);
+  dictionary dict("equationOfState");
+  property_.write(dict);
+  os<<indent<<dict.dictName()<<dict;
 }
 
 

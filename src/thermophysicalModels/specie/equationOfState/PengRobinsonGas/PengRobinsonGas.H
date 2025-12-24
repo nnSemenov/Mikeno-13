@@ -38,6 +38,7 @@ Usage
         Vc           | Critical volume [m^3/kmol]
         Pc           | Critical pressure [Pa]
         omega        | Acentric factor [-]
+        phase        | Preferred phase (vapor/liquid)
     \endtable
 
     Example specification of the PengRobinsonGas equation of state for methane:
@@ -114,7 +115,7 @@ namespace Foam {
             :
                     public Specie {
         // Private Data
-        bool is_gas{true};
+        realFluidProperty property_;
 
     public:
 
@@ -292,6 +293,9 @@ namespace Foam {
 
     public:
         // Constructors
+        inline PengRobinsonGas(
+            const Specie&sp,
+            const realFluidProperty& prop);
 
         //- Construct from components
         inline PengRobinsonGas(
@@ -310,6 +314,25 @@ namespace Foam {
 
         // Member Functions
 
+        inline scalar Tc() const noexcept {
+            return this->property_.Tc_;
+        }
+        inline scalar Pc() const noexcept {
+            return this->property_.Pc_;
+        }
+        inline scalar Vc() const noexcept {
+            return this->property_.Vc_;
+        }
+        inline scalar Zc() const noexcept {
+            return this->property_.Zc();
+        }
+        inline scalar omega() const noexcept {
+            return this->property_.omega_;
+        }
+        inline bool preferGas() const noexcept {
+            return this->property_.is_gas;
+        }
+
         //- Return the instantiated type name
         static word typeName() {
             return "PengRobinsonGas<" + word(Specie::typeName_()) + '>';
@@ -319,7 +342,7 @@ namespace Foam {
         inline EOSCore core(scalar p, scalar T) const {
             const auto Tc = this->Tc();
             const auto Pc = this->Pc();
-            const scalar omega=this->omega_;
+            const scalar omega=this->omega();
             // const scalar Tr = T/Tc;
             const scalar a_c = 0.45724* sqr(RR*Tc)/Pc;
             const scalar kappa = 0.37464+1.54226*omega - 0.26992*sqr(omega);
@@ -333,7 +356,7 @@ namespace Foam {
             const scalar da_dT = a_c*dalpha_dT;
             const scalar d2a_dT2 = a_c*d2alpha_dT2;
 
-            return {a,b,da_dT,d2a_dT2,this->preferGas_};
+            return {a,b,da_dT,d2a_dT2,this->preferGas()};
         }
 
         //- Is the equation of state is incompressible i.e. rho != f(p)

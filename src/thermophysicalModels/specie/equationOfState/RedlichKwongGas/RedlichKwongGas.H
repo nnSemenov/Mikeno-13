@@ -1,6 +1,45 @@
-//
+/*
 // Created by joseph on 25-7-11.
 //
+
+License
+    This file is part of Mikeno.
+
+Class
+    Foam::RedlichKwongGas
+
+Description
+    RedlichKwongGas cubic equation of state for gases
+
+    Coefficient mixing is very inaccurate and not supported, so this equation of
+    state can only be applied to mixtures by using a thermophysical properties
+    model which mixes specie property value.
+
+Usage
+    \table
+        Property     | Description
+        Tc           | Critical temperature [K]
+        Vc           | Critical volume [m^3/kmol]
+        Pc           | Critical pressure [Pa]
+        phase        | Preferred phase (vapor/liquid)
+    \endtable
+
+    Example specification of the RedlichKwongGas equation of state for methane:
+    \verbatim
+    equationOfState
+    {
+        Tc        190.55;
+        Vc        0.0285;
+        Pc        4.595e6;
+        phase     vapor;
+    }
+    \endverbatim
+
+SourceFiles
+    RedlichKwongGasI.H
+    RedlichKwongGas.C
+
+\*---------------------------------------------------------------------------*/
 
 #ifndef RedlichKwongGas_H
 #define RedlichKwongGas_H
@@ -44,6 +83,8 @@ template<class Specie>
 class RedlichKwongGas : public Specie {
 
 public:
+
+    realFluidProperty property_;
 
     struct EOSCore {
         scalar a;
@@ -215,7 +256,8 @@ public:
 
 public:
     inline RedlichKwongGas(
-            const Specie &sp
+            const Specie &sp,
+            const realFluidProperty&prop
        );
 
     RedlichKwongGas(const word&name, const dictionary&dict);
@@ -226,6 +268,21 @@ public:
 
 
     // Member Functions
+    inline scalar Tc() const noexcept {
+        return this->property_.Tc_;
+    }
+    inline scalar Pc() const noexcept {
+        return this->property_.Pc_;
+    }
+    inline scalar Vc() const noexcept {
+        return this->property_.Vc_;
+    }
+    inline scalar Zc() const noexcept {
+        return this->property_.Zc();
+    }
+    inline bool preferGas() const noexcept {
+        return this->property_.is_gas;
+    }
 
     //- Return the instantiated type name
     static word typeName()
@@ -235,12 +292,12 @@ public:
 //    inline Foam::cubicEOSRawCoefficient coeffRaw(scalar p, scalar T) const;
 
     inline EOSCore core(scalar p[[maybe_unused]], scalar T[[maybe_unused]]) const {
-        const auto Tc_ = this->Tc_;
+        const auto Tc_ = this->Tc();
 //    const auto Vc_=this->Vc_;
-        const auto Pc_ = this->Pc_;
+        const auto Pc_ = this->Pc();
         const scalar a = 0.42748025 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
         const scalar b = 0.08664035 * RR * Tc_ / Pc_;
-        return {a, b, this->preferGas_};
+        return {a, b, this->preferGas()};
     }
 
     //- Is the equation of state is incompressible i.e. rho != f(p)

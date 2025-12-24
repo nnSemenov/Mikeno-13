@@ -23,6 +23,8 @@ thermoType {
 mixture {
     specie {
         molWeight 2.016;
+    }
+    equationOfState {
         Tc 33.18;
         Pc 1292977.4;
         Vc 0.06503;
@@ -78,12 +80,13 @@ mixture {
         mu          1.84e-05 [Pa*s];
         Pr          0.7;
     }
-
 }
 
 N2 {
     specie {
         molWeight 28 [kg/kmol];
+    }
+    equationOfState {
         Tc 126.15    [K];
         Vc 0.0886885 [m^3/kmol];
         Pc 3.394e6   [Pa];

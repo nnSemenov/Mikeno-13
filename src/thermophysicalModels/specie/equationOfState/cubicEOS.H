@@ -5,15 +5,50 @@
 #ifndef CUBICEOS_H
 #define CUBICEOS_H
 
-#include "autoPtr.H"
-#include "mathematicalConstants.H"
-#include "speciesTable.H"
 #include <cassert>
 #include <type_traits>
 #include <functional>
-#include <variant>
+
+#include "autoPtr.H"
+#include "mathematicalConstants.H"
+#include "speciesTable.H"
+#include "thermodynamicConstants.H"
 
 namespace Foam {
+using constant::thermodynamic::RR;
+
+    struct realFluidProperty {
+
+        //- Critical Temperature [K]
+        scalar Tc_{-1};
+
+        //- Critical volume [m^3/kmol]
+        scalar Vc_{-1};
+
+        //- Critical Pressure [Pa]
+        scalar Pc_{-1};
+
+        //- Acentric factor [-]
+        scalar omega_{-2};
+
+        bool is_gas{true};
+
+        realFluidProperty()=default;
+
+        explicit realFluidProperty(const dictionary&dict);
+
+        [[nodiscard]] inline scalar Zc() const noexcept {
+            return Pc_*Vc_/(RR*Tc_);
+        }
+
+
+        [[nodiscard]] word checkForRealGasEOS(bool require_omega) const noexcept;
+
+        void requireRealGasEOS(const word&specieName, bool require_omega) const;
+
+        void write(dictionary&eos_dict) const;
+    };
+
 
     struct cubicEOSDimlessCoefficient {
         scalar A;

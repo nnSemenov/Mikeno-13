@@ -46,6 +46,8 @@ mixingRule {
 H2 {
     specie {
         molWeight 2.016;
+    }
+    equationOfState {
         Tc 33.18;
         Pc 1292977.4;
         Vc 0.06503;
@@ -120,6 +122,8 @@ H2 {
 N2 {
     specie {
         molWeight 28.014;
+    }
+    equationOfState {
         Tc 126.2069;
         Pc 3398309.7;
         Vc 0.0809887;
@@ -195,6 +199,8 @@ N2 {
 NH3 {
     specie {
         molWeight 17.031;
+    }
+    equationOfState {
         Tc 405.431;
         Pc 11358033.2;
         Vc 0.07255;
@@ -270,6 +276,8 @@ NH3 {
 H2O {
     specie {
         molWeight 18.015;
+    }
+    equationOfState {
         Tc 647.1081;
         Pc 22071804.5;
         Vc 0.055989;
@@ -344,6 +352,8 @@ H2O {
 CH4 {
     specie {
         molWeight 16.043;
+    }
+    equationOfState {
         Tc 190.5629;
         Pc 4606469.2;
         Vc 0.098961;

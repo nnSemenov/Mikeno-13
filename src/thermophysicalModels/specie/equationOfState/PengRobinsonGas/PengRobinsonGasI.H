@@ -31,12 +31,14 @@ License
 template<class Specie>
 inline Foam::PengRobinsonGas<Specie>::PengRobinsonGas
 (
-    const Specie& sp
+    const Specie& sp,
+    const realFluidProperty& prop
 )
 :
-    Specie(sp)
+    Specie(sp),
+    property_(prop)
 {
-    this->requireRealGasEOS(true);
+
 }
 
 
@@ -47,10 +49,9 @@ inline Foam::PengRobinsonGas<Specie>::PengRobinsonGas
     const PengRobinsonGas& pg
 )
 :
-    Specie(name, pg)
+    Specie(name, pg),
+    property_(pg.property_)
 {
-    pg.requireRealGasEOS(true);
-    this->requireRealGasEOS(true);
 }
 
 
