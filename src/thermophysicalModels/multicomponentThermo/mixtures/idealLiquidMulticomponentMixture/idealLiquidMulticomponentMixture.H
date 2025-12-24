@@ -25,8 +25,8 @@ Description
     Arrhenius mixing for mu, Vredeveled mixing for kappa (n=-2).
 
     That is:
+    log(mu) = sum n_i * log(mu_i)
     kappa^-2 = sum w_i * kappa_i^-2
-    log(mu) = sum w_i * log(mu_i)
 
 SourceFiles
     idealLiquidMulticomponentMixture.C
