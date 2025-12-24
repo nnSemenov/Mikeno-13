@@ -7,6 +7,6 @@ cd ${0%/*} || exit 1    # Run from this directory
 
 runApplication blockMesh
 export ENV_EOS=PengRobinsonGas
-runApplication -s $ENV_EOS Test-cubicEOS -eos $ENV_EOS
+runApplication -s $ENV_EOS Test-cubicEOS -eos $ENV_EOS -mixture
 export ENV_EOS=RedlichKwongGas
-runApplication -s $ENV_EOS Test-cubicEOS -eos $ENV_EOS
+runApplication -s $ENV_EOS Test-cubicEOS -eos $ENV_EOS -mixture
