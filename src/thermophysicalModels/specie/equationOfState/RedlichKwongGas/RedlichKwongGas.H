@@ -158,7 +158,6 @@ public:
 
         //- Return compressibility [s^2/m^2]
         inline scalar psi(scalar p, scalar T, scalar W) const {
-            #warning Non-precise implementation
             return 1/(this->Z(p,T)*this->R(W)*T);
         }
 
@@ -208,7 +207,7 @@ public:
         //- Return isothermal internal energy-pressure derivative [m/kg]
         inline scalar dedp_T(const scalar p, const scalar T, scalar W) const {
             const auto z=this->Z(p, T);
-            const scalar V = z*RR*T/p;
+            [[maybe_unused]] const scalar V = z*RR*T/p;
             const scalar dUdp_T = - T*dVdT_p(p, T, z) - p*dVdp_T(p, T, z);
             return dUdp_T/W;
         }

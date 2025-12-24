@@ -159,7 +159,7 @@ namespace Foam {
 
             inline Foam::residualEnergy residualHE(scalar p, scalar T, scalar W) const {
                 const auto AB=this->dimlessCoeff(p,T);
-                const scalar A=AB.A;
+                [[maybe_unused]] const scalar A=AB.A;
                 const scalar B=AB.B;
                 const scalar Z=this->Z(AB);
 
@@ -284,7 +284,7 @@ namespace Foam {
 
             inline scalar dedp_T(scalar p, scalar T, scalar W) const {
                 const scalar z = this->Z(p, T);
-                const scalar V = z * RR * T / p;
+                [[maybe_unused]] const scalar V = z * RR * T / p;
                 const scalar dUdp_T = -T*dVdT_p(p, T, z) - p*dVdp_T(p, T, z);
                 return dUdp_T/this->R(W);
             }
