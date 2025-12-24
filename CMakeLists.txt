@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.28)
-project(Mikeno VERSION 13 LANGUAGES CXX)
+project(Mikeno
+    VERSION 13
+    LANGUAGES CXX
+    DESCRIPTION "Mikeno is a fork of OpenFOAM, Frankensteined for chemical engineering usage."
+    HOMEPAGE_URL "https://github.com/nnSemenov/Mikeno-13"
+)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(WM_PRECISION_OPTION DP CACHE STRING "Precision of float point number. SP | DP")
