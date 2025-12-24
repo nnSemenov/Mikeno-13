@@ -29,7 +29,7 @@ defaultSpecie C6H6;
 
 C6H6 {
     specie {
-        molWeight 78;
+        molWeight 78.048;
     }
     equationOfState {
         rho {
@@ -139,7 +139,7 @@ C6H6 {
 
 C6H12 {
     specie {
-        molWeight 84;
+        molWeight 84.096;
     }
     equationOfState {
         rho {
@@ -249,7 +249,7 @@ C6H12 {
 
 C6H14 {
     specie {
-        molWeight 86;
+        molWeight 86.112;
     }
     equationOfState {
         rho {
