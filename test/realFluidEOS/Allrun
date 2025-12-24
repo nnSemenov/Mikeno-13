@@ -11,3 +11,4 @@ export PATH="$PATH:$(pwd)/build"
 
 ./pure/Allrun
 ./Mix/Allrun
+./idealLiquidMixture/Allrun
