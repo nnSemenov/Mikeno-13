@@ -1,0 +1,142 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2023-2025 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+Class
+    Foam::functionEntries::codeIncludeEntry
+
+Description
+    Specify an include file for \#calc, expects a single string to follow.
+
+    For example if functions from transform.H are used in the \#calc expression
+    \verbatim
+    angleOfAttack   5; // degs
+
+    angle           #calc "-degToRad($angleOfAttack)";
+
+    #codeInclude    "transform.H"
+    liftDir         #calc "transform(Ry($angle), vector(0, 0, 1))";
+    dragDir         #calc "transform(Ry($angle), vector(1, 0, 0))";
+    \endverbatim
+
+    The usual expansion of environment variables and other constructs
+    (eg, the \c ~OpenFOAM/ expansion) is retained.
+
+See also
+    Foam::functionEntries::calcEntry
+
+SourceFiles
+    codeIncludeEntry.C
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef codeIncludeEntry_H
+#define codeIncludeEntry_H
+
+#include "functionEntry.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace functionEntries
+{
+
+/*---------------------------------------------------------------------------*\
+                        Class codeIncludeEntry Declaration
+\*---------------------------------------------------------------------------*/
+
+class codeIncludeEntry
+:
+    public functionEntry
+{
+    // Private static data
+
+        // Static include file name cache
+        static DynamicList<fileName> includeFiles_;
+
+
+    // Private member functions
+
+        //- Return the file name
+        const string& fName() const
+        {
+            return operator[](0).stringToken();
+        }
+
+
+public:
+
+    //- Runtime type information
+    FunctionTypeName("#codeInclude");
+
+
+    // Constructors
+
+        //- Construct from line number, dictionary and Istream
+        codeIncludeEntry
+        (
+            const label lineNumber,
+            const dictionary& parentDict,
+            Istream& is
+        );
+
+        //- Copy construct
+        codeIncludeEntry(const codeIncludeEntry&) = default;
+
+        //- Clone
+        virtual autoPtr<entry> clone(const dictionary&) const
+        {
+            return autoPtr<entry>(new codeIncludeEntry(*this));
+        }
+
+
+    // Member Functions
+
+        //- Execute the functionEntry in a sub-dict context
+        virtual bool execute(dictionary& parentDict, Istream&);
+
+        //- Reset the cache of \#calc include file names
+        static void clear();
+
+        //- Add the cached include file names to the codeInclude entry
+        //  in codeDict
+        static void codeInclude(dictionary& codeDict);
+
+
+    // Member Operators
+
+        //- Disallow default bitwise assignment
+        void operator=(const codeIncludeEntry&) = delete;
+};
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace functionEntries
+} // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
+
+// ************************************************************************* //

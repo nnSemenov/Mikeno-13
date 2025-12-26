@@ -24,9 +24,8 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 2. Performance optimization
    - Add `-march=native` for optimization mode, enabling more vectorization from compiler
 3. Support `AOCC`.
-4. Add `Tc_` `Pc_` `Vc_` `omega_` to `specie` and remove revelant member from `PengRobinsonGas`. In `physicalProperties`, user should write them into `specie` dictionary.
-   - Critial point and acentric factor are intrinstic nature similar to mole weight.
-   - Makes it more convenient to add more real fluid EOS.
+4. Remove redundant reference in solver modules.
+   1. Currently cleand `isothermalFluidSolver` `fluidSolver` `multicomponentFluidSolver` `XiFluidSolver`
 
 ### Support arbitrarily high pressure
 1. The `pOffset` keyword can be added to `physicalProperites`, allowing gauge pressure for p-V coupling, and absolute pressure for thermophysical. **Small pressure difference will never be flooded by floating point rounding error(espicially single precision)**.
@@ -43,6 +42,11 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 5. New mixture model `realGasMulticomponentMixture` 
    1. Compute `rho` from mixed real gas EOS
    2. Compute and add residual properties of `Cp` `Cv` `hs` `ha` `es` `ea`. All residual properties are computed from mixed EOS
+   3. Apply harmonic mass weighed mixing for density (no extra volume)
+   4. Appy mass weighed mixing for he and Cp Cv (no extra energy)
+   5. Arrhenius mixing for mu
+   6. Vredeveled mixing for kappa (n=-2)
+6. Add `phase` keyword to `equationOfState` dictionary, allow using real fluid EOS for liquid.
 
 ## Fix unexpected SIGFPE trapping (compile option in brackes)
 1. Fix `flowRateInletVelocity` trapped by SIGFPE when writting flow field. This is caused by division in `unitConversion::toUser(const T& t) const`. (`Clang DP Opt`)

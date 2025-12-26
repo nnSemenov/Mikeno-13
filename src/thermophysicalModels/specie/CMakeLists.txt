@@ -9,8 +9,9 @@ add_library(specie SHARED
     equationOfState/cubicEOS.C
 
     thermophysicalFunctions/integratedNonUniformTable1/integratedNonUniformTable1.C
-    thermophysicalFunctions/APIdiffCoef/APIdiffCoef.C
+    thermophysicalFunctions/APIdiffusionCoefficient/APIdiffusionCoefficient.C
     thermophysicalFunctions/binaryDiffusionCoefficient/binaryDiffusionCoefficient.C
+    thermophysicalFunctions/FullerDiffusionCoefficient/FullerDiffusionCoefficient.C
 )
 
 set(NSRDS thermophysicalFunctions/NSRDS)

@@ -37,9 +37,9 @@ Foam::PengRobinsonGas<Specie>::PengRobinsonGas
                 const dictionary &dict
         )
         :
-        Specie(name, dict) {
-
-    this->requireRealGasEOS(true);
+        Specie(name, dict),
+        property_(dict) {
+  property_.requireRealGasEOS(name, true);
 }
 
 
@@ -49,6 +49,9 @@ Foam::PengRobinsonGas<Specie>::PengRobinsonGas
 template<class Specie>
 void Foam::PengRobinsonGas<Specie>::write(Ostream &os) const {
     Specie::write(os);
+    dictionary dict("equationOfState");
+    property_.write(dict);
+    os<<indent<<dict.dictName()<<dict;
 }
 
 

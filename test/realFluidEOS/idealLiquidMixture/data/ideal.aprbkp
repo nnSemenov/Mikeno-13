@@ -1,0 +1,417 @@
+MM "40.0" FLAVOR "NO" VERSION "40.0" DATETIME "Sun Dec 21 19:55:01 2025" 
+MACHINE "WIN-NT/VC" 
+? SETUP MAIN ? \ "RUN-CLASS" RUN-CLASS = PROP \ \ SIMULATE INTERACTIVE = NO 
+MOLEFLOW = MOLEFLOW \ ? SETUP GLOBAL ? \ "IN-UNITS" INSET = METCBAR \ ? SETUP 
+DIAGNOSTICS ? ? SETUP "SIM-OPTIONS" ? ; "METCBAR_MOLE" ; ? SETUP "UNITS-SET" 
+METCBAR ? \ DESCRIPTION DESCRIPTION = "User-defined units set" \ \ MMLOCAL 
+\ \ UNITSET BASESET = MET ( 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 5 3 4 3 3 3 
+3 3 3 3 3 4 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 
+3 3 3 3 3 3 3 3 3 3 5 3 3 3 3 3 3 5 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 
+3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 7 3 3 3 3 
+3 3 3 3 3 3 3 3 3 3 3 3 3 ) \ ? DATABANKS ? ? COMPONENTS MAIN ? \ COMPONENTS 
+CID = C6H6 ANAME = C6H6 OUTNAME = C6H6 DBNAME1 = "BENZENE" ANAME1 = "C6H6" /  
+CID = C6H12 ANAME = C6H12-1 OUTNAME = C6H12 DBNAME1 = "CYCLOHEXANE" ANAME1 = 
+"C6H12-1" /  CID = C6H14 ANAME = C6H14-1 OUTNAME = C6H14 DBNAME1 = "N-HEXANE" 
+ANAME1 = "C6H14-1" \ ? COMPONENTS "ADA/PCS" "LE-PROP-DATA" ? ; "METCBAR_MOLE" 
+; ? COMPONENTS "COMP-LIST" GLOBAL ? ? COMPONENTS "UNIFAC-GROUP" ? ? "BIO-COMPS" 
+? ? PROPERTIES MAIN ? \ GPROPERTIES GBASEOPSET = IDEAL GOPSETNAME = IDEAL 
+PARCON = -2 \ ? PROPERTIES "OPTION-SETS" IDEAL ? \ PARAM BASE = IDEAL \ ? 
+PROPERTIES "NC-PROPS" ? ? PROPERTIES "MOLEC-STRUCT" C6H6 ? ? PROPERTIES 
+"MOLEC-STRUCT" C6H12 ? ? PROPERTIES "MOLEC-STRUCT" C6H14 ? ? PROPERTIES 
+PARAMETERS SUMMARY ? ? PROPERTIES PARAMETERS BINARY SCALAR "MLQKIJ-1" ? ; 
+"ENG_MOLE" ; \ PROP-LIST PARAMNAME = MLQKIJ SETNO = 1 \ ? PROPERTIES 
+PARAMETERS BINARY SCALAR "RKTKIJ-1" ? ; "ENG_MOLE" ; \ PROP-LIST PARAMNAME = 
+RKTKIJ SETNO = 1 \ ? PROPERTIES PARAMETERS BINARY "T-DEPENDENT" "ANDKIJ-1" ? 
+; "ENG_MOLE" ; \ PROP-LIST PARAMNAME = ANDKIJ SETNO = 1 UNITROW = 0 TUNITROW
+ = 22 TUNITLABEL = F NEL = 2 \ \ PARAM DEFTUNIT = F \ ? PROPERTIES PARAMETERS 
+BINARY "T-DEPENDENT" "ANDMIJ-1" ? ; "ENG_MOLE" ; \ PROP-LIST PARAMNAME = 
+ANDMIJ SETNO = 1 UNITROW = 0 TUNITROW = 22 TUNITLABEL = F NEL = 2 \ \ PARAM 
+DEFTUNIT = F \ ? PROPERTIES PARAMETERS BINARY "T-DEPENDENT" "HENRY-1" ? ; 
+"METCBAR_MOLE" ; \ PROP-LIST PARAMNAME = HENRY SETNO = 1 UNITROW = 20 
+UNITLABEL = bar TUNITROW = 22 TUNITLABEL = C BDBANK = ( "APV140 BINARY" 
+"APV140 HENRY-AP" ) NEL = 7 \ \ PARAM DEFTUNIT = C DEFPROPUNIT = "bar" \ ? 
+PROPERTIES PARAMETERS BINARY "T-DEPENDENT" "MUKIJ-1" ? ; "ENG_MOLE" ; \ 
+PROP-LIST PARAMNAME = MUKIJ SETNO = 1 UNITROW = 0 TUNITROW = 22 TUNITLABEL = 
+F NEL = 6 \ \ PARAM DEFTUNIT = F \ ? PROPERTIES PARAMETERS BINARY "T-DEPENDENT" 
+"MULIJ-1" ? ; "ENG_MOLE" ; \ PROP-LIST PARAMNAME = MULIJ SETNO = 1 UNITROW = 0 
+TUNITROW = 22 TUNITLABEL = F NEL = 11 \ \ PARAM DEFTUNIT = F \ ? PROPERTIES 
+"ATTR-COMPS" ? ? POLYMERS ? ? "PROP-SET" MAIN "LIQ-Y" ? ; "METCBAR_MOLE" ; 
+\ P1 ID = MASSFRAC \ \ P2 PHASE = ( L ) SYSPRES = YES \ \ DIALOG \ ? "PROP-SET" 
+MAIN MIX ? ; "METCBAR_MOLE" ; \ P1 ID = RHOMX UNITS = ( "kg/cum" ) \ \ P1 ID
+ = CVMX UNITS = ( "J/kg-K" ) \ \ P1 ID = MUMX UNITS = ( "Pa-sec" ) \ \ P1 ID
+ = KMX UNITS = ( "Watt/m-K" ) \ \ P1 ID = PRES UNITS = ( "N/sqm" ) \ \ P2 
+PHASE = ( L ) SYSPRES = YES \ ? "PROP-SET" MAIN PURE ? ; "METCBAR_MOLE" ; \ 
+P1 ID = RHO UNITS = ( "kg/cum" ) \ \ P1 ID = CV UNITS = ( "J/kg-K" ) \ \ P1 
+ID = MU UNITS = ( "Pa-sec" ) \ \ P1 ID = K UNITS = ( "Watt/m-K" ) \ \ P2 
+PHASE = ( L ) SYSPRES = YES \ ? REPORT "STREAM-REPOR" ? \ OPTIONS MOLEFLOW = 
+MOLEFLOW \ ? "PROP-TABLE" GENERIC PURE ? ; "METCBAR_MOLE" ; \ MOLE-FLOW CID
+ = C6H6 FLOW = 1. <-89> <3> /  CID = C6H12 FLOW = 1. <-89> <3> /  CID = C6H14 
+FLOW = 1. <-89> <3> \ \ STATE PRES = 1. <20> <5> MAXPOINT = 21 \ \ VARY 
+VARNAME = TEMP VARVALUE = RANGE LOWER = -110. <0> <0> UPPER = 81. <0> <0> 
+INCR = 9.550000 <0> <0> NPOINT = 20 \ \ TABULATE PROPERTIES = ( PURE ) \ ? 
+"PROP-TABLE" MIXTURE "MIX-1" ? ; "METCBAR_MOLE" ; \ PROPFLASH OPT-COMP = 
+COMPONENT \ \ MOLE-FLOW CID = C6H6 FLOW = 1. <-89> <3> FRAC = 0.3333333333 
+<0> <0> /  CID = C6H12 FLOW = 1. <-89> <3> FRAC = 0.3333333333 <0> <0> /  CID
+ = C6H14 FLOW = 1. <-89> <3> FRAC = 0.3333333333 <0> <0> \ \ STATE TEMP = 20. 
+<22> <4> \ \ VARY VARNAME = PRES VARVALUE = LIST UNITROW = 20 UNITLABEL = bar 
+LIST = ( 1. <0> <0> ) \ \ VARY VARNAME = TEMP COMP = C6H6 VARVALUE = RANGE 
+UNITROW = 22 UNITLABEL = C LIST = ( 20. <0> <0> ) LOWER = -100. <0> <0> UPPER
+ = 80. <0> <0> INCR = 9.000000 <0> <0> NPOINT = 20 \ \ PARAM VAR-OPT = TP 
+TAGID = "MIXTU-1" \ \ TABULATE PROPERTIES = ( MIX "LIQ-Y" ) \ 
+
+ GRAPHICS_BACKUP
+PFS V NONE
+$CONFIG
+paramdata APV140 ENRTL-RK
+paramdata APV140 VLE-IG
+paramdata APV140 VLE-RK
+paramdata APV140 VLE-HOC
+paramdata APV140 LLE-LIT
+paramdata APV140 LLE-ASPEN
+paramdata APV140 VLE-LIT
+paramdata APV140 BINARY
+paramdata APV140 HENRY-AP
+paramdata APV140 PITZER
+paramdata APV140 EOS-LIT
+paramdata APV140 HENRY-AP
+paramdata APV140 SRK-ASPEN
+paramdata APV140 PC-SAFT
+paramdata APV140 POLYPCSF
+paramdata APV140 HYSYS
+paramdata APESV140 AP-EOS
+paramdata NISTV140 NIST-HOC
+paramdata NISTV140 NIST-IG
+paramdata NISTV140 NIST-RK
+paramdata NISTV140 NIST-EOS
+purebank APV140 PURE40
+purebank APV140 AQUEOUS
+purebank APV140 SOLIDS
+purebank APV140 INORGANIC
+purebank APESV140 AP-EOS
+purebank NISTV140 NIST-TRC
+regdbank 0
+ftn_check 1
+autoblockid 1
+autostreamid 1
+showblockid 1
+showstreamid 1
+autoplacement 1
+grid 2
+gridresolution 0.100000
+scale 0
+streamprefix 
+blockprefix B
+labelscale 1.000000
+qwformat %.0f
+wformat %.0f
+tempformat %.0f
+presformat %.0f
+flowformat %.0f
+strmqwformat %.0f
+strmwformat %.0f
+vflowformat %.0f
+mflowformat %.0f
+vfracformat %.0f
+pseudobatch 0
+partial 1
+animation 1
+runanyway 0
+globalqw 0
+globalw 0
+globaltemp 0
+globalpres 0
+globalflow 0
+globalstrmqw 0
+globalstrmw 0
+globalvflow 0
+globalmflow 0
+globalvfrac 0
+browserheight 6375
+browserwidth 9000
+browsertreewidth 2370
+polyplusenabled 1
+dynaplusenabled 1
+bfracenabled 1
+rtfenabled 1
+rspenabled 0
+pinchenabled 0
+linklimit 5000
+material_color 0
+material_style 983041
+material_width 1
+heat_color 0
+heat_style 983042
+heat_width 1
+heat_termid Q
+work_color 0
+work_style 983043
+work_width 1
+work_termid W
+connections_color 9
+connections_style 983044
+connections_width 1
+measurements_color 4
+measurements_style 983044
+measurements_width 1
+power_color 10
+power_style 5
+power_width 1
+power_termid I
+displayeoconn 0
+displayeomeas 1
+displayeomeastype 2
+showeoviews 0
+eoautosave 1
+allow_system_userprops 0
+copy_estimation 1
+copy_retrieved 1
+purge_incomp_params 0
+set_default_biparams 0
+set_default_dataset1 0
+set_default_dataset0 1
+roottype 0
+exchangerfile 1
+streamformat 1
+runsettingfile 1
+usermodelfile 1
+fortranfile 0
+timeout 1000
+tpsaupgrade 1
+#
+$_APWNSHELL_SETTINGS
+<FileRootSettings><CaseFileSettings>&lt;CaseFileSettings xmlns="clr-namespace:AspenTech.AspenPlus.Infrastructure;assembly=AspenTech.AspenPlus.Infrastructure" /&gt;</CaseFileSettings><CommonShellSettings>&lt;CommonShellSettings xmlns="http://schemas.aspentech.com/xaml/presentation/visualisation/commonshell" xmlns:atapmaa="clr-namespace:AspenTech.AspenPlus.Modules.ApwnApplication;assembly=ApwnShell" xmlns:atapie="clr-namespace:AspenTech.AspenPlus.Infrastructure.Events;assembly=AspenTech.AspenPlus.Infrastructure" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:apmab="clr-namespace:AspenPlus.Modules.ApwnBrowser;assembly=ApwnShell" xmlns:cxv="http://schemas.aspentech.com/xaml/presentation/cxsviewmodel"&gt;&lt;CommonShellSettings.CurrentWorkspace&gt;&lt;ShellWorkspace Layout="&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;utf-8&amp;quot;?&amp;gt;&amp;#xD;&amp;#xA;&amp;lt;xamDockManager version=&amp;quot;21.1.20211.27&amp;quot;&amp;gt;&amp;#xD;&amp;#xA;  &amp;lt;contentPanes&amp;gt;&amp;#xD;&amp;#xA;    &amp;lt;contentPane name=&amp;quot;_AnonymousScreen1&amp;quot; location=&amp;quot;Document&amp;quot; lastActivatedTime=&amp;quot;2025-12-21T11:55:01.4809991Z&amp;quot; /&amp;gt;&amp;#xD;&amp;#xA;  &amp;lt;/contentPanes&amp;gt;&amp;#xD;&amp;#xA;  &amp;lt;documents splitterOrientation=&amp;quot;Vertical&amp;quot;&amp;gt;&amp;#xD;&amp;#xA;    &amp;lt;splitPane splitterOrientation=&amp;quot;Vertical&amp;quot;&amp;gt;&amp;#xD;&amp;#xA;      &amp;lt;tabGroup selectedIndex=&amp;quot;0&amp;quot;&amp;gt;&amp;#xD;&amp;#xA;        &amp;lt;contentPane name=&amp;quot;_AnonymousScreen1&amp;quot; /&amp;gt;&amp;#xD;&amp;#xA;      &amp;lt;/tabGroup&amp;gt;&amp;#xD;&amp;#xA;    &amp;lt;/splitPane&amp;gt;&amp;#xD;&amp;#xA;  &amp;lt;/documents&amp;gt;&amp;#xD;&amp;#xA;&amp;lt;/xamDockManager&amp;gt;" NavigationGroupToSelect="Properties" IsNavigationPaneMinimized="False" IsRibbonMinimized="False"&gt;&lt;ShellWorkspace.Screens&gt;&lt;WorkspaceScreenData PaneName="_AnonymousScreen1" ScreenFactoryKey="ApwnFormContentFactory"&gt;&lt;WorkspaceScreenData.ScreenSubject&gt;&lt;atapmaa:ApwnFormScreenSubject Key="Analysis.PURE" NavigationGroupKey="Properties"&gt;&lt;atapmaa:ApwnFormScreenSubject.ShowFormArgs&gt;&lt;atapie:ShowFormEventArgs FormProgId="MMAPR_ANAL_GEN.MMAPR_ANAL_GEN_IN" FormKey="Analysis.PURE" Header="PURE (GENERIC)" ResultsOnly="False" PathKey="Top.appModelV8.Properties.Analysis.PURE"&gt;&lt;atapie:ShowFormEventArgs.Parameters&gt;&lt;s:String x:Key="id"&gt;PURE&lt;/s:String&gt;&lt;s:String x:Key="main"&gt;Top.appModelV8.Properties.Analysis.PURE&lt;/s:String&gt;&lt;/atapie:ShowFormEventArgs.Parameters&gt;&lt;/atapie:ShowFormEventArgs&gt;&lt;/atapmaa:ApwnFormScreenSubject.ShowFormArgs&gt;&lt;atapmaa:ApwnFormScreenSubject.PlotwizardRule&gt;&lt;apmab:ApwnPlotwizardRule ContextPath="Top.appModelV8.Properties.Analysis.PURE" /&gt;&lt;/atapmaa:ApwnFormScreenSubject.PlotwizardRule&gt;&lt;/atapmaa:ApwnFormScreenSubject&gt;&lt;/WorkspaceScreenData.ScreenSubject&gt;&lt;WorkspaceScreenData.ScreenState&gt;&lt;atapmaa:ApwnFormScreenState&gt;&lt;atapmaa:ApwnFormScreenState.Parameters&gt;&lt;cxv:CxvParameter Name="main" Value="Top.appModelV8.Properties.Analysis.PURE" /&gt;&lt;cxv:CxvParameter Name="id" Value="PURE" /&gt;&lt;cxv:CxvParameter Name="extraComments_path" Value="Comments" /&gt;&lt;cxv:CxvParameter Name="extraDescription_path" Value="Input.DESCRIPTION" /&gt;&lt;cxv:CxvParameter Name="extraUnits_path" Value="Input.Unit Set" /&gt;&lt;cxv:CxvParameter Name="selected_tab" Value="tab6" /&gt;&lt;/atapmaa:ApwnFormScreenState.Parameters&gt;&lt;/atapmaa:ApwnFormScreenState&gt;&lt;/WorkspaceScreenData.ScreenState&gt;&lt;/WorkspaceScreenData&gt;&lt;/ShellWorkspace.Screens&gt;&lt;/ShellWorkspace&gt;&lt;/CommonShellSettings.CurrentWorkspace&gt;&lt;CommonShellSettings.SavedWorkspaces&gt;&lt;ShellWorkspaceFolder /&gt;&lt;/CommonShellSettings.SavedWorkspaces&gt;&lt;/CommonShellSettings&gt;</CommonShellSettings></FileRootSettings>
+$_END_APWNSHELL_SETTINGS
+#
+
+$_SUMMARY_FILE
+ MMSUMMARY40.0                                                                  
+ IDSET RUNID (PROPERTIES) (114 *5)                                              
+ IDSET IT (PROPERTIES) (117 *6 119 *6 115 *1)                                   
+ LSET RUNID (%RUNID)                                                            
+ LSET IT (%IT)                                                                  
+ IDSET VERS (PROPERTIES) (345 *6 346 *6 347 *6 348 *6 355 *6)                   
+ LSET VERS (%VERS)                                                              
+ DSET RUN-STATUS VERS @VERS ( "40.0" "WIN-X64" "" "Joseph" "TOKINOPASOKON" )    
+ IDSET STRNAM (PROPERTIES) (1233 *6)                                            
+ LSET STRNAM (%STRNAM)                                                          
+ IDSET ID_STRPR (PROPERTIES) ( 454 *2 <119> 1236 *2 <125> 1237 *2 <29> 1238 *2  
+ <55> 1239 *2 <55> 1083 *6 1084 *6 )                                            
+ LSET L_STRPR (%ID_STRPR)                                                       
+ IDSET ID_GUID (PROPERTIES) ( 1270 *6 )                                         
+ LSET L_GUID (%ID_GUID)                                                         
+ DSET RUN-STATUS RUNID @RUNID ("_0617egi")                                      
+ DSET RUN-STATUS IT @IT ( "DECEMBER 21, 2025   7:50:31 P.M." "_0617egi.inm" 0)  
+ DSET RUN-STATUS CURRENCY @CURRENCY ( "$" )                                     
+ IDSET ID_NCC (COMPONENTS) (C6H6 C6H12 C6H14)                                   
+ IDSET ID_NCCNS (COMPONENTS) (C6H6 C6H12 C6H14)                                 
+ IDSET ALIAS (COMPONENTS) (1 *6)                                                
+ LSET ALIAS ( %ID_NCC & %ALIAS)                                                 
+ IDSET STATUS (PROPERTIES) (125 *1 126 *1 127 *1 128 *1 129 *1 130 *1)          
+ LSET STATUS (%STATUS)                                                          
+ IDSET PPSTAT (PROPERTIES) (272 *1)                                             
+ LSET PPSTAT (%PPSTAT)                                                          
+ IDSET PORT_NO (PROPERTIES) (236 *1 237 *1 238 *1)                              
+ IDSET IDS_0 (SUBSTREAM) ($TOTAL)                                               
+ IDSET IDS_1 (SUBSTREAM) (MIXED)                                                
+ IDSET BLKSTAT (PROPERTIES) (120 *1 121 *1)                                     
+ IDSET BLKMSG (PROPERTIES) (122 *6)                                             
+ LSET BLKSTAT (%BLKSTAT)                                                        
+ LSET BLKMSG (%BLKMSG)                                                          
+ IDSET DESC (PROPERTIES) (113 *6)                                               
+ LSET DESC (%DESC)                                                              
+ IDSET IDPH_V (PHASE) (VAPOR)                                                   
+ IDSET IDPH_L (PHASE) (LIQUID)                                                  
+ IDSET IDPH_S (PHASE) (SOLID)                                                   
+ IDSET IDPH_L1 (PHASE) (LIQUID_1)                                               
+ IDSET IDPH_T (PHASE) (TOTAL)                                                   
+ IDSET IDPH_L2 (PHASE) (LIQUID_2)                                               
+ IDSET IDWET (BASIS) (WET)                                                      
+ IDSET IDDRY (BASIS) (DRY)                                                      
+ IDSET SP (PROPERTIES) (118 *6)                                                 
+ LSET SP (%SP)                                                                  
+ IDSET SPSTAT (SPSTAT) (116 *1)                                                 
+ LSET SPSTAT ( %SPSTAT)                                                         
+ IDSET IDERR (PROPERTIES) (131 *1)                                              
+ DSET RUN-STATUS SP @SP ( "DECEMBER 21, 2025 7:50:31 P.M." )                    
+ IDSET FOR (PROPERTIES) (737 *1)                                                
+ LSET FOR (%FOR)                                                                
+ IDSET FORSTAT (PROPERTIES) (738 *1)                                            
+ LSET FORSTAT (%FORSTAT)                                                        
+ IDSET MW (PROPERTIES) (269 *2)                                                 
+ LSET MW (%MW & %ID_NCCNS)                                                      
+ DSET MW MW @MW (7.81136400D+01 8.41612800D+01 8.61771600D+01)                  
+ IDSET VST (PROPERTIES) (270 *2 <43> )                                          
+ LSET VST (%VST & %ID_NCCNS)                                                    
+ DSET VST VST @VST (8.85091000D+01 <3> 1.07687000D+02 <3> 1.30138000D+02 <3> )  
+ IDSET TB (PROPERTIES) (271 *2 <22> )                                           
+ LSET TB (%TB & %ID_NCC)                                                        
+ DSET TB TB @TB (8.00900000D+01 <4> 8.07200000D+01 <4> 6.87100000D+01 <4> )     
+ IDSET CASN (PROPERTIES) (37100 *6)                                             
+ LSET CASN (%ID_NCC & %CASN)                                                    
+ DSET CASN CASN @CASN ( "71-43-2" "110-82-7" "110-54-3" )                       
+ IDSET ISODES (PROPERTIES) (123 *5 124 *5 132 *5 1269 *5)                       
+ IDSET ISODESHW (PROPERTIES) (123 *5 124 *5 132 *5)                             
+ IDSET ISTRCV (PROPERTIES) (1251 *2)                                            
+ IDSET ID_WORK (PROPERTIES) (112 *2 <19> 195 *2 <28> )                          
+ LSET L_WORK (%ISODESHW %ID_WORK)                                               
+ IDSET ID_POWER (PROPERTIES) (112 *2 <47> 195 *2 <114> )                        
+ LSET L_POWER (%ISODESHW %ID_POWER)                                             
+ IDSET ID_HEAT (PROPERTIES) (1 *2 <13> 815 *2 <22> 816 *2 <22> )                
+ LSET L_HEAT (%ISODESHW %ID_HEAT)                                               
+ IDSET ID_LTVC (PROPERTIES) (817 *2 <22> )                                      
+ IDSET ID_LQVC (PROPERTIES) (818 *2 <13> )                                      
+ IDSET ID_TPQV (PROPERTIES) (1 *2 <13> 31 *2 <22> 32 *2 <20> 2 *2 3 *2)         
+ IDSET ID_QTP (PROPERTIES) (1 *2 <13> 31 *2 <22> 32 *2 <20> 3 *2)               
+ DSET ALIAS @ALIAS ( "C6H6" "C6H12-1" "C6H14-1" )                               
+ IDSET ID_1 (NPOINT) (#3)                                                       
+ IDSET ID_2 (PROPERTIES) (339 *6 132 *5 1196 *6 1197 *6 1198 *6)                
+ LSET L_1 (%ID_2 & %ID_1)                                                       
+ DSET COMPONENTS MAIN COMPS @L_1 ("C6H6" C "C6H6" "C6H6" "C6H6" "C6H12" C       
+ "C6H12-1" "C6H12-1" "C6H12" "C6H14" C "C6H14-1" "C6H14-1" "C6H14" )            
+ IDSET RSTAT (PROPERTIES) (739 *1)                                              
+ LSET RSTAT ( %RSTAT)                                                           
+ DSET RUN-STATUS RPTSTAT @RSTAT (0)                                             
+ IDSET ID_3 (PROPERTIES) (7001 *2 <22> )                                        
+ IDSET ID_4 ( PROPERTIES,  PHASE, COMPONENTS) (1017 *2 <38> , LIQUID , "C6H6"   
+ 1017 *2 <38> , LIQUID , "C6H12" 1017 *2 <38> , LIQUID , "C6H14" 1015 *2 <49> , 
+ LIQUID , "C6H6" 1015 *2 <49> , LIQUID , "C6H12" 1015 *2 <49> , LIQUID ,        
+ "C6H14" 3001 *2 <26> , LIQUID , "C6H6" 3001 *2 <26> , LIQUID , "C6H12" 3001 *2 
+ <26> , LIQUID , "C6H14" 3002 *2 <23> , LIQUID , "C6H6" 3002 *2 <23> , LIQUID , 
+ "C6H12" 3002 *2 <23> , LIQUID , "C6H14" )                                      
+ IDSET ID_5 (NPOINT) ( #21)                                                     
+ LSET L_2 ((%IDERR %ID_3 %ID_4) & %ID_5)                                        
+ DSET PROP-TABLE FLASHCURVE PURE PROPTAB @L_2 (0 -1.10000000D+02 <4>            
+ 9.96926787D+02 <1> 8.83809632D+02 <1> 7.64621924D+02 <1> 1.41555979D+03 <1>    
+ 1.24836743D+03 <1> 1.72788066D+03 <1> 1.18667182D-02 <9> 7.43657844D-02 <9>    
+ 3.58503460D-03 <9> 1.89641279D-01 <1> 1.62590442D-01 <1> 1.67322121D-01 <1> 0  
+ -1.00450000D+02 <4> 9.88763206D+02 <1> 8.76537354D+02 <1> 7.57597944D+02 <1>   
+ 1.42384948D+03 <1> 1.28287681D+03 <1> 1.73834827D+03 <1> 8.24781570D-03 <9>    
+ 4.33013936D-02 <9> 2.54069715D-03 <9> 1.86307919D-01 <1> 1.59765223D-01 <1>    
+ 1.63908131D-01 <1> 0 -9.09000000D+01 <4> 9.80523591D+02 <1> 8.69195183D+02 <1> 
+ 7.50493842D+02 <1> 1.43451670D+03 <1> 1.32081888D+03 <1> 1.75679678D+03 <1>    
+ 5.95531816D-03 <9> 2.66836573D-02 <9> 1.87374897D-03 <9> 1.82974558D-01 <1>    
+ 1.56940004D-01 <1> 1.60495921D-01 <1> 0 -8.13500000D+01 <4> 9.72204797D+02 <1> 
+ 8.61780165D+02 <1> 7.43305761D+02 <1> 1.44772696D+03 <1> 1.36161666D+03 <1>    
+ 1.78453062D+03 <1> 4.44176313D-03 <9> 1.72554698D-02 <9> 1.43900692D-03 <9>    
+ 1.79641198D-01 <1> 1.54114786D-01 <1> 1.57098128D-01 <1> 0 -7.18000000D+01 <4> 
+ 9.63803466D+02 <1> 8.54289143D+02 <1> 7.36029541D+02 <1> 1.46356735D+03 <1>    
+ 1.40470162D+03 <1> 1.81597286D+03 <1> 3.40632564D-03 <9> 1.16296575D-02 <9>    
+ 1.14288292D-03 <9> 1.76307837D-01 <1> 1.51289567D-01 <1> 1.53717684D-01 <1> 0  
+ -6.22500000D+01 <4> 9.55316006D+02 <1> 8.46718733D+02 <1> 7.28660676D+02 <1>   
+ 1.48204984D+03 <1> 1.44954539D+03 <1> 1.85116149D+03 <1> 2.67581573D-03 <9>    
+ 8.12318110D-03 <9> 9.33268440D-04 <9> 1.72974477D-01 <1> 1.48464349D-01 <1>    
+ 1.50355182D-01 <1> 0 -5.27000000D+01 <4> 9.46738569D+02 <1> 8.39065304D+02 <1> 
+ 7.21194279D+02 <1> 1.50311897D+03 <1> 1.49567943D+03 <1> 1.89005367D+03 <1>    
+ 2.14639086D-03 <9> 5.85312157D-03 <9> 7.79871799D-04 <9> 1.69641116D-01 <1>    
+ 1.45639130D-01 <1> 1.47011255D-01 <1> 0 -4.31500000D+01 <4> 9.38067023D+02 <1> 
+ 8.31324952D+02 <1> 7.13625035D+02 <1> 1.52666242D+03 <1> 1.54270466D+03 <1>    
+ 1.93254041D+03 <1> 1.75352764D-03 <9> 4.33380379D-03 <9> 6.64299500D-04 <9>    
+ 1.66307756D-01 <1> 1.42813911D-01 <1> 1.43686574D-01 <1> 0 -3.36000000D+01 <4> 
+ 9.29296923D+02 <1> 8.23493469D+02 <1> 7.05947145D+02 <1> 1.55252265D+03 <1>    
+ 1.59029355D+03 <1> 1.97846283D+03 <1> 1.45585010D-03 <9> 3.28668088D-03 <9>    
+ 5.74951694D-04 <9> 1.62974396D-01 <1> 1.39988693D-01 <1> 1.40381856D-01 <1> 0  
+ -2.40500000D+01 <4> 9.20423478D+02 <1> 8.15566309D+02 <1> 6.98154264D+02 <1>   
+ 1.58050857D+03 <1> 1.63818698D+03 <1> 2.02762874D+03 <1> 1.22607156D-03 <9>    
+ 2.54598313D-03 <9> 5.04266866D-04 <9> 1.59641035D-01 <1> 1.37163474D-01 <1>    
+ 1.37097869D-01 <1> 0 -1.45000000D+01 <4> 9.11441513D+02 <1> 8.07538553D+02 <1> 
+ 6.90239429D+02 <1> 1.61040642D+03 <1> 1.68618765D+03 <1> 2.07982830D+03 <1>    
+ 1.04574036D-03 <9> 2.00975473D-03 <9> 4.47170828D-04 <9> 1.56307675D-01 <1>    
+ 1.34338256D-01 <1> 1.33835435D-01 <1> 0 -4.95000000D+00 <4> 9.02345421D+02 <1> 
+ 7.99404861D+02 <1> 6.82194967D+02 <1> 1.64198943D+03 <1> 1.73415176D+03 <1>    
+ 2.13484843D+03 <1> 9.02095140D-04 <9> 1.61341214D-03 <9> 4.00170581D-04 <9>    
+ 1.52974314D-01 <1> 1.31513037D-01 <1> 1.30595435D-01 <1> 0 4.60000000D+00 <4>  
+ 8.93129117D+02 <1> 7.91159422D+02 <1> 6.74012399D+02 <1> 1.67502592D+03 <1>    
+ 1.78198004D+03 <1> 2.19248553D+03 <1> 7.86128771D-04 <9> 1.31494559D-03 <9>    
+ 3.60807087D-04 <9> 1.49640954D-01 <1> 1.28687818D-01 <1> 1.27378818D-01 <1> 0  
+ 1.41500000D+01 <4> 8.83785974D+02 <1> 7.82795893D+02 <1> 6.65682308D+02 <1>    
+ 1.71403662D+03 <1> 1.83218814D+03 <1> 2.25255665D+03 <1> 6.90479062D-04 <9>    
+ 1.08761762D-03 <9> 3.27314820D-04 <9> 1.46321093D-01 <1> 1.25870405D-01 <1>    
+ 1.24186610D-01 <1> 0 2.37000000D+01 <4> 8.74308761D+02 <1> 7.74307334D+02 <1>  
+ 6.57194197D+02 <1> 1.75535010D+03 <1> 1.88427409D+03 <1> 2.31490923D+03 <1>    
+ 6.09734941D-04 <9> 9.13722073D-04 <9> 2.98404207D-04 <9> 1.43034933D-01 <1>    
+ 1.23077620D-01 <1> 1.21019916D-01 <1> 0 3.32500000D+01 <4> 8.64689555D+02 <1>  
+ 7.65686121D+02 <1> 6.48536307D+02 <1> 1.79835427D+03 <1> 1.93780606D+03 <1>    
+ 2.37942983D+03 <1> 5.41104937D-04 <9> 7.78525032D-04 <9> 2.73119151D-04 <9>    
+ 1.39783874D-01 <1> 1.20311046D-01 <1> 1.17879937D-01 <1> 0 4.28000000D+01 <4>  
+ 8.54919654D+02 <1> 7.56923851D+02 <1> 6.39695394D+02 <1> 1.84293565D+03 <1>    
+ 1.99287727D+03 <1> 2.44605232D+03 <1> 4.82407001D-04 <9> 6.71821915D-04 <9>    
+ 2.50741638D-04 <9> 1.36569243D-01 <1> 1.17571850D-01 <1> 1.14767978D-01 <1> 0  
+ 5.23500000D+01 <4> 8.44989461D+02 <1> 7.48011230D+02 <1> 6.30656458D+02 <1>    
+ 1.88900883D+03 <1> 2.04960504D+03 <1> 2.51476613D+03 <1> 4.31912379D-04 <9>    
+ 5.86454092D-04 <9> 2.30726519D-04 <9> 1.33392461D-01 <1> 1.14861295D-01 <1>    
+ 1.11685465D-01 <1> 0 6.19000000D+01 <4> 8.34888355D+02 <1> 7.38937934D+02 <1>  
+ 6.21402406D+02 <1> 1.93651985D+03 <1> 2.10812945D+03 <1> 2.58562533D+03 <1>    
+ 3.88239877D-04 <9> 5.17308173D-04 <9> 2.12656075D-04 <9> 1.30255050D-01 <1>    
+ 1.12180756D-01 <1> 1.08633954D-01 <1> 0 7.14500000D+01 <4> 8.24604530D+02 <1>  
+ 7.29692445D+02 <1> 6.11913620D+02 <1> 1.98544967D+03 <1> 2.16861348D+03 <1>    
+ 2.65875958D+03 <1> 3.50277307D-04 <9> 4.60670696D-04 <9> 1.96207777D-04 <9>    
+ 1.27158645D-01 <1> 1.09531728D-01 <1> 1.05615157D-01 <1> 0 8.10000000D+01 <4>  
+ * <1> * <1> * <1> * <1> * <1> * <1> * <9> * <9> * <9> * <1> * <1> * <1> )      
+ DSET PROP-TABLE FLASHCURVE PURE COMPSTAT @L_1 (0)                              
+ IDSET ID_6 (PROPERTIES) (7002 *2 <20> 7001 *2 <22> )                           
+ IDSET ID_7 ( PROPERTIES, PHASE) (11006 *2 <38> , LIQUID 2017 *2 <49> , LIQUID  
+ 4001 *2 <26> , LIQUID 4002 *2 <23> , LIQUID 7002 *2 <20> , TOTAL )             
+ IDSET ID_8 ( PROPERTIES,  PHASE, COMPONENTS) (8004 *2 , LIQUID , "C6H6" 8004   
+ *2 , LIQUID , "C6H12" 8004 *2 , LIQUID , "C6H14" )                             
+ IDSET ID_9 (NPOINT) ( #21)                                                     
+ LSET L_3 ((%IDERR %ID_6 %ID_7 %ID_8) & %ID_9)                                  
+ DSET PROP-TABLE FLASHCURVE MIX-1 PROPTAB @L_3 (0 1.00000000D+00 <5>            
+ -1.00000000D+02 <4> 8.59806833D+02 <1> 1.48609955D+03 <1> 9.50394340D-03 <9>   
+ 1.68305567D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> -9.10000000D+01 <4> 8.52622992D+02 <1>     
+ 1.50751410D+03 <1> 6.70214490D-03 <9> 1.65306908D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ -8.20000000D+01 <4> 8.45369267D+02 <1> 1.53340894D+03 <1> 4.89930674D-03 <9>   
+ 1.62312141D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> -7.30000000D+01 <4> 8.38042664D+02 <1>     
+ 1.56187761D+03 <1> 3.69326619D-03 <9> 1.59322227D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ -6.40000000D+01 <4> 8.30639977D+02 <1> 1.59278724D+03 <1> 2.85867586D-03 <9>   
+ 1.56337397D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> -5.50000000D+01 <4> 8.23157768D+02 <1>     
+ 1.62598089D+03 <1> 2.26380299D-03 <9> 1.53357896D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ -4.60000000D+01 <4> 8.15592344D+02 <1> 1.66128642D+03 <1> 1.82863404D-03 <9>   
+ 1.50383990D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> -3.70000000D+01 <4> 8.07939728D+02 <1>     
+ 1.69852417D+03 <1> 1.50289713D-03 <9> 1.47415960D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ -2.80000000D+01 <4> 8.00195629D+02 <1> 1.73751355D+03 <1> 1.25404281D-03 <9>   
+ 1.44454111D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> -1.90000000D+01 <4> 7.92355409D+02 <1>     
+ 1.77807832D+03 <1> 1.06042272D-03 <9> 1.41498768D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ -1.00000000D+01 <4> 7.84414037D+02 <1> 1.82005088D+03 <1> 9.07287384D-04 <9>   
+ 1.38550282D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> -1.00000000D+00 <4> 7.76366048D+02 <1>     
+ 1.86327557D+03 <1> 7.84366938D-04 <9> 1.35609031D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ 8.00000000D+00 <4> 7.68205483D+02 <1> 1.90815973D+03 <1> 6.84353746D-04 <9>    
+ 1.32675776D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> 1.70000000D+01 <4> 7.59925832D+02 <1>      
+ 1.95625595D+03 <1> 6.02000765D-04 <9> 1.29760865D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ 2.60000000D+01 <4> 7.51519952D+02 <1> 2.00596150D+03 <1> 5.33496449D-04 <9>    
+ 1.26869744D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> 3.50000000D+01 <4> 7.42979988D+02 <1>      
+ 2.05723320D+03 <1> 4.75920548D-04 <9> 1.24003348D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ 4.40000000D+01 <4> 7.34297265D+02 <1> 2.11005458D+03 <1> 4.27068584D-04 <9>    
+ 1.21162685D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> 5.30000000D+01 <4> 7.25462162D+02 <1>      
+ 2.16443825D+03 <1> 3.85255148D-04 <9> 1.18348846D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ 6.20000000D+01 <4> 7.16463973D+02 <1> 2.22042882D+03 <1> 3.49176527D-04 <9>    
+ 1.15563008D-01 <1> 1.00000000D+05 <1> 3.14401232D-01 3.38742505D-01            
+ 3.46856263D-01 0 1.00000000D+00 <5> 7.10000000D+01 <4> 7.07290717D+02 <1>      
+ 2.27810663D+03 <1> 3.17813304D-04 <9> 1.12806456D-01 <1> 1.00000000D+05 <1>    
+ 3.14401232D-01 3.38742505D-01 3.46856263D-01 0 1.00000000D+00 <5>              
+ 8.00000000D+01 <4> * <1> * <1> * <9> * <1> 1.00000000D+05 <1> * * * )          
+ DSET PROP-TABLE FLASHCURVE MIX-1 COMPSTAT @L_1 (0)                             
+ DSET RUN-STATUS PPSTAT @PPSTAT (0)                                             
+ DSET RUN-STATUS STATUS @STATUS ( 8 * * * * * )                                 
+ DSET RUN-STATUS COMPSTAT @L_1 (0)                                              
+ IDSET TSTAT (PROPERTIES) (741 *1)                                              
+ LSET TSTAT ( %TSTAT)                                                           
+ DSET RUN-STATUS TOTSTAT @TSTAT (0)                                             
+ DSET SPSTAT @SPSTAT (0)                                                        

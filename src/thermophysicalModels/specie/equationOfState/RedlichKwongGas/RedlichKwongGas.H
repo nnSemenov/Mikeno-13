@@ -1,6 +1,45 @@
-//
+/*
 // Created by joseph on 25-7-11.
 //
+
+License
+    This file is part of Mikeno.
+
+Class
+    Foam::RedlichKwongGas
+
+Description
+    RedlichKwongGas cubic equation of state for gases
+
+    Coefficient mixing is very inaccurate and not supported, so this equation of
+    state can only be applied to mixtures by using a thermophysical properties
+    model which mixes specie property value.
+
+Usage
+    \table
+        Property     | Description
+        Tc           | Critical temperature [K]
+        Vc           | Critical volume [m^3/kmol]
+        Pc           | Critical pressure [Pa]
+        phase        | Preferred phase (vapor/liquid)
+    \endtable
+
+    Example specification of the RedlichKwongGas equation of state for methane:
+    \verbatim
+    equationOfState
+    {
+        Tc        190.55;
+        Vc        0.0285;
+        Pc        4.595e6;
+        phase     vapor;
+    }
+    \endverbatim
+
+SourceFiles
+    RedlichKwongGasI.H
+    RedlichKwongGas.C
+
+\*---------------------------------------------------------------------------*/
 
 #ifndef RedlichKwongGas_H
 #define RedlichKwongGas_H
@@ -45,9 +84,12 @@ class RedlichKwongGas : public Specie {
 
 public:
 
+    realFluidProperty property_;
+
     struct EOSCore {
         scalar a;
         scalar b;
+        bool is_gas;
 
     protected:
         //- Molar volume [m^3/kmol]
@@ -66,7 +108,9 @@ public:
             const scalar a1 = A - B - sqr(B);
             const scalar a0 = -A * B;
 
-            return solveCubicEquation(a2, a1, a0);
+            const scalar Z= solveCubicEquation(a2, a1, a0, this->is_gas, B);
+            assert(Z>B);
+            return Z;
         }
         //- Return residual h and e
         inline Foam::residualEnergy residualHE(const scalar p, const scalar T, scalar W) const {
@@ -155,7 +199,6 @@ public:
 
         //- Return compressibility [s^2/m^2]
         inline scalar psi(scalar p, scalar T, scalar W) const {
-            #warning Non-precise implementation
             return 1/(this->Z(p,T)*this->R(W)*T);
         }
 
@@ -205,7 +248,7 @@ public:
         //- Return isothermal internal energy-pressure derivative [m/kg]
         inline scalar dedp_T(const scalar p, const scalar T, scalar W) const {
             const auto z=this->Z(p, T);
-            const scalar V = z*RR*T/p;
+            [[maybe_unused]] const scalar V = z*RR*T/p;
             const scalar dUdp_T = - T*dVdT_p(p, T, z) - p*dVdp_T(p, T, z);
             return dUdp_T/W;
         }
@@ -213,7 +256,8 @@ public:
 
 public:
     inline RedlichKwongGas(
-            const Specie &sp
+            const Specie &sp,
+            const realFluidProperty&prop
        );
 
     RedlichKwongGas(const word&name, const dictionary&dict);
@@ -224,6 +268,21 @@ public:
 
 
     // Member Functions
+    inline scalar Tc() const noexcept {
+        return this->property_.Tc_;
+    }
+    inline scalar Pc() const noexcept {
+        return this->property_.Pc_;
+    }
+    inline scalar Vc() const noexcept {
+        return this->property_.Vc_;
+    }
+    inline scalar Zc() const noexcept {
+        return this->property_.Zc();
+    }
+    inline bool preferGas() const noexcept {
+        return this->property_.is_gas;
+    }
 
     //- Return the instantiated type name
     static word typeName()
@@ -233,12 +292,12 @@ public:
 //    inline Foam::cubicEOSRawCoefficient coeffRaw(scalar p, scalar T) const;
 
     inline EOSCore core(scalar p[[maybe_unused]], scalar T[[maybe_unused]]) const {
-        const auto Tc_ = this->Tc_;
+        const auto Tc_ = this->Tc();
 //    const auto Vc_=this->Vc_;
-        const auto Pc_ = this->Pc_;
+        const auto Pc_ = this->Pc();
         const scalar a = 0.42748025 * sqr(RR * Tc_) * sqrt(Tc_) / Pc_;
         const scalar b = 0.08664035 * RR * Tc_ / Pc_;
-        return {a, b};
+        return {a, b, this->preferGas()};
     }
 
     //- Is the equation of state is incompressible i.e. rho != f(p)
@@ -323,13 +382,14 @@ public:
                            getXiFun &specieMoleFracFun) const {
             scalar sqrt_a_sum = 0;
             scalar bSum = 0;
+            const bool is_gas=coreFun(0).is_gas;
             for (label spIdx = 0; spIdx < nSpecie; spIdx++) {
                 const EOSCore core_i = coreFun(spIdx);
                 const scalar Xi = specieMoleFracFun(spIdx);
                 sqrt_a_sum += Xi * sqrt(core_i.a);
                 bSum += Xi * core_i.b;
             }
-            return EOSCore{sqr(sqrt_a_sum), bSum};
+            return EOSCore{sqr(sqrt_a_sum), bSum, is_gas};
         }
     };
 

@@ -265,6 +265,7 @@ target_sources(meshTools PRIVATE
 
     zoneGenerators/cell/containsPoints/containsPoints.C
     zoneGenerators/cell/generatedCellZone/generatedCellZone.C
+    zoneGenerators/cell/nearPatchCells/nearPatchCells_zoneGenerator.C
 
     zoneGenerators/face/face/face_zoneGenerator.C
     zoneGenerators/face/patch/patch_zoneGenerator.C

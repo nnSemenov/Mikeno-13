@@ -76,22 +76,6 @@ class specie
         //- Molecular weight of specie [kg/kmol]
         scalar molWeight_;
 
-protected:
-
-        //- Critical Temperature [K]
-        scalar Tc_;
-
-        //- Critical volume [m^3/kmol]
-        scalar Vc_;
-
-        //- Critical Pressure [Pa]
-        scalar Pc_;
-
-        //- Acentric factor [-]
-        scalar omega_;
-
-        word checkForRealGasEOS(bool requireOmega) const;
-        void requireRealGasEOS(bool requireOmega) const;
 
 public:
 
@@ -102,24 +86,14 @@ public:
     // Constructors
 
         //- Construct from components without name
-        inline specie(const scalar Y,
-                      const scalar molWeight,
-                      const scalar Tc=-1,
-                      const scalar Vc=-1,
-                      const scalar Pc=-1,
-                      const scalar omega=-2
-                      );
+        inline specie(const scalar Y, const scalar molWeight);
 
         //- Construct from components with name
         inline specie
         (
             const word& name,
             const scalar Y,
-            const scalar molWeight,
-            const scalar Tc=-1,
-            const scalar Vc=-1,
-            const scalar Pc=-1,
-            const scalar omega=-2
+            const scalar molWeight
         );
 
         //- Construct as named copy
@@ -148,21 +122,6 @@ public:
             //- Gas constant [J/kg/K]
             inline scalar R() const;
 
-
-            //- Critical Temperature [K]
-            inline scalar Tc() const;
-
-            //- Critical compression factor [-]
-            inline scalar Zc() const;
-
-            //- Critical Pressure [Pa]
-            inline scalar Pc() const;
-
-            //- Critical volume [m^3/kmol]
-            inline scalar Vc() const;
-
-            //- Acentric factor [-]
-            inline scalar omega() const;
 
         // I-O
 

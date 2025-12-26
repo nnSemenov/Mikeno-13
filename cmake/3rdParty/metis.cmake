@@ -18,7 +18,7 @@ find_library(metis_lib
 )
 
 if(NOT metis_lib)
-    message(WARNING "Failed to find metis library: ${metis_option}")
+    message(FATAL_ERROR "Failed to find metis library: ${metis_option}")
     return()
 endif ()
 message(STATUS "Found metis library: ${metis_lib}")

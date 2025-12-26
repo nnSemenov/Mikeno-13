@@ -38,6 +38,7 @@ Usage
         Vc           | Critical volume [m^3/kmol]
         Pc           | Critical pressure [Pa]
         omega        | Acentric factor [-]
+        phase        | Preferred phase (vapor/liquid)
     \endtable
 
     Example specification of the PengRobinsonGas equation of state for methane:
@@ -48,7 +49,7 @@ Usage
         Vc        0.0285;
         Pc        4.595e6;
         omega     0.0115;
-
+        phase     vapor;
     }
     \endverbatim
 
@@ -114,6 +115,7 @@ namespace Foam {
             :
                     public Specie {
         // Private Data
+        realFluidProperty property_;
 
     public:
 
@@ -122,6 +124,7 @@ namespace Foam {
             scalar b;
             scalar da_dT;
             scalar dd2a_dT2;
+            bool is_gas;
 
             inline cubicEOSDimlessCoefficient dimlessCoeff(scalar p, scalar T) const {
                 const scalar A = a * p / sqr(RR * T);
@@ -140,7 +143,7 @@ namespace Foam {
                 const scalar a2 = B-1;
                 const scalar a1=A -2*B -3*sqr(B);
                 const scalar a0 = pow3(B) + sqr(B)-A*B;
-                const scalar Z = solveCubicEquation(a2,a1,a0);
+                const scalar Z = solveCubicEquation(a2,a1,a0,this->is_gas, B);
                 assert(Z>B);
                 return Z;
             }
@@ -157,7 +160,7 @@ namespace Foam {
 
             inline Foam::residualEnergy residualHE(scalar p, scalar T, scalar W) const {
                 const auto AB=this->dimlessCoeff(p,T);
-                const scalar A=AB.A;
+                [[maybe_unused]] const scalar A=AB.A;
                 const scalar B=AB.B;
                 const scalar Z=this->Z(AB);
 
@@ -282,7 +285,7 @@ namespace Foam {
 
             inline scalar dedp_T(scalar p, scalar T, scalar W) const {
                 const scalar z = this->Z(p, T);
-                const scalar V = z * RR * T / p;
+                [[maybe_unused]] const scalar V = z * RR * T / p;
                 const scalar dUdp_T = -T*dVdT_p(p, T, z) - p*dVdp_T(p, T, z);
                 return dUdp_T/this->R(W);
             }
@@ -290,6 +293,9 @@ namespace Foam {
 
     public:
         // Constructors
+        inline PengRobinsonGas(
+            const Specie&sp,
+            const realFluidProperty& prop);
 
         //- Construct from components
         inline PengRobinsonGas(
@@ -308,6 +314,25 @@ namespace Foam {
 
         // Member Functions
 
+        inline scalar Tc() const noexcept {
+            return this->property_.Tc_;
+        }
+        inline scalar Pc() const noexcept {
+            return this->property_.Pc_;
+        }
+        inline scalar Vc() const noexcept {
+            return this->property_.Vc_;
+        }
+        inline scalar Zc() const noexcept {
+            return this->property_.Zc();
+        }
+        inline scalar omega() const noexcept {
+            return this->property_.omega_;
+        }
+        inline bool preferGas() const noexcept {
+            return this->property_.is_gas;
+        }
+
         //- Return the instantiated type name
         static word typeName() {
             return "PengRobinsonGas<" + word(Specie::typeName_()) + '>';
@@ -317,7 +342,7 @@ namespace Foam {
         inline EOSCore core(scalar p, scalar T) const {
             const auto Tc = this->Tc();
             const auto Pc = this->Pc();
-            const scalar omega=this->omega_;
+            const scalar omega=this->omega();
             // const scalar Tr = T/Tc;
             const scalar a_c = 0.45724* sqr(RR*Tc)/Pc;
             const scalar kappa = 0.37464+1.54226*omega - 0.26992*sqr(omega);
@@ -331,7 +356,7 @@ namespace Foam {
             const scalar da_dT = a_c*dalpha_dT;
             const scalar d2a_dT2 = a_c*d2alpha_dT2;
 
-            return {a,b,da_dT,d2a_dT2};
+            return {a,b,da_dT,d2a_dT2,this->preferGas()};
         }
 
         //- Is the equation of state is incompressible i.e. rho != f(p)
@@ -456,6 +481,7 @@ namespace Foam {
                 scalar da_dT_sum=0;
                 scalar d2a_dT2_sum=0;
                 scalar bSum=0;
+                const bool is_gas=coreFun(0).is_gas;
                 for(label i=0;i<nSpecie;i++) {
                     const scalar Xi=specieMoleFracFun(i);
                     const EOSCore iCore=coreFun(i);
@@ -487,7 +513,7 @@ namespace Foam {
                         d2a_dT2_sum += Xi*Xj*(1-kij) *d2_dT2_sqrt_aiaj;
                     }
                 }
-                return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum};
+                return EOSCore{aSum,bSum,da_dT_sum,d2a_dT2_sum,is_gas};
             }
 
         };

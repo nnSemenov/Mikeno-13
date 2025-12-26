@@ -7,7 +7,7 @@ find_library(parmetis_lib
     NAMES parmetis
 )
 if(NOT parmetis_lib)
-    message(WARNING "Failed to find parmteis lib")
+    message(FATAL_ERROR "Failed to find parmteis lib")
     return()
 endif ()
 message(STATUS "Found parmetis library: ${parmetis_lib}")

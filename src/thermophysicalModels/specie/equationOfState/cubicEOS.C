@@ -6,45 +6,116 @@
 
 #include <limits>
 
+#include "../../../OpenFOAM/db/dictionary/dictionary.H"
+
 using Foam::scalar;
 using Foam::word;
 
-Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0) {
+Foam::realFluidProperty::realFluidProperty(const dictionary&dict) {
+    const dictionary&eos=dict.subDict("equationOfState");
+    Tc_=eos.lookup<scalar>("Tc");
+    Vc_=eos.lookup<scalar>("Vc");
+    Pc_=eos.lookup<scalar>("Pc");
+    omega_=eos.lookup<scalar>("omega");
 
-    const scalar Q = (3 * a1 - a2 * a2) / 9.0;
-    const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
-
-    const scalar Q3 = Q * Q * Q;
-    const scalar D = Q3 + Rl * Rl;
-
-    scalar root = -1;
-
-    if (D <= 0) {
-        const scalar th = ::acos(Rl / sqrt(-Q3));
-        const scalar qm = 2 * sqrt(-Q);
-        const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
-        const scalar r2 =
-                qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
-        const scalar r3 =
-                qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
-
-        root = max(r1, max(r2, r3));
+    const word phase=eos.lookupOrDefault<word>("phase","vapor");
+    if(phase=="vapor") {
+        is_gas=true;
+    } else if(phase=="liquid") {
+        is_gas=false;
     } else {
-        // One root is real
-        const scalar D05 = sqrt(D);
-        const scalar S = cbrt(Rl + D05);
-        scalar Tl = 0;
-        if (D05 > Rl) {
-            Tl = -cbrt(mag(Rl - D05));
-        } else {
-            Tl = cbrt(Rl - D05);
-        }
-
-        root = S + Tl - a2 / 3.0;
+        FatalErrorInFunction<<"Invalid value for phase: \""<<phase<<"\". Valid values: (vapor liquid)"<<endl;
+        ::Foam::abort(::Foam::FatalError);
     }
-    assert(root > 0);
+}
+
+word Foam::realFluidProperty::checkForRealGasEOS(bool checkOmega) const noexcept {
+
+    if(this->Tc_<=0) {
+        return "Invalid critical temperature: "+::Foam::name(this->Tc_) +"[K]";
+    }
+    if(this->Pc_<=0) {
+        return "Invalid critical pressure: "+::Foam::name(this->Pc_)+"[Pa]";
+    }
+    if(this->Vc_<=0) {
+        return "Invalid critical volume: "+::Foam::name(this->Vc_)+"[m^3/kmol]";
+    }
+    if((this->Zc()<=0) or (this->Zc()>1)) {
+        return "Invalid critical compression factor: "+::Foam::name(this->Pc_);
+    }
+    if(checkOmega and (this->omega_<=-1)) {
+        return "Invalid acentric factor: "+::Foam::name(this->omega_);
+    }
+    return "";
+}
+
+void Foam::realFluidProperty::requireRealGasEOS(const word&specieName, bool require_omega) const {
+    const word error=checkForRealGasEOS(require_omega);
+    if (error.empty()) {
+        return;
+    }
+
+    FatalErrorInFunction<<specieName<<" is invalid specie: "<<error<<endl;
+
+    ::Foam::abort(::Foam::FatalError);
+}
+
+void Foam::realFluidProperty::write(dictionary&dict) const {
+    if(Tc_>0) {
+        dict.add("Tc", Tc_);
+    }
+    if(Pc_>0) {
+        dict.add("Pc",Pc_);
+    }
+    if(Vc_>0) {
+        dict.add("Vc",Vc_);
+    }
+    if(omega_>-1) {
+        dict.add("omega", omega_);
+    }
+    const char* phase_val=this->is_gas?"vapor":"liquid";
+    dict.add("phase",phase_val);
+}
+
+
+Foam::scalar Foam::solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max, scalar lower_bound) {
+  const scalar Q = (3 * a1 - a2 * a2) / 9.0;
+  const scalar Rl = (9 * a2 * a1 - 27 * a0 - 2 * a2 * a2 * a2) / 54.0;
+
+  const scalar Q3 = Q * Q * Q;
+  const scalar D = Q3 + Rl * Rl;
+
+//  scalar root = -1;
+
+  if (D <= 0) {
+    // Three roots are real, but may contains negative
+    const scalar th = ::acos(Rl / sqrt(-Q3));
+    const scalar qm = 2 * sqrt(-Q);
+    const scalar r1 = qm * cos(th / 3.0) - a2 / 3.0;
+    const scalar r2 =
+        qm * cos((th + 2 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
+    const scalar r3 =
+        qm * cos((th + 4 * constant::mathematical::pi) / 3.0) - a2 / 3.0;
+
+    if(prefer_max) {
+      return max(r1, max(r2, r3));
+    }
+    return take_min_valid(r1,r2,r3,lower_bound);
+  } else {
+    // One root is real
+    const scalar D05 = sqrt(D);
+    const scalar S = cbrt(Rl + D05);
+    scalar Tl = 0;
+    if (D05 > Rl) {
+      Tl = -cbrt(mag(Rl - D05));
+    } else {
+      Tl = cbrt(Rl - D05);
+    }
+
+    const scalar root = S + Tl - a2 / 3.0;
 
     return root;
+  }
 }
 
 word Foam::parseBinarySpeciePair(const word&str, word&sp0, word&sp1) {

@@ -234,6 +234,12 @@ protected:
             bool topoChanged_;
 
 
+    // Protected Member Functions
+
+        //- Does a read update move the mesh forward in time?
+        bool readUpdateIsForward() const;
+
+
 public:
 
     // Public Typedefs
@@ -598,7 +604,7 @@ public:
 
         // Write
 
-            //- Write the underlying polyMesh
+            //- Write the mesh data and all objects in the registry
             virtual bool writeObject
             (
                 IOstream::streamFormat fmt,
@@ -606,6 +612,9 @@ public:
                 IOstream::compressionType cmp,
                 const bool write = true
             ) const;
+
+            //- Write the mesh data only
+            virtual bool writeMesh() const;
 
 
     // Member Operators

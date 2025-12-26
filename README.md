@@ -24,11 +24,8 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 2. 性能优化
    - `Opt`和`Prof`模式编译时开启`-march=native`，允许编译器充分利用SIMD
 3. 支持 `AOCC`.
-4. 在 `specie` 字典中添加 `Tc_` `Pc_` `Vc_` `omega_` 字段，从 `equationOfState`字典中删除相应字段。在编写 `physicalProperties` 时，用户应该把临界性质和偏心因子写入 `specie` 字典。
-   - 理由：临界点和偏心因子是物质的本征性质，与摩尔量类似
-   - 这样更方便添加其他真实气体状态方程
-5. 删除一些求解器模块代码中的冗余引用
-   1. 目前清理了 `isothermalFluidSolver`、`fluidSolver`、`multicomponentFluidSolver`、`XiFluidSolver`。
+4. 删除一些求解器模块代码中的冗余引用
+   1. 目前清理了 `isothermalFluidSolver`、`fluidSolver`、`multicomponentFluidSolver`、`XiFluidSolver`
 
 
 ### 支持任意高的压力
@@ -46,6 +43,12 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 5. 新的混合物模型 `realGasMulticomponentMixture` 
    1. 依靠混合气体的混合状态方程计算 `rho`
    2. 从剩余性质计算以下物性的真实性质： `Cp` `Cv` `hs` `ha` `es` `ea`。所有剩余性质都是从混合状态方程计算的。
+6. 新的混合物模型 `idealLiquidMulticomponentMixture`
+   1. 体积加权平均计算密度（无混合体积）
+   2. 质量加权平均计算比能、比热（无混合热）
+   3. Avgadro混合规则计算粘度（粘度对数摩尔分数加权）
+   4. Vredeveled混合规则计算热导率（$n=-2$）
+7. 向 `equationOfState` 字典增加可选项 `phase` ，允许预测液体密度。
 
 ## 修复意外触发SIGFPE（括号备注编译选项）
 1. 修复`flowRateInletVelocity`在写出流场时触发SIGFPE。该误触来自于`unitConversion::toUser(const T& t) const`中的除法。（`Clang DP Opt`）

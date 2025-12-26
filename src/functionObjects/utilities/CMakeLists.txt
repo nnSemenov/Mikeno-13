@@ -18,6 +18,7 @@ add_library(${target_name} SHARED
     removeObjects/removeObjects.C
     writeDictionary/writeDictionary.C
     writeObjects/writeObjects.C
+    writeMesh/writeMesh.C
     time/timeFunctionObject.C
     checkMesh/checkMesh.C
 )

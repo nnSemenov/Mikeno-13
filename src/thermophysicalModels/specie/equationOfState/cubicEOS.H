@@ -5,24 +5,71 @@
 #ifndef CUBICEOS_H
 #define CUBICEOS_H
 
-#include "autoPtr.H"
-#include "mathematicalConstants.H"
-#include "speciesTable.H"
 #include <cassert>
 #include <type_traits>
 #include <functional>
 
+#include "autoPtr.H"
+#include "mathematicalConstants.H"
+#include "speciesTable.H"
+#include "thermodynamicConstants.H"
+
 namespace Foam {
+using constant::thermodynamic::RR;
+
+    struct realFluidProperty {
+
+        //- Critical Temperature [K]
+        scalar Tc_{-1};
+
+        //- Critical volume [m^3/kmol]
+        scalar Vc_{-1};
+
+        //- Critical Pressure [Pa]
+        scalar Pc_{-1};
+
+        //- Acentric factor [-]
+        scalar omega_{-2};
+
+        bool is_gas{true};
+
+        realFluidProperty()=default;
+
+        explicit realFluidProperty(const dictionary&dict);
+
+        [[nodiscard]] inline scalar Zc() const noexcept {
+            return Pc_*Vc_/(RR*Tc_);
+        }
+
+
+        [[nodiscard]] word checkForRealGasEOS(bool require_omega) const noexcept;
+
+        void requireRealGasEOS(const word&specieName, bool require_omega) const;
+
+        void write(dictionary&eos_dict) const;
+    };
+
 
     struct cubicEOSDimlessCoefficient {
         scalar A;
         scalar B;
     };
 
-    // Solve z^3 + a2 *z^2 + a1 * z + z0 = 0
-    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0);
+    // Solve z^3 + a2 *z^2 + a1 * z + a0 = 0
+    scalar solveCubicEquation(scalar a2, scalar a1, scalar a0, bool prefer_max, scalar lower_bound);
 
-    struct residualEnergy {
+    constexpr inline scalar take_min_valid(scalar x0,scalar x1,scalar x2, scalar lower_bound) noexcept {
+        constexpr scalar gr=std::numeric_limits<scalar>::max();
+
+        const scalar r0=(x0>lower_bound ? x0: gr);
+        const scalar r1=(x1>lower_bound ? x1: gr);
+        const scalar r2=(x2>lower_bound ? x2: gr);
+        const scalar r=std::min(r0,std::min(r1,r2));
+        return r;
+    }
+
+
+  struct residualEnergy {
         scalar h_R;//[J/kg]
         scalar e_R;//[J/kg]
         scalar Z;
