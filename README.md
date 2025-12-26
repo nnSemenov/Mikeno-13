@@ -60,7 +60,6 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 2. 把多孔介质传热模块拓展到单相多组分
 3. 改进`porousMediaFluidSolver`的热非平衡模型，使它在大比表面积、高传热系数时更加稳定
 
-## 现存bug(截至20251126):
+## 现存bug(截至20251224):
 1. 算例包含拉格朗日场时，`decomposePar`崩溃（`test/Largrangian`的一些算例测试不通过）
 2. `test/postProcessing/channel`的一些后处理算例不通过
-3. ~~单精度+优化时`blockMesh`因SIGFPE崩溃~~（无解，编译器优化产生的SSE指令会除零产生NAN，但不使用错误结果。只能`unset FOAM_SIGFPE`）
