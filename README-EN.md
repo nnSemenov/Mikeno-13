@@ -60,7 +60,6 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 3. Stabilize `porousMediaFluid` for non-equilibrium heat transfer with large coefficient or specific area
 
 
-## Existing Bugs(Up to 20251126):
+## Existing Bugs(Up to 20251224):
 1. `decomposePar` crashes with Largrangian fields(Some cases in `test/Largrangian` fail)
 2. Some postprocessing fails (`test/postProcessing/channel`)
-3. ~~`blockMesh` trapped by SIGFPE when compiled with single-precision, optimization.~~ (Almost impossible to fix, compiler generates SSE instructions that produce NAN but don't use them. Only way is to `unset FOAM_SIGFPE`)
