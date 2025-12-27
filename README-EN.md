@@ -53,6 +53,8 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 2. Fix `chemistryModel` trapped by SIGFPE when calculating reaction rate. This is is trapped in `Foam::Reaction<ThermoType>::C`, probably caused by branching logic. (`Clang DP Release`)
 3. Fix unexpected SIGFPE globally by adding `-ffp-exception-behavior=maytrap`. (`Clang`)
 
+## Bug fixes
+1. Fix conflicts between `AndradeTransport` and chemistry. Fill missing implementation of `operator+` and `operator*`.
 
 ## Pending works
 1. More equation of state: Patel-Teja, Martin-Hou
