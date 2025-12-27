@@ -14,9 +14,6 @@ target_include_directories(solidThermo PRIVATE
     ${LIB_SRC}/physicalProperties/lnInclude
 )
 
-target_compile_options(solidThermo PRIVATE
-    -ffp-exception-behavior=maytrap
-)
 
 target_link_libraries(solidThermo PRIVATE
     OpenFOAM_Defines
