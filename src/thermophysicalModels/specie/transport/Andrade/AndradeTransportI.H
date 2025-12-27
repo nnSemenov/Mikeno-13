@@ -127,48 +127,48 @@ void Foam::AndradeTransport<Thermo>::operator*=(const scalar s) {
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-// template<class Thermo>
-// inline Foam::AndradeTransport<Thermo> Foam::operator+(
-//     const AndradeTransport<Thermo>&at1,
-//     const AndradeTransport<Thermo>& at2
-//     ) {
-//     Thermo t(
-//         static_cast<const Thermo&>(at1) + static_cast<const Thermo&>(at2));
+template<class Thermo>
+inline Foam::AndradeTransport<Thermo> Foam::operator+(
+    const AndradeTransport<Thermo>&at1,
+    const AndradeTransport<Thermo>& at2
+    ) {
+    Thermo t(
+        static_cast<const Thermo&>(at1) + static_cast<const Thermo&>(at2));
 
-//     if (mag(t.Y())<small) {
-//         return AndradeTransport<Thermo> (
-//             t,
-//             0,
-//             at1.muCoeffs_,
-//             at1.kappaCoeffs_
-//         );
-//     }
-//     const scalar Y1=at1.Y()/t.Y();
-//     const scalar Y2=at2.Y()/t.Y();
-//     decltype(at1.muCoeffs_) muCoeff, kappaCoeff;
-//     forAll(muCoeff, idx) {
-//         muCoeff[idx]    = Y1*at1.muCoeffs_[idx]      +Y2*at2.muCoeffs_[idx];
-//     }
-//     forAll(kappaCoeff, idx) {
-//         kappaCoeff[idx] = Y1*at1.kappaCoeffs_[idx]   +Y2*at2.kappaCoeffs_[idx];
-//     }
-//     return AndradeTransport<Thermo> (
-//         t,
-//         muCoeff,
-//         kappaCoeff
-//     );
-// }
+    if (mag(t.Y())<small) {
+        return AndradeTransport<Thermo> (
+            t,
+            0,
+            at1.muCoeffs_,
+            at1.kappaCoeffs_
+        );
+    }
+    const scalar Y1=at1.Y()/t.Y();
+    const scalar Y2=at2.Y()/t.Y();
+    decltype(at1.muCoeffs_) muCoeff, kappaCoeff;
+    forAll(muCoeff, idx) {
+        muCoeff[idx]    = Y1*at1.muCoeffs_[idx]      +Y2*at2.muCoeffs_[idx];
+    }
+    forAll(kappaCoeff, idx) {
+        kappaCoeff[idx] = Y1*at1.kappaCoeffs_[idx]   +Y2*at2.kappaCoeffs_[idx];
+    }
+    return AndradeTransport<Thermo> (
+        t,
+        muCoeff,
+        kappaCoeff
+    );
+}
 
-// template<class Thermo>
-// inline Foam::AndradeTransport<Thermo> Foam::operator*(
-//     scalar s,
-//     const AndradeTransport<Thermo>& at
-// ) {
-//     return AndradeTransport<Thermo> (
-//         s*static_cast<const Thermo&>(at),
-//         at.muCoeffs_,
-//         at.kappaCoeffs_
-//     );
-// }
+template<class Thermo>
+inline Foam::AndradeTransport<Thermo> Foam::operator*(
+    const scalar s,
+    const AndradeTransport<Thermo>& at
+) {
+    return AndradeTransport<Thermo> (
+        s*static_cast<const Thermo&>(at),
+        at.muCoeffs_,
+        at.kappaCoeffs_
+    );
+}
 
 // ************************************************************************* //
