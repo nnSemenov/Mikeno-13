@@ -33,7 +33,7 @@ public:
     static const word FLUID_PHASE_NAME;
 
     struct phaseTransferProperty {
-        heatTransfer heatTransfer;
+        heatTransfer heatTransfer_;
     };
 
     using heatTransferGraph_type = 

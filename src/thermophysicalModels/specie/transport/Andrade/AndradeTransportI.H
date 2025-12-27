@@ -23,6 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "AndradeTransport.H"
 #include "specie.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -100,5 +101,74 @@ inline Foam::scalar Foam::AndradeTransport<Thermo>::kappa
     );
 }
 
+template <class Thermo>
+void Foam::AndradeTransport<Thermo>::operator+=(const AndradeTransport<Thermo>& at) {
+
+    scalar Y1 = this->Y();
+
+    Thermo::operator+=(at);
+    // this->Y() gives changed results after this +=
+    if (mag(this->Y())>small) {
+        Y1/=this->Y();
+        const scalar Y2=at.Y()/this->Y();
+        forAll(muCoeffs_,idx) {
+            muCoeffs_[idx]=Y1*this->muCoeffs_[idx] + Y2*at.muCoeffs_[idx];
+        }
+        forAll(kappaCoeffs_, idx) {
+            kappaCoeffs_[idx]=Y1*this->kappaCoeffs_[idx] + Y2*at.kappaCoeffs_[idx];
+        }
+    }
+}
+
+template <class Thermo>
+void Foam::AndradeTransport<Thermo>::operator*=(const scalar s) {
+    Thermo::operator*=(s);
+}
+
+// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
+
+template<class Thermo>
+inline Foam::AndradeTransport<Thermo> Foam::operator+(
+    const AndradeTransport<Thermo>&at1,
+    const AndradeTransport<Thermo>& at2
+    ) {
+    Thermo t(
+        static_cast<const Thermo&>(at1) + static_cast<const Thermo&>(at2));
+
+    if (mag(t.Y())<small) {
+        return AndradeTransport<Thermo> (
+            t,
+            0,
+            at1.muCoeffs_,
+            at1.kappaCoeffs_
+        );
+    }
+    const scalar Y1=at1.Y()/t.Y();
+    const scalar Y2=at2.Y()/t.Y();
+    decltype(at1.muCoeffs_) muCoeff, kappaCoeff;
+    forAll(muCoeff, idx) {
+        muCoeff[idx]    = Y1*at1.muCoeffs_[idx]      +Y2*at2.muCoeffs_[idx];
+    }
+    forAll(kappaCoeff, idx) {
+        kappaCoeff[idx] = Y1*at1.kappaCoeffs_[idx]   +Y2*at2.kappaCoeffs_[idx];
+    }
+    return AndradeTransport<Thermo> (
+        t,
+        muCoeff,
+        kappaCoeff
+    );
+}
+
+template<class Thermo>
+inline Foam::AndradeTransport<Thermo> Foam::operator*(
+    const scalar s,
+    const AndradeTransport<Thermo>& at
+) {
+    return AndradeTransport<Thermo> (
+        s*static_cast<const Thermo&>(at),
+        at.muCoeffs_,
+        at.kappaCoeffs_
+    );
+}
 
 // ************************************************************************* //

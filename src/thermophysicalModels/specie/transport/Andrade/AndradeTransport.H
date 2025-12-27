@@ -89,15 +89,15 @@ template<class Thermo> class AndradeTransport;
 template<class Thermo>
 inline AndradeTransport<Thermo> operator+
 (
-    const AndradeTransport<Thermo>&,
-    const AndradeTransport<Thermo>&
+    const AndradeTransport<Thermo>&at1,
+    const AndradeTransport<Thermo>&at2
 );
 
 template<class Thermo>
 inline AndradeTransport<Thermo> operator*
 (
-    const scalar,
-    const AndradeTransport<Thermo>&
+    const scalar s,
+    const AndradeTransport<Thermo>&at
 );
 
 template<class Thermo>
@@ -176,6 +176,13 @@ public:
         //- Write to Ostream
         void write(Ostream& os) const;
 
+        inline void operator+=(const AndradeTransport&);
+        inline void operator*=(const scalar);
+
+
+    // Friend operators
+        friend AndradeTransport operator+ <Thermo>(const AndradeTransport&, const AndradeTransport&);
+        friend AndradeTransport operator* <Thermo>(const scalar, const AndradeTransport&);
 
     // Ostream Operator
 
@@ -184,6 +191,7 @@ public:
             Ostream&,
             const AndradeTransport&
         );
+
 };
 
 

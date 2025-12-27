@@ -55,6 +55,9 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 2. 修复`chemistryModel`在计算反应速率触发SIGFPE。该误触来自于`void Foam::Reaction<ThermoType>::C`，可能是分支逻辑导致。（`Clang DP Release`）
 3. 全面修复SIGFPE误触。只要有clang且非Debug，就加入`-ffp-exception-behavior`。这不会降低性能，因为主要瓶颈在于内存带宽而非计算速度。
 
+## 修复Bug
+1. 修复输运性质为`AndradeTransport`时不能加载化学反应的`dynamicCode`的bug。补上了缺失的函数模板`operator+`和`operator*`的实现
+
 ## 计划添加的
 1. 更多状态方程：Patel-Teja、Martin-Hou等
 2. 把多孔介质传热模块拓展到单相多组分

@@ -26,8 +26,6 @@ License
 #include "unitConversion.H"
 
 
-// restrict compiler optimization, avoid generating xmm code which may cause "divide by zero"
-#pragma clang fp exceptions(maytrap)
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class T>

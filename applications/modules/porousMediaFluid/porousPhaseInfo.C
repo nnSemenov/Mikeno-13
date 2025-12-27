@@ -144,7 +144,7 @@ Foam::porousPhaseInfo::porousPhaseInfo(fvMesh&mesh, const Time& runTime):
 
             auto & g=this->heatTransferGraph_;
             boost::add_edge(getPhaseVertex(phaseA),getPhaseVertex(phaseB),
-                phaseTransferProperty{.heatTransfer=heatTransfer},
+                phaseTransferProperty{.heatTransfer_=heatTransfer},
                 g);
         }
     }
@@ -197,7 +197,7 @@ std::vector<std::vector<word>> Foam::porousPhaseInfo::thermalEquilibriumPhases()
 
     // Remove all non-thermal-equilibrium heat transfer links
     auto pred = [&](auto edge)->bool {
-        const heatTransfer&ht = graph[edge].heatTransfer;
+        const heatTransfer&ht = graph[edge].heatTransfer_;
         if(std::get_if<equilibriumHeatTransfer>(&ht)==nullptr) {
             return true;
         }
@@ -247,7 +247,7 @@ Foam::porousPhaseInfo::heatTransferBetween(
 
     auto pair = boost::edge(vertA, vertB, heatTransferGraph_);
     if(pair.second) { // edge exist
-        return &heatTransferGraph_[pair.first].heatTransfer;
+        return &heatTransferGraph_[pair.first].heatTransfer_;
     }
     return nullptr;
 }

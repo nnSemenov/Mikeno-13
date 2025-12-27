@@ -158,8 +158,9 @@ int main(int argc, char **argv) {
   // Parallel compression
   std::mutex info_lock;
   std::atomic_int error_num{0};
-#pragma omp parallel for schedule(runtime) default(none) \
-  shared(compressible_files,compress_level,error_num,case_path,info_lock,Info,args,FatalError,compress_keep)
+#pragma omp parallel for schedule(runtime)
+  //default(none)
+  // shared(compressible_files,compress_level,error_num,case_path,info_lock,Info,args,FatalError,compress_keep)
   for (const stdfs::path &src_file: compressible_files) {
     thread_local std::vector<uint8_t> buffer;
     if(error_num>0) {
