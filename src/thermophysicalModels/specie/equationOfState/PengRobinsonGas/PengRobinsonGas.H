@@ -206,8 +206,7 @@ namespace Foam {
             }
 
             inline Foam::residualSpecificHeatDerivative residualSpecificHeatDerivative(scalar p, scalar T, scalar W) const {
-                const scalar B=AB.B;
-                const scalar Z=this->Z(AB);
+                const scalar Z=this->Z(this->dimlessCoeff(p,T));
 
                 const scalar V = Z*RR*T/p;
                 const scalar log_part = std::log(
