@@ -45,6 +45,7 @@ SourceFiles
 #define RedlichKwongGas_H
 
 #include "autoPtr.H"
+#include "GeometricSymmTensorField.H"
 #include "../equationOfState/cubicEOS.H"
 
 namespace Foam {
@@ -153,6 +154,23 @@ public:
             };
         }
 
+        inline Foam::residualSpecificHeatDerivative residualSpecificHeatDerivative(const scalar p, const scalar T, const scalar W) const {
+            const auto coeff = this->dimlessCoeff(p, T);
+            const scalar z = this->Z(coeff);
+            const scalar V = z*RR*T/p;
+
+            const scalar dCvdT_p = (3*a)/(4*b*sqr(T)*sqrt(T)) * log(1+b/V) + T* dVdT_p(p,T,z) * dd2p_dT2_V(p,T,z);
+            #warning "TODO: implement derivative of residual specific heat difference d(Cp^R-Cv^R)/dT. Ignored currently"
+            const scalar dCpdT_p = dCvdT_p + 0;
+
+            return Foam::residualSpecificHeatDerivative{
+                .dCpdT_R = dCpdT_p * W,
+                .dCvdT_R = dCvdT_p * W,
+                .dCp_minus_Cv_dT_R = 0 * W,
+                .Z = z,
+            };
+        }
+
         inline scalar R(scalar W) const {
             return RR/W;
         }
@@ -208,6 +226,16 @@ public:
             return this->residualSpecificHeat(p,T,W).Cp_R_minus_Cv_R + this->R(W);
         }
 
+        //- Return dCv/dT_p contribution [J/(kg K^2)]
+        inline scalar dCvdT(scalar p, scalar T, scalar W) const {
+            return this->residualSpecificHeatDerivative(p,T,W).dCvdT_R;
+        }
+
+        //- Return dCp/dT_p contribution [J/(kg K^2)]
+        inline scalar dCpdT(scalar p, scalar T, scalar W) const {
+            return this->residualSpecificHeatDerivative(p,T,W).dCpdT_R;
+        }
+
         //- Return volumetric coefficient of thermal expansion [1/T]
         inline scalar alphav(const scalar p, const scalar T) const;
 
@@ -235,6 +263,18 @@ public:
                 3*sqr(V) - 2*RR*T/p*V + a/p/sqrt(T) - b*RR*T/p - sqr(b)
             );
             return dVdp_T;
+        }
+
+        inline scalar dpdT_V(const scalar p, const scalar T, const scalar z) const {
+            const scalar V = z*RR*T/p;
+            const scalar result = RR/(V-b) + a/(2*T*sqrt(T) * V*(V+b));
+            return result;
+        }
+
+        inline scalar dd2p_dT2_V(const scalar p, const scalar T, const scalar z) const {
+            const scalar V = z*RR*T/p;
+            const scalar result = - 3*a / (4*sqr(T) * sqrt(T) * V*(V+b));
+            return result;
         }
 
         //- Return isothermal enthalpy-pressure derivative [m/kg]
@@ -326,6 +366,11 @@ public:
         return this->core(p,T).Cp(p,T,this->W());
     }
 
+    //- Return dCp/dT_p contribution [J/(kg K^2)]
+    inline scalar dCpdT(const scalar p, const scalar T) const {
+        return this->core(p,T).dCpdT(p,T,this->W());
+    }
+
     //- Return internal energy contribution [J/kg]
     inline scalar e(const scalar p, const scalar T) const{
         return this->core(p,T).e(p,T,this->W());
@@ -334,6 +379,11 @@ public:
     //- Return Cv contribution [J/(kg K)]
     inline scalar Cv(scalar p, scalar T) const{
         return this->core(p,T).Cv(p,T,this->W());
+    }
+
+    //- Return dCv/dT_p contribution [J/(kg K^2)]
+    inline scalar dCvdT(const scalar p, const scalar T) const {
+        return this->core(p,T).dCvdT(p,T,this->W());
     }
 
     //- Return entropy contribution to the integral of Cp/T [J/kg/K]
