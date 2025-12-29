@@ -219,6 +219,15 @@ public:
                 return dHdp_T/this->W();
             }
 
+            //- Return dCp/dT_p contribution [J/(kg K^2)]
+            inline scalar dCpdT(const scalar p, const scalar T) const {
+                return 0;
+            }
+
+            //- Return dCv/dT_p contribution [J/(kg K^2)]
+            inline scalar dCvdT(const scalar p, const scalar T) const {
+                return 0;
+            }
         // IO
 
             //- Write to Ostream

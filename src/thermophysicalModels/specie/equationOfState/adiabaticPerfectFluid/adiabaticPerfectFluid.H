@@ -212,6 +212,16 @@ public:
             //- Return isothermal internal energy-pressure derivative [m/kg]
             inline scalar dedp_T(const scalar p, const scalar T) const;
 
+            //- Return dCp/dT_p contribution [J/(kg K^2)]
+            inline scalar dCpdT(const scalar p, const scalar T) const {
+                return 0;
+            }
+
+            //- Return dCv/dT_p contribution [J/(kg K^2)]
+            inline scalar dCvdT(const scalar p, const scalar T) const {
+                return 0;
+            }
+
         // IO
 
             //- Write to Ostream

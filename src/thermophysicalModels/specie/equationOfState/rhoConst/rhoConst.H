@@ -179,6 +179,12 @@ public:
             //- Return isothermal internal energy-pressure derivative [m^3/kg]
             inline scalar dedp_T(const scalar p, const scalar T) const;
 
+            //- Return dCp/dT_p contribution [J/(kg K^2)]
+            inline scalar dCpdT(const scalar p, const scalar T) const;
+
+            //- Return dCv/dT_p contribution [J/(kg K^2)]
+            inline scalar dCvdT(const scalar p, const scalar T) const;
+
 
         // IO
 

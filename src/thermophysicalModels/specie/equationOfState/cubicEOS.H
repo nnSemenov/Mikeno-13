@@ -82,19 +82,27 @@ using constant::thermodynamic::RR;
         scalar Z;
     };
 
+    struct residualSpecificHeatDerivative {
+        scalar dCpdT_R;          //[J/kg/K^2]
+        scalar dCvdT_R;          //[J/kg/K^2]
+        scalar dCp_minus_Cv_dT_R;//[J/kg/K^2]
+        scalar Z;
+    };
+
     namespace internal {
         // Some SFINAE tricks
         template<class EOS>
         inline int requiresCubicEOS(const EOS *eos) {
-            const scalar T = 273;
-            const scalar p = 1e5;
-            const scalar W = 28.0;
+            constexpr scalar T = 273;
+            constexpr scalar p = 1e5;
+            constexpr scalar W = 28.0;
             // EOS must have these interfaces
             [[maybe_unused]] typename EOS::EOSCore core = eos->core(p, T);
             [[maybe_unused]] const scalar u = core.Z(p, T) + core.rho(p, T, W)
                                               + core.h(p, T, W) + core.Cp(p, T, W) + core.e(p, T, W) +
                                               core.Cv(p, T, W) + core.sp(p, T, W) + core.sv(p, T, W) +
                                               core.psi(p, T, W) + core.CpCv(p, T, W) + core.alphav(p, T, W);
+            return 0;
         }
 
         inline void requiresCubicEOS(...) {}
@@ -102,9 +110,9 @@ using constant::thermodynamic::RR;
     }
     template<class EOS>
     struct is_cubic_EOS {
-        static constexpr bool value = std::is_same<decltype(internal::requiresCubicEOS(
+        static constexpr bool value = std::is_same_v<decltype(internal::requiresCubicEOS(
                 static_cast<const EOS *>(nullptr)
-        )), int>::value and (not EOS::incompressible);
+        )), int> and (not EOS::incompressible);
     };
 
     class flatMatrix {
