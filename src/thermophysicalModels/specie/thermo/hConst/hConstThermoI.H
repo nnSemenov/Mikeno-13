@@ -178,7 +178,7 @@ inline Foam::scalar Foam::hConstThermo<EquationOfState>::dCpdT
     const scalar T
 ) const
 {
-    return 0;
+    return 0 + EquationOfState::dCpdT(p, T);
 }
 
 
