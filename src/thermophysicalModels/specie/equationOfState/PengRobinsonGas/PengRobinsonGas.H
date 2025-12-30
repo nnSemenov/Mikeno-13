@@ -500,7 +500,7 @@ namespace Foam {
         protected:
             const label nSpecie;
             // row major
-            flatMatrix kij;
+            scalarSquareMatrix kij;
             explicit EOSMixer(label nSp):nSpecie(nSp), kij(nSp) { }
         public:
             EOSMixer(const speciesTable &spTable, const dictionary&physicalPropDict):
@@ -527,7 +527,7 @@ namespace Foam {
                 };
                 parseBinaryInteractionMatrix(*kDict,skipFun,this->kij,spTable,symmetry);
 
-                Info<<"Binary interaction coefficient table for PR equationOfState: \nk="<<this->kij.asList()<<endl;
+                Info<<"Binary interaction coefficient table for PR equationOfState: \nk="<<this->kij<<endl;
             }
 
             inline scalar &k(label i, label j)& {

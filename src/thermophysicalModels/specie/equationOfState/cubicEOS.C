@@ -137,12 +137,13 @@ word Foam::parseBinarySpeciePair(const word&str, word&sp0, word&sp1) {
 
 void Foam::parseBinaryInteractionMatrix(const dictionary&kDict,
                                         const std::function<bool(const word&)> & skipKey,
-                                        flatMatrix& mat,
+                                        scalarSquareMatrix& mat,
                                         const speciesTable&spTable,
                                         bool symmetry) {
-
-    for(scalar &k:mat) {
-        k=std::numeric_limits<scalar>::signaling_NaN();
+    for (label r=0;r<mat.m();r++) {
+        for (label c=0;c<mat.n();c++) {
+            mat(r,c)=std::numeric_limits<scalar>::signaling_NaN();
+        }
     }
 
     auto set_k_ij=[&mat](label i, label j, scalar k) noexcept  {
@@ -173,9 +174,14 @@ void Foam::parseBinaryInteractionMatrix(const dictionary&kDict,
             set_k_ij(idxSp1,idxSp0,k);
         }
     }
-    for(scalar& k:mat) {
-        if(not std::isfinite(k)) {
-            k=0;
+
+
+    for (label r=0;r<mat.m();r++) {
+        for (label c=0;c<mat.n();c++) {
+            scalar & k =mat(r,c);
+            if (not std::isfinite(k)) {
+                k=0;
+            }
         }
     }
 }

@@ -11,6 +11,7 @@
 
 #include "autoPtr.H"
 #include "mathematicalConstants.H"
+#include "scalarMatrices.H"
 #include "speciesTable.H"
 #include "thermodynamicConstants.H"
 
@@ -115,68 +116,10 @@ using constant::thermodynamic::RR;
         )), int> and (not EOS::incompressible);
     };
 
-    class flatMatrix {
-    protected:
-        label rowCols;
-        List<scalar> value;
-
-    public:
-        explicit flatMatrix(label rc): rowCols(rc),value(rc*rc, Foam::zero()) {
-        }
-
-        inline scalar rows() const {
-            return this->rowCols;
-        }
-        inline scalar cols() const {
-            return this->rowCols;
-        }
-        inline scalar size() const {
-            return this->rows()*this->cols();
-        }
-
-
-        inline label offsetOf(label i, label j) const {
-            assert(rowCols>0);
-            assert(i>=0);
-            assert(j>=0);
-            assert(i<rowCols);
-            assert(j<rowCols);
-            return i*rowCols+j;
-        }
-
-        inline scalar & operator()(label i,label j) & {
-            return this->value[this->offsetOf(i,j)];
-        }
-
-        inline const scalar & operator()(label i,label j)const & {
-            return this->value[this->offsetOf(i,j)];
-        }
-
-        inline List<scalar>& asList() & {
-            return this->value;
-        }
-        inline const List<scalar>& asList() const & {
-            return this->value;
-        }
-
-        inline auto begin() & {
-            return this->value.begin();
-        }
-        inline auto end() & {
-            return this->value.end();
-        }
-        inline auto begin()const & {
-            return this->value.begin();
-        }
-        inline auto end()const & {
-            return this->value.end();
-        }
-    };
-
     word parseBinarySpeciePair(const word&str, word&sp0, word&sp1);
 
     void parseBinaryInteractionMatrix(const dictionary&coeffDict, const std::function<bool(const word&)> & skipKey,
-                                      flatMatrix& mat, const speciesTable&spTable,
+                                      scalarSquareMatrix& mat, const speciesTable&spTable,
                                       bool symmetry);
 }
 
