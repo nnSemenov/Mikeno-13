@@ -42,11 +42,14 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 5. New mixture model `realGasMulticomponentMixture` 
    1. Compute `rho` from mixed real gas EOS
    2. Compute and add residual properties of `Cp` `Cv` `hs` `ha` `es` `ea`. All residual properties are computed from mixed EOS
-   3. Apply harmonic mass weighed mixing for density (no extra volume)
-   4. Appy mass weighed mixing for he and Cp Cv (no extra energy)
-   5. Arrhenius mixing for mu
-   6. Vredeveled mixing for kappa (n=-2)
-6. Add `phase` keyword to `equationOfState` dictionary, allow using real fluid EOS for liquid.
+6. New mixture model `idealLiquidMulticomponentMixture`
+   1. Apply harmonic mass weighed mixing for density (no extra volume)
+   2. Appy mass weighed mixing for he and Cp Cv (no extra energy)
+   3. Arrhenius mixing for mu
+   4. Vredeveled mixing for kappa ($n=-2$)
+7. Add `phase` keyword to `equationOfState` dictionary, allow using real fluid EOS for liquid.
+8. Equation of states implemenets `dCpdT` `dCvdT` (residual specific heat derivative to temperature) for chemical solver usage
+   - Currently only `dCvdT` is rigorous. Derivative of difference of residual specific heat is currently ignored (TOO COMPLEX for cubic EOS).
 
 ## Fix unexpected SIGFPE trapping (compile option in brackes)
 1. Fix `flowRateInletVelocity` trapped by SIGFPE when writting flow field. This is caused by division in `unitConversion::toUser(const T& t) const`. (`Clang DP Opt`)
@@ -62,6 +65,6 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 3. Stabilize `porousMediaFluid` for non-equilibrium heat transfer with large coefficient or specific area
 
 
-## Existing Bugs(Up to 20251224):
+## Existing Bugs(Up to 20251230):
 1. `decomposePar` crashes with Largrangian fields(Some cases in `test/Largrangian` fail)
 2. Some postprocessing fails (`test/postProcessing/channel`)
