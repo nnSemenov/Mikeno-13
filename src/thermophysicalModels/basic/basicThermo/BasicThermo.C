@@ -754,7 +754,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::hs
         dimEnergy/dimMass,
         &MixtureType::thermoMixture,
         &MixtureType::thermoMixtureType::hs,
-        p,
+        absolutePressureVol(p, this->pOffset(), this->mesh()),
         T
     );
 }
@@ -774,7 +774,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::hs
         dimEnergy/dimMass,
         &MixtureType::thermoMixture,
         &MixtureType::thermoMixtureType::hs,
-        p,
+        absolutePressurePatch(p, this->pOffset(), this->mesh()),
         T
     );
 }
@@ -848,7 +848,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::ha
         dimEnergy / dimMass,
         &MixtureType::thermoMixture,
         &MixtureType::thermoMixtureType::ha,
-        p,
+        absolutePressureVol(p, this->pOffset(), this->mesh()),
         T
     );
 }
@@ -868,7 +868,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::ha
         dimEnergy / dimMass,
         &MixtureType::thermoMixture,
         &MixtureType::thermoMixtureType::ha,
-        p,
+        absolutePressurePatch(p, this->pOffset(), this->mesh()),
         T
     );
 }
@@ -985,7 +985,7 @@ Foam::BasicThermo<MixtureType, BasicThermoType>::The
         &MixtureType::thermoMixture,
         &MixtureType::thermoMixtureType::The,
         h,
-        p,
+        absolutePressureVol(p, this->pOffset(), this->mesh()),
         T0
     );
 }

@@ -147,6 +147,15 @@ inline Foam::scalar Foam::rhoConst<Specie>::dedp_T(const scalar p, const scalar 
     return 0;
 }
 
+template<class Specie>
+inline Foam::scalar Foam::rhoConst<Specie>::dCpdT(const scalar p, const scalar T) const {
+    return 0;
+}
+
+template<class Specie>
+inline Foam::scalar Foam::rhoConst<Specie>::dCvdT(const scalar p, const scalar T) const {
+    return 0;
+}
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
 

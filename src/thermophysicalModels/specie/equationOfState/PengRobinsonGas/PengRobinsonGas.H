@@ -194,15 +194,7 @@ namespace Foam {
                 const scalar Cv_dimless = -this->dd2a_dT2*pB_part*log_part;
 
                 // compute CpMCv
-                const scalar CpMCv_dimless = [=](){
-                    const scalar numerator = sqr(
-                        RR/(V-b)
-                        - da_dT/VVBbbVb
-                    );
-                    const scalar denominator =
-                            a*(V+b)/sqr(VVBbbVb) - RR*T/ sqr(V-b);
-                    return -1 - T/RR * numerator/denominator;
-                }();
+                const scalar CpMCv_dimless = -1 +T/RR * dpdT_V(p, T, Z) * dVdT_p(p, T, Z);
                 const scalar Cp_dimless = Cv_dimless+CpMCv_dimless;
 
                 return Foam::residualSpecificHeat{
@@ -210,6 +202,28 @@ namespace Foam {
                         Cv_dimless * this->R(W),
                         CpMCv_dimless * this->R(W),
                         Z
+                };
+            }
+
+            inline Foam::residualSpecificHeatDerivative residualSpecificHeatDerivative(scalar p, scalar T, scalar W) const {
+                const scalar Z=this->Z(this->dimlessCoeff(p,T));
+
+                const scalar V = Z*RR*T/p;
+                const scalar log_part = std::log(
+                (V-(sqrt(2.0)-1)*b)
+                /(V+(sqrt(2.0)+1)*b)
+                );
+                // J/kmol/K
+                const scalar dCvR_dT_first_part = -dd2a_dT2 /(2*sqrt(2.0)*b) * log_part;
+                const scalar dCvR_dT_second_part = T*dVdT_p(p, T, Z)*dd2p_dT2_V(p, T, Z);
+                const scalar dCvR_dT = dCvR_dT_first_part + dCvR_dT_second_part;
+                #warning "TODO: implement derivative of residual specific heat difference d(Cp^R-Cv^R)/dT. Ignored currently"
+                const scalar dCpR_dT = dCvR_dT + 0;
+                return Foam::residualSpecificHeatDerivative{
+                    .dCpdT_R = dCpR_dT * W,
+                    .dCvdT_R = dCvR_dT * W,
+                    .dCp_minus_Cv_dT_R = 0 * W,
+                    .Z=Z,
                 };
             }
 
@@ -221,15 +235,24 @@ namespace Foam {
                 return this->residualHE(p,T,W).h_R;
             }
 
-            //- Return Cp contribution [J/(kg K]
+            //- Return Cp contribution [J/(kg K)]
             inline scalar Cp(scalar p, scalar T, scalar W) const {
                 return this->residualSpecificHeat(p,T,W).Cp_R;
             }
 
-
-            //- Return Cv contribution [J/(kg K]
+            //- Return Cv contribution [J/(kg K)]
             inline scalar Cv(scalar p, scalar T, scalar W) const{
                 return this->residualSpecificHeat(p,T,W).Cv_R;
+            }
+
+            //- Return dCv/dT_p contribution [J/(kg K^2)]
+            inline scalar dCvdT(scalar p, scalar T, scalar W) const {
+                return this->residualSpecificHeatDerivative(p,T,W).dCvdT_R;
+            }
+
+            //- Return dCp/dT_p contribution [J/(kg K^2)]
+            inline scalar dCpdT(scalar p, scalar T, scalar W) const {
+                return this->residualSpecificHeatDerivative(p,T,W).dCpdT_R;
             }
 
             //- Return entropy contribution to the integral of Cp/T [J/kg/K]
@@ -255,6 +278,13 @@ namespace Foam {
 
             inline scalar alphav(const scalar p, const scalar T) const;
 
+            inline scalar dpdT_V(const scalar p, const scalar T,
+                                 const scalar z) const {
+                const scalar V = z*RR*T/p;
+                const scalar result = RR/(V-b) - da_dT/(V*(V+b)+b*(V-b));
+                return result;
+            }
+
             inline scalar dVdT_p(const scalar p, const scalar T,
                                  const scalar z) const {
               const scalar V = z * RR * T / p;
@@ -274,6 +304,31 @@ namespace Foam {
                   (3 * sqr(p * V) + 2 * p * V * (p * b - RR * T) + a * p -
                    2 * b * RR * T * p - 3 * sqr(p * b));
               return dVdp_T;
+            }
+
+            inline scalar dpdV_T(const scalar p, const scalar T,
+                                 const scalar z) const {
+                return 1./dVdp_T(p, T, z);
+            }
+
+            inline scalar dd2p_dT2_V(const scalar p, const scalar T,
+                                 const scalar z) const {
+                const scalar V = z * RR * T / p;
+                const scalar result = -this->dd2a_dT2 / (V*(V+b)+b*(V-b));
+                return result;
+            }
+
+            inline scalar dd2V_dT2_p(const scalar p, const scalar T,
+                                 const scalar z) const {
+                const scalar V = z * RR * T / p;
+                const scalar dV= dVdT_p(p, T, z);
+                const scalar first =
+                    (dV*(2*RR*V + 2*RR*b- da_dT) - dd2a_dT2*V + dd2a_dT2*b)
+                    / (3*p *sqr(V) + (2*b*p - 2*RR*T)*V + a - 2*b*RR*T - 3*sqr(b)*p);
+                const scalar second = (RR*sqr(V) + (2*b*RR-da_dT)*V + da_dT*b - RR*sqr(b))
+                    * (dV*(6*p*V+2*b*p-2*RR*T) - 2*RR*V + da_dT - 2*RR*b)
+                    / sqr(3*p*sqr(V) + (2*b*p-2*RR*T)*V + a - 2*b*RR*T - 3*sqr(b)*p);
+                return first+second;
             }
 
             inline scalar dhdp_T(scalar p, scalar T, scalar W) const {
@@ -386,9 +441,19 @@ namespace Foam {
             return this->core(p,T).Cp(p,T,this->W());
         }
 
+        //- Return dCp/dT_p contribution [J/(kg K^2)]
+        inline scalar dCpdT(const scalar p, const scalar T) const {
+            return this->core(p,T).dCpdT(p,T,this->W());
+        }
+
         //- Return internal energy contribution [J/kg]
         inline scalar e(const scalar p, const scalar T) const{
             return this->core(p,T).e(p,T,this->W());
+        }
+
+        //- Return dCv/dT_p contribution [J/(kg K^2)]
+        inline scalar dCvdT(const scalar p, const scalar T) const {
+            return this->core(p,T).dCvdT(p,T,this->W());
         }
 
         //- Return Cv contribution [J/(kg K)]
@@ -435,7 +500,7 @@ namespace Foam {
         protected:
             const label nSpecie;
             // row major
-            flatMatrix kij;
+            scalarSquareMatrix kij;
             explicit EOSMixer(label nSp):nSpecie(nSp), kij(nSp) { }
         public:
             EOSMixer(const speciesTable &spTable, const dictionary&physicalPropDict):
@@ -462,7 +527,7 @@ namespace Foam {
                 };
                 parseBinaryInteractionMatrix(*kDict,skipFun,this->kij,spTable,symmetry);
 
-                Info<<"Binary interaction coefficient table for PR equationOfState: \nk="<<this->kij.asList()<<endl;
+                Info<<"Binary interaction coefficient table for PR equationOfState: \nk="<<this->kij<<endl;
             }
 
             inline scalar &k(label i, label j)& {

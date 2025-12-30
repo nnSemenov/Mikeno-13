@@ -290,7 +290,7 @@ inline Foam::scalar Foam::janafThermo<EquationOfState>::dCpdT
 ) const
 {
     const coeffArray& a = coeffs(T);
-    return (((4*a[4]*T + 3*a[3])*T + 2*a[2])*T + a[1]);
+    return (((4*a[4]*T + 3*a[3])*T + 2*a[2])*T + a[1]) + EquationOfState::dCpdT(p, T);
 }
 
 

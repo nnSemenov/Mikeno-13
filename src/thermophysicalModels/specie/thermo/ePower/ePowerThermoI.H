@@ -205,8 +205,8 @@ inline Foam::scalar Foam::ePowerThermo<EquationOfState>::dCpdT
     const scalar T
 ) const
 {
-    NotImplemented;
-    return 0; // + EquationOfState::dCpdT
+    const scalar self_part = n0_*c0_/Tref_ * pow(T/Tref_, n0_-1) ;
+    return self_part + EquationOfState::dCpdT(p, T);
 }
 
 

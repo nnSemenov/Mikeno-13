@@ -172,10 +172,7 @@ inline Foam::scalar Foam::hPolynomialThermo<EquationOfState, PolySize>::dCpdT
     const scalar T
 ) const
 {
-    return
-    (
-        CpCoeffs_.derivative(T)
-    );
+    return CpCoeffs_.derivative(T) + EquationOfState::dCpdT(p, T);
 }
 
 

@@ -49,6 +49,8 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
    3. Avgadro混合规则计算粘度（粘度对数摩尔分数加权）
    4. Vredeveled混合规则计算热导率（$n=-2$）
 7. 向 `equationOfState` 字典增加可选项 `phase` ，允许预测液体密度。
+8. 状态方程类实现`dCpdT` `dCvdT`（剩余比热对温度的导数），以供化学反应求解器使用
+   - 目前只有剩余定压比热的导数是严格的。剩余比热差值对温度的导数暂时忽略（太复杂了）
 
 ## 修复意外触发SIGFPE（括号备注编译选项）
 1. 修复`flowRateInletVelocity`在写出流场时触发SIGFPE。该误触来自于`unitConversion::toUser(const T& t) const`中的除法。（`Clang DP Opt`）
@@ -63,6 +65,7 @@ Mikeno 是 OpenFOAM 的魔改版（分支），面向化工应用。
 2. 把多孔介质传热模块拓展到单相多组分
 3. 改进`porousMediaFluidSolver`的热非平衡模型，使它在大比表面积、高传热系数时更加稳定
 
-## 现存bug(截至20251224):
+
+## 现存bug(截至20251230):
 1. 算例包含拉格朗日场时，`decomposePar`崩溃（`test/Largrangian`的一些算例测试不通过）
 2. `test/postProcessing/channel`的一些后处理算例不通过

@@ -20,7 +20,21 @@ $
 
 === polynomial form
 $
-tilde(V)^3 + (b-(R T)/p)tilde(V)^2 + (a/p - 2 (b R T)/p -3 b^2) tilde(V) + (b^3 - (a b)/p + (b^2 R T)/p) =0
+tilde(V)^3 + (b-(R T)/p)tilde(V)^2 + (a/p - 2 (b R T)/p -3 b^2) tilde(V) + (b^3 - (a b)/p + (b^2 R T)/p) =0 \
+$
+
+=== Common Derivatives
+$
+((partial V)/(partial T))_p &= (R V^2+(2b R-(dif a)/(dif T))V+b (dif a)/(dif T)-b^2R)/(
+  3p V^2+(2b p - 2R T)V+a-2b R T-3b^2p) \
+
+((partial p)/(partial T))_V &=  R/(V-b) - (dif a)/(dif T) dot 1/(V(V+b)+b(V-b))  \
+
+((partial ^2p)/(partial T^2))_V &= -(dif^2a)/(dif T^2) dot 1/(V(V+b)+b(V-b)) \
+
+((partial^2V)/(partial T^2))_p &= (((partial V)/(partial T))_p (2R V + 2R b - (dif a)/(dif T)) + (dif^2 a)/(dif T^2)(b-V)) / (3p V^2 + (2 b p - 2 R T)V + a - 2 b R T - 3 b^2p) \
+& - ((R V^2 + (2 R b - (dif a)/(dif T))V + b (dif a)/(dif T) - R b^2)( ((partial V)/(partial T))_p (6p V + 2 b p - 2 R T) - 2 R V + (dif a)/(dif T) - 2 R b)) 
+     / (3 p V^2 + (2 b p - 2 R T)V + a - 2 b R T - 3 b^2 p)^2
 $
 
 // Dimensionless
@@ -56,13 +70,32 @@ C_v^R/R & = T/R integral_infinity^V ((partial^2 p)/(partial T^2))_V dif V \
         & = - (dif^2 a)/(dif T^2) dot T/R integral_infinity^V (dif V)/(V(V+b)+b(V-b)) \
         & = - (dif^2 a)/(dif T^2) dot (p)/(2sqrt(2) R^2 B) ln((Z-(sqrt(2)-1)B)/(Z+(sqrt(2)+1)B))
 $
-Fixed pressre:
+Fixed pressure:
 $
-(C_p^R-C_v^R)/R & = -1 -T/R ((partial p)/(partial T))_V^2/((partial p)/(partial V))_T \
-                & = -1 -T/R (R/(V-b)-(dif a)/(dif T) 1/(V(V+b)+b(V-b)))^2/((a(V+b))/[V(V+b)+b(V-b)]^2 - (R T)/(V-b)^2 )
+// (C_p^R-C_v^R)/R & = -1 -T/R ((partial p)/(partial T))_V^2/((partial p)/(partial V))_T \
+//                 & = -1 -T/R (R/(V-b)-(dif a)/(dif T) 1/(V(V+b)+b(V-b)))^2/((a(V+b))/[V(V+b)+b(V-b)]^2 - (R T)/(V-b)^2 )
+
+(C_p^R - C_v^R)/R = -1 + T/R ((partial p)/(partial T))_V ((partial V)/(partial T))_p
+
 $
 
+== Derivative of Residual Heat capacity
+Fixed volume:
+$
+  ((partial C_v^R)/(partial T))_p 
+  &= (partial /(partial T))_p [T integral_infinity^V ((partial^2p)/(partial T^2))_V dif V] \
+  &=  integral_infinity^V ((partial^2p)/(partial T^2))_V dif V + T ((partial V)/(partial T))_p ((partial^2p)/(partial T^2))_V \
+  &= - (dif^2 a)/(dif T^2) 1/(2sqrt(2)b) ln (V-(sqrt(2)-1)b)/(V+(sqrt(2)+1)b) + T ((partial V)/(partial T))_p ((partial^2p)/(partial T^2))_V
+$
 
+Fixed pressure:
+$
+  (partial/(partial T))_p (C_p^R - C_v^R) 
+  // &= - (partial/(partial T))_p dot (T ((partial p)/(partial T))_V^2)/((partial p)/(partial V))_T \
+  // &= - (((partial p)/(partial T))_V^2 + 2T ((partial p)/(partial T))_V ((partial^2 p)/(partial T^2))_V)/(((partial p)/(partial V))_T) + T/(((partial p)/(partial V))_T^2) dot (partial/(partial T))_p dot ((partial p)/(partial V))_T
+  &=  (partial/(partial T))_p dot [T((partial p)/(partial T))_V ((partial V)/(partial T))_p] \
+  &= T ((partial p)/(partial T))_V ((partial^2 V)/(partial T^2))_p + ((partial V)/(partial T))_p ((partial p)/(partial T))_V + T((partial V)/(partial T))_p (partial/(partial T))_p dot ((partial p)/(partial T))_V 
+$
 
 
 == Mixing rule
