@@ -3,6 +3,7 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 set(target_name solverFunctionObjects)
 
 add_library(${target_name} SHARED
+    age/age.C
     scalarTransport/scalarTransport.C
     phaseScalarTransport/phaseScalarTransport.C
 )
