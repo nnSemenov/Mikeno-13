@@ -49,3 +49,40 @@ FOAM_unit_test(SOURCES boundSphere/Test-boundSphere.C
     TEST_COMMAND_ARGS -nTests 1000 1000
 )
 FOAM_unit_test(SOURCES callback/Test-callback.C)
+FOAM_unit_test(SOURCES Circulator/Test-Circulator.C)
+FOAM_unit_test(SOURCES codeStream/Test-codeStream.C
+    TEST_COMMAND_ARGS ${CMAKE_CURRENT_SOURCE_DIR}/codeStream/codeStreamDict1
+)
+FOAM_unit_test(SOURCES CompactIOList/Test-CompactIOList.C
+    TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/mesh/blockMesh/pipe
+)
+FOAM_unit_test(SOURCES CompactListList/Test-CompactListList.C
+    TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/mesh/blockMesh/pipe
+)
+
+FOAM_unit_test(SOURCES cubicEOS/Test-cubicEOS.C
+    NAME Test-cubicEOS
+    LINK_LIBS finiteVolume
+              fvModels
+              fvConstraints
+              meshTools
+              specie
+              fluidThermophysicalModels
+              momentumTransportModels
+              compressibleMomentumTransportModels
+              multicomponentThermophysicalModels
+    INCLUDE_DIRS ${LIB_SRC}/physicalProperties/lnInclude
+                 ${LIB_SRC}/ThermophysicalTransportModels/fluidMulticomponentThermo/lnInclude
+                 ${LIB_SRC}/thermophysicalModels/multicomponentThermo/lnInclude
+    BUILD_ONLY
+)
+add_test(NAME Test-cubicEOS_pure_PR
+    COMMAND Test-cubicEOS -eos PR
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cubicEOS/pure
+)
+add_test(NAME Test-cubicEOS_mix_PR
+    COMMAND Test-cubicEOS -eos PR
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cubicEOS/Mix
+)
+
+FOAM_unit_test(SOURCES cubicEqn/Test-cubicEqn.C)

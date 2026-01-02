@@ -263,6 +263,17 @@ Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::gamma (
 
 template<class ThermoType>
 Foam::scalar
+    Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::dhedp_T(const Foam::scalar p,
+                                                                               const Foam::scalar T) const {
+    if(ThermoType::enthalpy()) {
+        return this->dhdp_T(p,T);
+    }else{
+        return this->dedp_T(p,T);
+    }
+}
+
+template<class ThermoType>
+Foam::scalar
 Foam::realGasMulticomponentMixture<ThermoType>::thermoMixtureType::The
         (
                 const scalar he,
