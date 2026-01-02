@@ -87,7 +87,10 @@ const Foam::HashSet<Foam::word> Foam::fvMesh::curGeometryFields
 
 void Foam::fvMesh::clearFvGeomNotOldVol()
 {
-    DebugInFunction << "Clearing current-time FV geometry" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "clearFvGeomNotOldVol" << endl;
+    }
 
     meshObjects::clearUpto
     <
@@ -117,7 +120,10 @@ void Foam::fvMesh::clearFvGeomNotOldVol()
 
 void Foam::fvMesh::clearFvGeom()
 {
-    DebugInFunction << "Clearing FV Geometry" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "clearFvGeom" << endl;
+    }
 
     clearFvGeomNotOldVol();
 
@@ -245,7 +251,10 @@ void Foam::fvMesh::printAllocated() const
 
 void Foam::fvMesh::clearGeom()
 {
-    DebugInFunction << "Clearing geometry" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Clearing geometric data" << endl;
+    }
 
     clearFvGeom();
 
@@ -255,7 +264,10 @@ void Foam::fvMesh::clearGeom()
 
 void Foam::fvMesh::clearAddressing(const bool isMeshUpdate)
 {
-    DebugInFunction << "isMeshUpdate: " << isMeshUpdate << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "isMeshUpdate: " << isMeshUpdate << endl;
+    }
 
     if (isMeshUpdate)
     {
@@ -385,7 +397,10 @@ Foam::fvMesh::fvMesh
     CfPtr_(nullptr),
     phiPtr_(nullptr)
 {
-    DebugInFunction << "Constructing fvMesh from IOobject" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Constructing fvMesh from IOobject" << endl;
+    }
 
     if (doPost)
     {
@@ -448,7 +463,10 @@ Foam::fvMesh::fvMesh
     CfPtr_(nullptr),
     phiPtr_(nullptr)
 {
-    DebugInFunction << "Constructing fvMesh from shapes" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Constructing fvMesh from cellShapes" << endl;
+    }
 }
 
 
@@ -500,7 +518,10 @@ Foam::fvMesh::fvMesh
     CfPtr_(nullptr),
     phiPtr_(nullptr)
 {
-    DebugInFunction << "Constructing fvMesh from components" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Constructing fvMesh from components" << endl;
+    }
 }
 
 
@@ -550,7 +571,10 @@ Foam::fvMesh::fvMesh
     CfPtr_(nullptr),
     phiPtr_(nullptr)
 {
-    DebugInFunction << "Constructing fvMesh from components" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Constructing fvMesh from components" << endl;
+    }
 }
 
 
@@ -589,7 +613,10 @@ Foam::fvMesh::fvMesh(fvMesh&& mesh)
     CfPtr_(Foam::move(mesh.CfPtr_)),
     phiPtr_(Foam::move(mesh.phiPtr_))
 {
-    DebugInFunction << "Move-constructing fvMesh" << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Moving fvMesh" << endl;
+    }
 }
 
 
@@ -770,7 +797,10 @@ void Foam::fvMesh::addFvPatches
 
 void Foam::fvMesh::removeFvBoundary()
 {
-    DebugInFunction << "Removing boundary patches." << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME << "Removing boundary patches." << endl;
+    }
 
     // Remove fvBoundaryMesh data first.
     boundary_.clear();
@@ -832,50 +862,26 @@ Foam::fvMesh::readUpdateState Foam::fvMesh::readUpdate
     const stitchType stitch
 )
 {
-    // Determine if this update moves forward in time. If so, searching back in
-    // time for data files will only go back as far as the previous instance.
-    const fileName instance0 = instance();
-    const bool forward = readUpdateIsForward();
-
-    // Update the polyMesh and the mesh instance
-    const polyMesh::readUpdateState state = polyMesh::readUpdate();
-
-    DebugInFunction << "Updating the fvMesh:" << endl;
-
     if (debug)
     {
-        switch (state)
-        {
-            case polyMesh::TOPO_PATCH_CHANGE:
-                Info<< "    Boundary and topological change" << endl;
-                break;
-            case polyMesh::TOPO_CHANGE:
-                Info<< "    Topological change" << endl;
-                break;
-            case polyMesh::POINTS_MOVED:
-                Info<< "    Point motion" << endl;
-                break;
-            default:
-                Info<< "    No change" << endl;
-                break;
-        }
+        Pout<< FUNCTION_NAME << "Updating fvMesh.  ";
     }
+
+    const polyMesh::readUpdateState state = polyMesh::readUpdate();
+
+    const fileName polyFacesInst =
+        time().findInstance
+        (
+            dbDir()/typeName,
+            "polyFaces",
+            IOobject::READ_IF_PRESENT
+        );
 
     const bool reStitch =
         stitcher_.valid()
      && stitcher_->stitches()
      && stitch != stitchType::none
-     && (
-            !conformal()
-         || time().findInstance
-            (
-                dbDir()/typeName,
-                "polyFaces",
-                IOobject::READ_IF_PRESENT,
-                forward ? word(instance0) : word::null
-            )
-         != (forward ? instance0 : polyFacesBfIOPtr_->instance())
-        );
+     && (!conformal() || polyFacesInst != polyFacesBfIOPtr_->instance());
 
     if (reStitch)
     {
@@ -886,20 +892,44 @@ Foam::fvMesh::readUpdateState Foam::fvMesh::readUpdate
         conform();
     }
 
-    switch (state)
+    if (state == polyMesh::TOPO_PATCH_CHANGE)
     {
-        case polyMesh::TOPO_PATCH_CHANGE:
-            boundary_.readUpdate(boundaryMesh());
-            clearOut();
-            break;
-        case polyMesh::TOPO_CHANGE:
-            clearOut();
-            break;
-        case polyMesh::POINTS_MOVED:
-            clearFvGeom();
-            break;
-        default:
-            break;
+        boundary_.readUpdate(boundaryMesh());
+    }
+
+    if (state == polyMesh::TOPO_PATCH_CHANGE)
+    {
+        if (debug)
+        {
+            Info<< "Boundary and topological update" << endl;
+        }
+
+        clearOut();
+    }
+    else if (state == polyMesh::TOPO_CHANGE)
+    {
+        if (debug)
+        {
+            Info<< "Topological update" << endl;
+        }
+
+        clearOut();
+    }
+    else if (state == polyMesh::POINTS_MOVED)
+    {
+        if (debug)
+        {
+            Info<< "Point motion update" << endl;
+        }
+
+        clearFvGeom();
+    }
+    else
+    {
+        if (debug)
+        {
+            Info<< "No update" << endl;
+        }
     }
 
     if (reStitch && stitch != stitchType::none)
@@ -1125,12 +1155,16 @@ const Foam::fvMeshMover& Foam::fvMesh::mover() const
 
 void Foam::fvMesh::mapFields(const polyTopoChangeMap& map)
 {
-    DebugInFunction
-        << " nOldCells:" << map.nOldCells()
-        << " nCells:" << nCells()
-        << " nOldFaces:" << map.nOldFaces()
-        << " nFaces:" << nFaces()
-        << endl;
+    if (debug)
+    {
+        Pout<< FUNCTION_NAME
+            << " nOldCells:" << map.nOldCells()
+            << " nCells:" << nCells()
+            << " nOldFaces:" << map.nOldFaces()
+            << " nFaces:" << nFaces()
+            << endl;
+    }
+
 
     // We require geometric properties valid for the old mesh
     if
