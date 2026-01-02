@@ -58,6 +58,9 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 
 ## Bug fixes
 1. Fix conflicts between `AndradeTransport` and chemistry. Fill missing implementation of `operator+` and `operator*`.
+2. Fix segfault when `foamPostProcess` runs function object with cellZone. 
+   - This was caused by `3caf09d88b95092a1f4a6047cf498d47d5e86a7a` which aims to optimize performance.
+   - This commit is reverted, currently no perfect way to fix.
 
 ## Pending works
 1. More equation of state: Patel-Teja, Martin-Hou
@@ -65,6 +68,5 @@ Mikeno is a fork of OpenFOAM, it's Frankensteined for chemical engineering usage
 3. Stabilize `porousMediaFluid` for non-equilibrium heat transfer with large coefficient or specific area
 
 
-## Existing Bugs(Up to 20251230):
+## Existing Bugs(Up to 20260102):
 1. `decomposePar` crashes with Largrangian fields(Some cases in `test/Largrangian` fail)
-2. Some postprocessing fails (`test/postProcessing/channel`)

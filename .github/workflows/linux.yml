@@ -89,6 +89,8 @@ jobs:
         ./multiphaseEuler/Allclean
         ./chemistry/Allrun
         ./chemistry/Allclean
+        ./postProcessing/Allrun
+        ./postProcessing/Allclean
 
     - name: Upload test files
       uses: actions/upload-artifact@v4
