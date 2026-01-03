@@ -6,7 +6,7 @@ endif ()
 enable_testing()
 
 function(FOAM_unit_test)
-    cmake_parse_arguments(arg "BUILD_ONLY" "NAME;TEST_NAME" "SOURCES;LINK_LIBS;INCLUDE_DIRS;TEST_COMMAND_ARGS" ${ARGN})
+    cmake_parse_arguments(arg "BUILD_ONLY;WILL_FAIL" "NAME;TEST_NAME" "SOURCES;LINK_LIBS;INCLUDE_DIRS;TEST_COMMAND_ARGS" ${ARGN})
 
     list(GET arg_SOURCES 0 first_source_file)
     cmake_path(GET first_source_file PARENT_PATH test_proj_dir)
@@ -16,7 +16,6 @@ function(FOAM_unit_test)
     endif ()
     add_executable(${arg_NAME} ${arg_SOURCES})
     target_include_directories(${arg_NAME} PRIVATE
-
         ${arg_INCLUDE_DIRS}
     )
     target_link_libraries(${arg_NAME} PRIVATE
@@ -40,6 +39,11 @@ function(FOAM_unit_test)
         COMMAND ${arg_NAME} ${arg_TEST_COMMAND_ARGS}
         WORKING_DIRECTORY ${test_proj_dir}
     )
+    if(${arg_WILL_FAIL})
+        set_property(TEST ${arg_TEST_NAME}
+            PROPERTY WILL_FAIL TRUE
+        )
+    endif ()
 endfunction()
 
 FOAM_unit_test(SOURCES alloc/Test-alloc.C)
@@ -85,5 +89,20 @@ FOAM_unit_test(SOURCES dimensionedType/Test-dimensionedType.C
 
 FOAM_unit_test(SOURCES distribution/Test-distribution.C
     LINK_LIBS sampling
+    BUILD_ONLY
+)
+
+FOAM_unit_test(SOURCES DLList/Test-DLList.C)
+
+FOAM_unit_test(SOURCES DynamicField/Test-DynamicField.C)
+
+FOAM_unit_test(SOURCES dynamicIndexedOctree/Test-dynamicIndexedOctree.C
+    LINK_LIBS meshTools
+)
+
+FOAM_unit_test(SOURCES DynamicList/Test-DynamicList.C)
+
+FOAM_unit_test(SOURCES error/Test-error.C
+#    WILL_FAIL
     BUILD_ONLY
 )
