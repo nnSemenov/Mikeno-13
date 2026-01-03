@@ -6,7 +6,7 @@ endif ()
 enable_testing()
 
 function(FOAM_unit_test)
-    cmake_parse_arguments(arg "BUILD_ONLY;WILL_FAIL" "NAME;TEST_NAME" "SOURCES;LINK_LIBS;INCLUDE_DIRS;TEST_COMMAND_ARGS" ${ARGN})
+    cmake_parse_arguments(arg "BUILD_ONLY;WILL_FAIL" "NAME;TEST_NAME;WORKING_DIRECTORY" "SOURCES;LINK_LIBS;INCLUDE_DIRS;TEST_COMMAND_ARGS" ${ARGN})
 
     list(GET arg_SOURCES 0 first_source_file)
     cmake_path(GET first_source_file PARENT_PATH test_proj_dir)
@@ -35,9 +35,13 @@ function(FOAM_unit_test)
     endif ()
 
     cmake_path(ABSOLUTE_PATH test_proj_dir)
+    if(NOT DEFINED arg_WORKING_DIRECTORY)
+        set(arg_WORKING_DIRECTORY ${test_proj_dir})
+    endif ()
+
     add_test(NAME ${arg_TEST_NAME}
         COMMAND ${arg_NAME} ${arg_TEST_COMMAND_ARGS}
-        WORKING_DIRECTORY ${test_proj_dir}
+        WORKING_DIRECTORY ${arg_WORKING_DIRECTORY}
     )
     if(${arg_WILL_FAIL})
         set_property(TEST ${arg_TEST_NAME}
@@ -106,3 +110,17 @@ FOAM_unit_test(SOURCES error/Test-error.C
 #    WILL_FAIL
     BUILD_ONLY
 )
+
+FOAM_unit_test(SOURCES extendedStencil/Test-ExtendedStencil.C
+    LINK_LIBS finiteVolume meshTools Pstream_best
+    TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/mesh/blockMesh/pipe
+)
+
+FOAM_unit_test(SOURCES fieldDependency/Test-fieldDependency.C
+    LINK_LIBS finiteVolume
+    TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/incompressibleFluid/mixerSRF
+)
+
+FOAM_unit_test(SOURCES fileName/Test-fileName.C)
+
+FOAM_unit_test(SOURCES fileNameClean/Test-fileNameClean.C)

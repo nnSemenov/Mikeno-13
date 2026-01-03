@@ -74,6 +74,7 @@ jobs:
         source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
         cd tutorials
         blockMesh -case incompressibleFluid/mixerSRF
+        blockMesh -case mesh/blockMesh/pipe
 
     - name: Run unit test
       run: |
