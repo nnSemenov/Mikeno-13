@@ -42,7 +42,7 @@ function(FOAM_unit_test)
     )
 endfunction()
 
-FOAM_unit_test(SOURCES alloc/Test-alloc.C BUILD_ONLY)
+FOAM_unit_test(SOURCES alloc/Test-alloc.C)
 FOAM_unit_test(SOURCES BinSum/Test-BinSum.C LINK_LIBS Pstream_best)
 FOAM_unit_test(SOURCES boundSphere/Test-boundSphere.C
     LINK_LIBS fileFormats Pstream_best
@@ -65,4 +65,25 @@ FOAM_unit_test(SOURCES cubicEqn/Test-cubicEqn.C)
 FOAM_unit_test(SOURCES cyclic/Test-cyclic.C
     LINK_LIBS finiteVolume meshTools
     TEST_COMMAND_ARGS -case ${PROJECT_SOURCE_DIR}/tutorials/incompressibleFluid/mixerSRF
+)
+
+FOAM_unit_test(SOURCES decomposedBlockData/Test-decomposedBlockData.C
+    BUILD_ONLY
+)
+
+FOAM_unit_test(SOURCES delete/Test-delete.C)
+
+FOAM_unit_test(SOURCES Dictionary/Test-Dictionary.C)
+
+FOAM_unit_test(SOURCES dictionary/Test-dictionary.C
+    BUILD_ONLY
+)
+
+FOAM_unit_test(SOURCES dimensionedType/Test-dimensionedType.C
+    BUILD_ONLY
+)
+
+FOAM_unit_test(SOURCES distribution/Test-distribution.C
+    LINK_LIBS sampling
+    BUILD_ONLY
 )
