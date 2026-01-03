@@ -92,6 +92,17 @@ jobs:
         ./postProcessing/Allrun
         ./postProcessing/Allclean
 
+    - name: Prepare for unit test
+      run: |
+        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        cd tutorials/incompressibleFluid/mixerSRF
+
+    - name: Run unit test
+      run: |
+        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        cd build/applications/test
+        ctest --parallel
+
     - name: Upload test files
       uses: actions/upload-artifact@v4
       if: ${{ failure() }}
