@@ -124,3 +124,19 @@ FOAM_unit_test(SOURCES fieldDependency/Test-fieldDependency.C
 FOAM_unit_test(SOURCES fileName/Test-fileName.C)
 
 FOAM_unit_test(SOURCES fileNameClean/Test-fileNameClean.C)
+
+
+
+
+
+
+
+
+
+
+
+
+
+FOAM_unit_test(SOURCES realFluidEOS/Test-realFluidEOS.cpp
+    LINK_LIBS specie
+)
