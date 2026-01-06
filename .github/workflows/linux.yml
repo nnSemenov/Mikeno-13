@@ -9,6 +9,8 @@ on:
 env:
   # Customize the CMake build type here (Release, Release, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  foam_build_type: Opt
+
 
 jobs:
   build:
@@ -16,9 +18,27 @@ jobs:
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [Gcc, Clang]
+
+    env:
+      foam_platform: linux64${{ matrix.compiler }}DPInt32${{ foam_build_type }}
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Set compiler
+      env:
+        foam_compiler: ${{ matrix.compiler }}
+      run: |
+        if ${foam_compiler} == "Gcc"; then
+          echo "c_compiler=gcc-14" >> $GITHUB_ENV
+          echo "cxx_compiler=g++-14" >> $GITHUB_ENV
+        else
+          echo "c_compiler=clang-20" >> $GITHUB_ENV
+          echo "cxx_compiler=clang++-20" >> $GITHUB_ENV
+        fi
 
     - name: Install compiler
       run: |
@@ -33,7 +53,7 @@ jobs:
 #      run: sudo apt install --fix-missing paraview paraview-dev libvtk9-dev
 
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DParaView_TYPE=none -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DParaView_TYPE=none -DCMAKE_C_COMPILER=$c_compiler -DCMAKE_CXX_COMPILER=$cxx_compiler
 
     - name: Build
       # Build your program with the given configuration
@@ -44,9 +64,9 @@ jobs:
 
     - name: Archive
       run: |
-        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        source platforms/${{foam_platform}}/FOAMenv.sh
         7z a -mx=9 -mmt=0 -snl -sse platform.7z platforms
-#        7z a -mx=9 -mmt=0 -xr'!build' -xr'!.git' -xr'!.github' -xr'!idea' -xr'!.vscode' -snl -sse linux64ClangDPInt32Opt.7z
+#        7z a -mx=9 -mmt=0 -xr'!build' -xr'!.git' -xr'!.github' -xr'!idea' -xr'!.vscode' -snl -sse ${{foam_platform}}.7z
 
     - name: Upload archive
       uses: actions/upload-artifact@v4
@@ -58,33 +78,33 @@ jobs:
 
     - name: Test secondary development
       run: |
-        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        source platforms/${{foam_platform}}/FOAMenv.sh
         cd test/find_package
         cmake -S . -B build -DCMAKE_PREFIX_PATH=$MIKENO_BINARY_INSTALL_PREFIX -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_CXX_COMPILER=$WM_CXX
         cmake --build build --parallel
 
     - name: Test dynamic linking
       run: |
-        cd platforms/linux64ClangDPInt32Opt
+        cd platforms/${{foam_platform}}
         source FOAMenv.sh
         cmake "-Dsearch_dirs=./bin;./lib" -P ../../cmake/check_linking.cmake
 
     - name: Prepare for unit test
       run: |
-        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        source platforms/${{foam_platform}}/FOAMenv.sh
         cd tutorials
         blockMesh -case incompressibleFluid/mixerSRF
         blockMesh -case mesh/blockMesh/pipe
 
     - name: Run unit test
       run: |
-        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        source platforms/${{foam_platform}}/FOAMenv.sh
         cd build/applications/test
         ctest --parallel
 
     - name: Run function tests
       run: |
-        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+        source platforms/${{foam_platform}}/FOAMenv.sh
         export FOAM_SETNAN=set
         export FOAM_SIGFPE=set
         cd test
@@ -115,6 +135,6 @@ jobs:
 
 #    - name: Run unit test
 #      run: |
-#        source platforms/linux64ClangDPInt32Opt/FOAMenv.sh
+#        source platforms/${{foam_platform}}/FOAMenv.sh
 #        cd build
 #        ctest
