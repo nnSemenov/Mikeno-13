@@ -9,7 +9,6 @@ on:
 env:
   # Customize the CMake build type here (Release, Release, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  foam_build_type: Opt
 
 
 jobs:
@@ -23,7 +22,7 @@ jobs:
         compiler: [Gcc, Clang]
 
     env:
-      foam_platform: linux64${{ matrix.compiler }}DPInt32${{ foam_build_type }}
+      foam_platform: linux64${{ matrix.compiler }}DPInt32Opt
 
     steps:
     - uses: actions/checkout@v4
