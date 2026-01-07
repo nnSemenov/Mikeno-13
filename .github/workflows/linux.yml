@@ -27,7 +27,7 @@ jobs:
     - name: Set compiler
       run: |
         echo "foam_platform=linux64${{ matrix.compiler }}DPInt32Opt" >> $GITHUB_ENV
-        if "${{ matrix.compiler }}" == "Gcc"; then
+        if [["${{ matrix.compiler }}" == "Gcc"]]; then
           echo "c_compiler=gcc-14" >> $GITHUB_ENV
           echo "cxx_compiler=g++-14" >> $GITHUB_ENV
         else
