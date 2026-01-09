@@ -1,3 +1,5 @@
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
 add_subdirectory(solvers/foamRun)
 add_subdirectory(solvers/foamMultiRun)
 add_subdirectory(solvers/chemFoam)
