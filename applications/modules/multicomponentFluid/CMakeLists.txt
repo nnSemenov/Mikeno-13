@@ -14,7 +14,7 @@ target_include_directories(${target_name} PUBLIC
 
 target_include_directories(${target_name} PRIVATE
     ${LIB_SRC}/physicalProperties/lnInclude
-    ${LIB_SRC}/ThermophysicalTransportModels/fluid/lnInclude
+    #${LIB_SRC}/ThermophysicalTransportModels/fluid/lnInclude
     ${LIB_SRC}/ThermophysicalTransportModels/thermophysicalTransportModel/lnInclude
 )
 
@@ -26,7 +26,8 @@ target_link_libraries(${target_name} PRIVATE
     basicFluidSolver
     isothermalFluidSolver
 
-    fluidThermophysicalModels 
+    fluidThermophysicalModels
+    fluidThermophysicalTransportModel 
     specie 
     chemistryModel 
     ODE 

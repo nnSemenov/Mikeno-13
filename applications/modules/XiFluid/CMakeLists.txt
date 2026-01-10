@@ -90,6 +90,7 @@ target_link_libraries(${target_name} PRIVATE
     basicFluidSolver 
     isothermalFluidSolver
 
+    fluidThermophysicalTransportModel
     momentumTransportModels 
     compressibleMomentumTransportModels 
     phaseCompressibleMomentumTransportModels 
