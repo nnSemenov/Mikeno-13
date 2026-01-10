@@ -8,6 +8,7 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     -Wno-invalid-offsetof
     -Wno-attributes
     -ftemplate-depth-256
+    -Wno-array-bounds
 
     -frounding-math
     -ftrapping-math
