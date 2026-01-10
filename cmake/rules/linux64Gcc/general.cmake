@@ -14,8 +14,10 @@ target_compile_options(OpenFOAM_Defines INTERFACE
     -ftrapping-math
 )
 
+set(CMAKE_LINKER_TYPE BFD)
+
 target_link_options(OpenFOAM_Defines INTERFACE
-    -fuse-ld=bfd
+#    -fuse-ld=bfd
     -Xlinker --add-needed
 #    -Xlinker --no-as-needed
 )
