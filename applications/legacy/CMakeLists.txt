@@ -1,3 +1,5 @@
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
 add_subdirectory(basic/laplacianFoam)
 add_subdirectory(basic/financialFoam)
 
