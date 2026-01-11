@@ -1,4 +1,4 @@
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${LTO_option})
 
 add_subdirectory(basic/laplacianFoam)
 add_subdirectory(basic/financialFoam)

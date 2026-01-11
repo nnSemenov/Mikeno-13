@@ -14,6 +14,7 @@ target_compile_options(OpenFOAM_Defines INTERFACE
 )
 
 set(CMAKE_LINKER_TYPE LLD)
+set(LTO_option ON)
 
 list(APPEND Mikeno_less_warn_options
         -Wno-old-style-cast
