@@ -297,8 +297,10 @@ target_sources(OpenFOAM PRIVATE
     ${functionEntries}/calcEntry/calcEntry.C
     ${functionEntries}/streamEntry/streamEntry.C
     ${functionEntries}/codeStream/codeStream.C
+    ${functionEntries}/codeDict/codeDict.C
     ${functionEntries}/codeBlock/codeBlockEntry.C
-    ${functionEntries}/codeBlockCalc/codeBlockCalcEntry.C
+    ${functionEntries}/codeBlockStream/codeBlockStreamEntry.C
+    ${functionEntries}/codeBlockDict/codeBlockDictEntry.C
     ${functionEntries}/endCodeBlock/endCodeBlockEntry.C
     ${functionEntries}/includeEntry/includeEntry.C
     ${functionEntries}/includeEtcEntry/includeEtcEntry.C
