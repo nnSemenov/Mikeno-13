@@ -3,8 +3,11 @@ lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 set(target_name XiFluidSolver)
 
 add_library(${target_name} SHARED
-    ubRhoMulticomponentThermo/ubRhoMulticomponentThermo.C
-    ubRhoMulticomponentThermo/ubRhoMulticomponentThermos.C
+    uRhoMulticomponentThermo/uRhoMulticomponentThermo.C
+    uRhoMulticomponentThermo/uRhoMulticomponentThermos.C
+
+    bRhoMulticomponentThermo/bRhoMulticomponentThermo.C
+    bRhoMulticomponentThermo/bRhoMulticomponentThermos.C
 
     ubRhoThermo/ubRhoThermo.C
     ubRhoThermo/derivedFvPatchFields/ubCoupledTemperature/ubCoupledTemperatureFvPatchScalarField.C

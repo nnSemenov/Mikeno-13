@@ -1,12 +1,12 @@
 lnInclude(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(target_name combustionModels)
+set(target_name reactionModels)
 
 add_library(${target_name} SHARED
-    combustionModel/combustionModel.C
-    combustionModel/combustionModelNew.C
+    reactionModel/reactionModel.C
+    reactionModel/reactionModelNew.C
 
-    singleStepCombustion/singleStepCombustion.C
+    singleStepReaction/singleStepReaction.C
 
     diffusion/diffusion.C
 
@@ -24,15 +24,15 @@ add_library(${target_name} SHARED
     FSD/reactionRateFlameAreaModels/relaxation/relaxation.C
     FSD/FSD.C
 
-    zoneCombustion/zoneCombustion.C
+    zoneReaction/zoneReaction.C
 
-    noCombustion/noCombustion.C
+    noReaction/noReaction.C
 
-    functionObjects/adjustTimeStepToCombustion/adjustTimeStepToCombustion.C
+    functionObjects/adjustTimeStepToReaction/adjustTimeStepToReaction.C
     functionObjects/Qdot/Qdot.C
 
-    radiationModels/absorptionEmissionModels/greyMeanCombustion/greyMeanCombustion.C
-    radiationModels/absorptionEmissionModels/wideBandCombustion/wideBandCombustion.C
+    radiationModels/absorptionEmissionModels/greyMeanReaction/greyMeanReaction.C
+    radiationModels/absorptionEmissionModels/wideBandReaction/wideBandReaction.C
     radiationModels/sootModels/mixtureFraction/mixtureFraction.C
 )
 

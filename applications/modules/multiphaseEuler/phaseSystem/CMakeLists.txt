@@ -200,7 +200,7 @@ target_link_libraries(${target_name} PRIVATE
     phaseFluidThermophysicalTransportModels
     phaseFluidMulticomponentThermophysicalTransportModels
     phaseSolidThermophysicalTransportModels
-    combustionModels
+    reactionModels
     fluidThermophysicalTransportModel
     solidThermo
     solidThermophysicalTransportModels

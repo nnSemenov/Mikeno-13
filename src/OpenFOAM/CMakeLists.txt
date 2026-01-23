@@ -107,6 +107,8 @@ target_sources(OpenFOAM PRIVATE
     primitives/triad/triad.C
 
     primitives/omega/omega.C
+
+    primitives/Tuple2/Tuple2s.C
 )
 
 
@@ -292,6 +294,8 @@ target_sources(OpenFOAM PRIVATE
 set(functionEntries ${dictionary}/functionEntries)
 target_sources(OpenFOAM PRIVATE
     ${functionEntries}/functionEntry/functionEntry.C
+    ${functionEntries}/exitEntry/exitEntry.C
+    ${functionEntries}/printEntry/printEntry.C
     ${functionEntries}/negEntry/negEntry.C
     ${functionEntries}/codeIncludeEntry/codeIncludeEntry.C
     ${functionEntries}/calcEntry/calcEntry.C
@@ -437,6 +441,7 @@ target_sources(OpenFOAM PRIVATE
     ${lduMatrix}/solvers/PBiCG/PBiCG.C
     ${lduMatrix}/solvers/PBiCGStab/PBiCGStab.C
 
+    ${lduMatrix}/smoothers/noSmoother/noSmoother.C
     ${lduMatrix}/smoothers/GaussSeidel/GaussSeidelSmoother.C
     ${lduMatrix}/smoothers/symGaussSeidel/symGaussSeidelSmoother.C
     ${lduMatrix}/smoothers/nonBlockingGaussSeidel/nonBlockingGaussSeidelSmoother.C

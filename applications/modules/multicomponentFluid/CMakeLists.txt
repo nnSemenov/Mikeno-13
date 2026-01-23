@@ -31,7 +31,7 @@ target_link_libraries(${target_name} PRIVATE
     specie 
     chemistryModel 
     ODE 
-    combustionModels 
+    reactionModels
     multicomponentThermophysicalModels 
     momentumTransportModels 
     compressibleMomentumTransportModels 
